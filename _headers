@@ -1,0 +1,25 @@
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+/index.html
+  Cache-Control: no-cache, must-revalidate
+/
+  Cache-Control: no-cache, must-revalidate
+/app.js
+  Cache-Control: no-cache, must-revalidate
+/mise-a-jour.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/backup.js
+  Cache-Control: no-cache, must-revalidate
+
+/apple-touch-icon-couleur-241.png
+  Cache-Control: no-store
+/manifest-icone-couleur.webmanifest
+  Cache-Control: no-store
+/installer-icone-couleur.html
+  Cache-Control: no-store
+
+/styles.css
+  Cache-Control: no-cache, must-revalidate
+/app.js
+  Cache-Control: no-cache, must-revalidate

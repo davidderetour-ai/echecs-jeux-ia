@@ -1,0 +1,26 @@
+{
+  "name": "Échecs & Jeux IA — Version 3.8",
+  "short_name": "Échecs IA 3.8",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#13243e",
+  "lang": "fr",
+  "description": "Échecs classiques et 4 joueurs, Shogi, Go, dames et autres jeux, rendu WebGPU ou WebGL avec vue 2D en secours, IA locale et mode hors ligne.",
+  "icons": [
+    {
+      "src": "assets/icone-couleur-241-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icone-couleur-241-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

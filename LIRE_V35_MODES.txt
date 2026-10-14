@@ -1,0 +1,1 @@
+V3.5 : Go : adversaire local heuristique et deux joueurs; conseils optionnels. 100 défis : mode solo avec assistant de placement et mode coopératif deux joueurs, conseils optionnels. Echecs, mini-jeux et Shogi conservent leurs modes IA locaux existants. Aucune IA réseau nécessaire. IA Go simple, pas un moteur professionnel.

@@ -1,0 +1,7 @@
+VERSION V3.4 — 100 DÉFIS DE PAIX ORIGINAUX
+
+Ouvrir index.html puis l’onglet « 100 défis de paix ».
+Les 100 défis sont des créations nouvelles inspirées du principe général Chess Peace, et ne reproduisent pas les 60 défis officiels ni les supports polyominos.
+Règles : placer 7 pièces sur 5x5 sans attaque entre couleurs opposées ; les pièces verrouillées ne bougent pas. Plusieurs solutions possibles.
+Chaque défi possède une solution valide incluse. Le contrôle accepte toute configuration pacifique complète.
+La progression est sauvegardée localement. Les autres jeux sont conservés.

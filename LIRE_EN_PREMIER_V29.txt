@@ -1,0 +1,49 @@
+ÉCHECS & JEUX IA — VERSION 2.9 — MISE À JOUR DU PROJET EXISTANT
+===============================================================
+
+Cette archive contient le VRAI PROGRAMME web, pas une image ou une maquette.
+Elle est préparée pour le site Netlify EXISTANT gorgeous-fairy-4c7374.
+Elle conserve les 10 jeux, le Shogi, l'académie, les règles et les outils de sauvegarde de la V2.8.
+
+CE QUI CHANGE
+- À l'accueil, un échiquier en HTML/CSS remplace la photo. Touchez-le pour ouvrir la vraie partie.
+- La vue tactile 2D est proposée par défaut sur une nouvelle installation.
+- Un bouton « Vue 2D tactile / Vue 3D 360° » est ajouté dans la barre de jeu.
+- Indication simple : toucher une de ses pièces, puis une case verte.
+- Mise en évidence du dernier coup joué (échecs).
+- Choix de la pièce de promotion humaine (dame, tour, fou, cavalier).
+- Enregistrement du dernier coup dans les sauvegardes, annulation compatible.
+- Numéro de version et cache hors ligne mis à jour.
+
+METTRE À JOUR TON NETLIFY SANS CHANGER DE SITE
+1. AVANT TOUT : dans l'application V2.8, ouvre Réglages > « Copier mes sauvegardes dans Fichiers »,
+   puis exporte un JSON. Conserve-le précieusement dans Fichiers.
+2. Ouvre https://app.netlify.com/projects/gorgeous-fairy-4c7374
+3. Utilise la rubrique Deploys / Déploiements de CE PROJET.
+4. Si Netlify n'accepte pas l'archive ZIP directement, décompresse cette archive,
+   puis téléverse/dépose le DOSSIER contenant directement index.html, app.js et styles.css.
+   Sur ordinateur, le glisser-déposer du dossier décompressé est généralement plus facile.
+5. ATTENDS la publication. Va sur https://gorgeous-fairy-4c7374.netlify.app/
+6. Vérifie en bas de la page « v2.9 » et touche le plateau de l'accueil.
+7. Si besoin, mets à jour l'application installée, ferme-la puis rouvre-la.
+8. Avant d'effacer une ancienne installation, confirme que les sauvegardes sont visibles.
+   Le stockage de Safari et celui de la web-app iPhone peuvent être distincts.
+
+COMMENT JOUER SUR IPHONE
+- Accueil > toucher le plateau ou « Jouer à 4 ».
+- La partie commence aux Rouges. Toucher une pièce rouge puis une case surlignée.
+- Si les autres couleurs sont des robots, ils joueront automatiquement.
+- Dans « Joueurs », sélectionner Humain pour faire jouer une couleur par un proche.
+- Dans « Règlement », choisir Chess.com individuel, Chess.com équipes ou House of Chess.
+- La 3D à 360 degrés reste en option, avec retour direct à la 2D tactile.
+
+LIMITES IMPORTANTES
+- Les cas rares des règles Chess.com restent simplifiés : ce n'est pas une copie officielle
+  du moteur en ligne de Chess.com.
+- Les robots intégrés sont une IA locale pédagogique, pas un moteur d'analyse de niveau professionnel.
+- Le mode Internet multijoueur nécessite un serveur compatible extérieur à ce ZIP.
+- Ce ZIP ne peut pas mettre à jour ton Netlify à ta place sans accès à ton compte.
+- Vérification réalisée : syntaxe JavaScript et 10 tests de moteur. La mise à jour
+  doit encore être testée manuellement dans Safari sur ton iPhone après publication.
+
+Pour développeurs : node tests/test-moteur.mjs

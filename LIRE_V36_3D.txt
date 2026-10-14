@@ -1,0 +1,1 @@
+V3.6 : vue 3D simulée et rotation 360 degrés avec curseur sur Go et 100 défis; ombres et épaisseur du plateau améliorées. Les autres jeux conservent leurs vues 3D existantes. Pas de modèles 3D volumétriques individuels.
