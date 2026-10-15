@@ -1,4 +1,4 @@
-const CACHE="alicia-shell-v21";
+const CACHE="alicia-shell-v22";
 const ALICIA_CACHE_PREFIX="alicia-shell-";
 const FILES=["./","./index.html","./styles.css","./app.js","./composer-tools.js","./composer-core.mjs","./web-browse-core.mjs","./web-browse.js","./design-core.mjs","./design-studio.js","./avatar.js","./emotion-ui.js","./emotion-sounds.mjs","./intelligence-lab.js","./intelligence-core.mjs","./avatar-motion.mjs","./expression-core.mjs","./tool-finder.js","./data-lab.js","./data-core.mjs","./mac-lab.js","./mac-core.mjs","./mac-audit.sh","./mac-improve.sh","./github-health.js","./github-proposal-core.mjs","./github-draft.mjs","./puter-engine.js","./wifi-policy.js","./installer-iphone.html","./copy-learning.js","./copy-learning-core.mjs","./copy-learning-catalog.json","./copy-safety.json","./success-metrics.mjs","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));self.skipWaiting()});
