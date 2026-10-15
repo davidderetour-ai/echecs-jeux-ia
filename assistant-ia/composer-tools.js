@@ -55,7 +55,8 @@ async function transcribeAudio(button){
  const selected=attachment;
  if(selected?.kind!=="audio"||!selected.file)return;
  try{
-  window.AliciaWiFi?.requireConfirmed?.();
+  if(!window.AliciaWiFi?.requireConfirmed)throw Error("Protection Wi-Fi absente : actualise Alicia.");
+  window.AliciaWiFi.requireConfirmed();
   if(!window.puter?.ai?.speech2txt)throw Error("Le moteur de transcription Puter n'est pas chargé. Confirme le Wi-Fi dans Alicia.");
   if(!(await window.puter.auth?.isSignedIn?.()))throw Error("Connecte ton compte Puter avant la transcription.");
   button.disabled=true;button.textContent="Transcription en cours…";
@@ -107,7 +108,7 @@ function renderAttachment(){
   preview.append(explanation(attachment.kind==="audio"?
    "Écoute ton audio sur cet iPhone. « Transcrire avec l'IA » enverra l'enregistrement à Puter seulement avec ton accord, et peut utiliser des crédits.":
    "Regarde la vidéo localement. Tu peux capturer une image pour la faire analyser. Le film entier n'est pas transmis à l'IA."));
-  if(attachment.kind==="audio")addAction("Transcrire avec l'IA",button=>transcribeAudio(button));
+  if(attachment.kind==="audio")addAction("Transcrire avec l'IA",event=>transcribeAudio(event.currentTarget));
   else addAction("Capturer l'image affichée",()=>captureVideoFrame(media));
  }else{
   preview.append(explanation("Le texte du fichier sera joint à ta prochaine question quand tu toucheras « Envoyer »."));
