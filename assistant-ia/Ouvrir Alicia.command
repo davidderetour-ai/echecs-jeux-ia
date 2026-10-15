@@ -10,7 +10,9 @@ mkdir -p "$DATA" || exit 1
 if [ ! -f "$BASE/index.html" ]; then
  echo "Alicia : fichier index.html introuvable dans $BASE"; read -r -p "Entrée pour fermer..." _; exit 1
 fi
-if ! command -v ruby >/dev/null 2>&1; then
+RUBY="/usr/bin/ruby"
+if [ ! -x "$RUBY" ];then RUBY="$(command -v ruby || true)";fi
+if [ -z "$RUBY" ] || ! "$RUBY" -rwebrick -e "exit 0" >/dev/null 2>&1; then
  echo "Ruby absent : Alicia ne peut pas démarrer son interface locale sur ce Mac."; read -r -p "Entrée pour fermer..." _; exit 1
 fi
 if curl --max-time 2 -fsS "$URL" >/dev/null 2>&1; then
@@ -20,12 +22,17 @@ if curl --max-time 2 -fsS "$URL" >/dev/null 2>&1; then
  fi
 else
  echo "Démarrage de l'interface Alicia sur ce Mac..."
- nohup ruby -rwebrick -e '
+ nohup "$RUBY" -rwebrick -e '
   dir=ARGV.fetch(0)
   log=WEBrick::Log.new(File::NULL,WEBrick::Log::ERROR)
+  mime=WEBrick::HTTPUtils::DefaultMimeTypes.dup
+  mime["mjs"]="text/javascript"
+  mime["js"]="text/javascript"
+  mime["webmanifest"]="application/manifest+json"
   server=WEBrick::HTTPServer.new(
     :Port=>8765,:BindAddress=>"127.0.0.1",
-    :DocumentRoot=>dir,:Logger=>log,:AccessLog=>[])
+    :DocumentRoot=>dir,:Logger=>log,:AccessLog=>[],
+    :MimeTypes=>mime)
   trap("TERM"){server.shutdown}
   trap("INT"){server.shutdown}
   server.start
