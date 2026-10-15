@@ -21,6 +21,12 @@
 </select></label>
 <label class="check"><input id="search" type="checkbox"> Recherche Web</label>
 <small id="connection-status" role="status">Sur iPhone, un compte Puter permet des échanges IA en ligne avec une allocation gratuite limitée. Aucun achat automatique.</small>
+<div class="wifi-policy" id="wifi-policy">
+ <div class="wifi-policy-title">📶 Wi-Fi uniquement sur iPhone</div>
+ <button type="button" id="wifi-confirm" class="secondary">Je suis connecté au Wi-Fi</button>
+ <p id="wifi-state" role="status">Vérifie que l'icône Wi-Fi apparaît sur ton iPhone avant de connecter Alicia.</p>
+ <small>Safari ne peut pas garantir l'absence de 4G/5G. Pour une protection réelle, désactive les données cellulaires d'Alicia (si affichée) ou de Safari et l'option Assistance Wi-Fi dans les réglages de ton iPhone.</small>
+</div>
 <a href="./installer-iphone.html" class="iphone-install-guide">📲 Installer Alicia sur l’écran d’accueil iPhone — guide</a>
 <div id="puter-panel" class="puter-panel" hidden>
  <button id="puter-connect" class="primary" type="button">Connecter mon compte IA (Puter)</button>
@@ -144,5 +150,5 @@
 <p class="disclaimer">Alicia peut se tromper. Le mode Puter demande Internet et un compte (quota gratuit limité). Le mode local nécessite un moteur compatible. Aucun achat ni modification de ton appareil sans ta permission.</p>
 </div>
 </div>
-<script src="https://js.puter.com/v2/" async></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
+<script src="./wifi-policy.js" defer></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
 </body></html>
