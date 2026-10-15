@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "name": "Alicia",
+  "publisher": "davidderetour-ai",
+  "publicDownloads": "copies",
+  "originalActivation": "Only the owner may mark their own installation as Alicia Original, after successful verification of their GitHub identity on that device. This is a local designation, not an unforgeable cryptographic attestation.",
+  "copyRights": "Copies are independent. They may voluntarily send issue reports and read public reviewed lessons.",
+  "limits": "No remote deletion, no remote execution, no hidden access to files or conversations, no automatic learning from unverified reports."
+}
