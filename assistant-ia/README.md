@@ -21,7 +21,9 @@ Prototype d'assistant IA en français utilisable dans le navigateur et installab
 ## Autocorrection et évolution
 - *Autocorrection d'une réponse* : critique + réécriture par le modèle. Ce contrôle n'est pas une garantie d'exactitude.
 - *Évolution des préférences* : notes locales créées avec consentement explicite ; effaçables d'un clic.
-- *Évolution du logiciel* : les changements futurs sont proposés dans une branche GitHub et une pull request, vérifiés par tests et approuvés par le propriétaire avant déploiement. **Aucune modification autonome de son propre code, aucun accès direct à l'ordinateur, aucune commande ou suppression automatique.**
+- *Évolution du logiciel* : Alicia peut analyser un problème, chercher des méthodes, concevoir une correction et préparer des changements proposés dans une branche GitHub et une pull request. Elle ne doit appliquer les changements sensibles qu'après **ta permission explicite pour chaque opération**, avec aperçu, tests, sauvegarde et possibilité de revenir en arrière. Aucune permission globale implicite.
+- *Protocole de permission* : détailler ce qui sera modifié/supprimé/installé, l'utilité, les risques, le coût éventuel et les possibilités de restauration ; demander une approbation spécifique ; agir uniquement dans le périmètre validé ; présenter un journal et le résultat. Une permission peut être refusée ou retirée avant l'exécution.
+- *État réel du prototype* : l'interface actuelle peut discuter et proposer du code, mais **ne dispose pas encore d'outils permettant de manipuler les fichiers ou d'installer des logiciels sur l'appareil**. Ce protocole est une règle de conception pour les futures intégrations, pas une exécution déjà disponible.
 - Pour commencer les tests : \`cd assistant-ia && npm test\`. Les tests unitaires ne valident pas le modèle externe, qui requiert une clé API et le déploiement.
 
 ## Limitations de cette V1
