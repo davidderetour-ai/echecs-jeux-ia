@@ -4,7 +4,7 @@ Objectif : créer une véritable application iOS et Android, compilée pour le s
 
 ## Réalisé
 
-- Interface bleu nuit/violet et portrait vectoriel original inclus hors connexion.
+- Interface bleu nuit/violet et portrait tiré de la maquette fournie et embarqué hors connexion.
 - Synthèse vocale française via les voix de l'appareil.
 - Dictée native avec autorisation du microphone ; la reconnaissance peut nécessiter Internet.
 - Rire, peur, colère et tristesse sous forme d'exclamations synthétiques (pas d'enregistrements ni de voix humaine clonée).
@@ -16,7 +16,7 @@ Objectif : créer une véritable application iOS et Android, compilée pour le s
 
 Cette version est un **prototype d'interface native**, pas encore la migration complète d'Alicia Web.
 
-- Le portrait photoréaliste de la capture n'est **pas encore** intégré : l'application contient une illustration vectorielle originale. Le rendu est inspiré du modèle, pas identique au pixel près.
+- Le portrait utilisé provient de la maquette, mais le reste de l'interface ne reproduit pas encore exactement tous les détails : l'application contient une image recadrée de la maquette fournie. Le rendu est inspiré du modèle, pas identique au pixel près.
 - Puter.js est un moteur JavaScript Web et **ne fonctionne pas directement en Flutter natif**. Il faut une intégration native autorisée ou un serveur IA distinct. Sans URL de serveur IA valide, l'application montre un aperçu explicitement étiqueté et ne prétend pas avoir répondu.
 - Pas encore de moteur hors ligne embarqué ni des fonctions GitHub, CAO, caméra, jeux et réparation d'ordinateur.
 - Les émotions sont des courtes phrases TTS, pas des fichiers audio réalistes.
