@@ -66,3 +66,14 @@ Ce script lit uniquement la version de macOS, le modèle, l'architecture, la RAM
 **Limitations :** l'application Ollama officielle exige macOS 14 ou plus récent ; une optimisation ne peut pas rendre arbitrairement compatible une version plus récente d'un programme. Une mise à niveau macOS doit être vérifiée selon le modèle exact du Mac, sauvegardée et décidée par le propriétaire. Les futures opérations de nettoyage, mise à jour ou installation demanderont un consentement distinct, des contrôles et une possibilité de retour en arrière. Le module actuel n'exécute aucune modification du Mac.
 
 Sources : https://ollama.com/download/mac et https://support.apple.com/en-us/108382
+
+## Première modification Mac contrôlée : animation du Dock
+Un second script distinct, **mac-improve.sh**, démontre le cycle complet :
+- `bash ~/Downloads/mac-improve.sh preview` : plan précis, effet et risques, aucune modification ;
+- `bash ~/Downloads/mac-improve.sh apply` : demande explicite de saisir `OUI ALICIA` dans un Terminal interactif, sans `sudo`, avant toute modification ;
+- `bash ~/Downloads/mac-improve.sh verify` : contrôle de la préférence après action ;
+- `bash ~/Downloads/mac-improve.sh undo` : permission explicite, restauration de l'ancienne valeur sauvegardée, puis vérification.
+
+La seule préférence modifiée est `com.apple.dock launchanim` (animation d'ouverture depuis le Dock). Cela n'améliore **pas la puissance CPU/RAM** et ne permet **pas de faire tourner des applications incompatibles avec Big Sur**. Un redémarrage bref du Dock peut survenir. Le script crée un petit fichier de sauvegarde privé dans le dossier utilisateur Alicia ; il ne supprime aucun document et ne modifie aucun fichier système macOS. Aucune commande de ce script n'a été exécutée sur ton Mac à distance. Le téléchargement du script ne constitue pas une autorisation de l'exécuter.
+
+D'autres changements comme la désinstallation de logiciels, la gestion des programmes au démarrage et les mises à jour demandent une analyse supplémentaire et un mécanisme d'autorisation séparé.
