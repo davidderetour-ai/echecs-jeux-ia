@@ -37,6 +37,10 @@ jobs:
           node --check puter-engine.js
           node --check composer-core.mjs
           node --check composer-tools.js
+          node --check web-browse-core.mjs
+          node --check web-browse.js
+          node --check design-core.mjs
+          node --check design-studio.js
           node --check wifi-policy.js
           node --check avatar-motion.mjs
           node --check copy-learning.js
