@@ -5,6 +5,7 @@ on:
     paths:
       - "assistant-ia/**"
       - ".github/workflows/alicia-pages.yml"
+      - ".nojekyll"
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy:
-    name: Préparer et publier Alicia
+    name: Publier les jeux ET Alicia séparément
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -23,23 +24,54 @@ jobs:
     steps:
       - name: Récupérer le projet
         uses: actions/checkout@v4
-      - name: Vérifier les fichiers
+      - name: Vérifier les entrées des deux applications
         run: |
+          test -f index.html
+          test -f app.js
           test -f assistant-ia/index.html
           test -f assistant-ia/app.js
           test -f assistant-ia/puter-engine.js
           test -f assistant-ia/manifest.webmanifest
-      - name: Préparer les fichiers statiques Alicia
+          grep -q 'Échecs & Jeux' index.html
+          grep -q '<title>Alicia' assistant-ia/index.html
+      - name: Construire un site avec deux chemins indépendants
         run: |
-          mkdir -p _alicia_pages
-          cp -R assistant-ia/. _alicia_pages/
-          touch _alicia_pages/.nojekyll
+          mkdir -p _combined_pages
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='_combined_pages/' --exclude='node_modules/' --exclude='__pycache__/' ./ _combined_pages/
+          touch _combined_pages/.nojekyll
+          test -f _combined_pages/index.html
+          test -f _combined_pages/assistant-ia/index.html
+          grep -q '<title>Alicia' _combined_pages/assistant-ia/index.html
       - name: Configurer GitHub Pages
         uses: actions/configure-pages@v5
       - name: Publier l'archive
         uses: actions/upload-pages-artifact@v4
         with:
-          path: _alicia_pages
+          path: _combined_pages
       - name: Déployer
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Vérifier en ligne la bonne adresse Alicia
+        shell: bash
+        run: |
+          set -euo pipefail
+          alicia="https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/"
+          games="https://davidderetour-ai.github.io/echecs-jeux-ia/"
+          for attempt in $(seq 1 18); do
+            if curl -L --max-time 15 -fsS "$alicia" -o /tmp/alicia-online.html &&
+               grep -q '<title>Alicia' /tmp/alicia-online.html; then
+              echo "OK : Alicia est bien disponible à $alicia"
+              break
+            fi
+            if [ "$attempt" -eq 18 ]; then
+              echo "::error::Alicia n'est pas encore joignable à $alicia."
+              exit 1
+            fi
+            sleep 8
+          done
+          curl -L --max-time 15 -fsS "$games" -o /tmp/games-online.html
+          if ! grep -q 'Échecs & Jeux' /tmp/games-online.html; then
+            echo "::error::La page des jeux a été remplacée : publication invalide."
+            exit 1
+          fi
+          echo "OK : les échecs sont toujours accessibles à $games"
