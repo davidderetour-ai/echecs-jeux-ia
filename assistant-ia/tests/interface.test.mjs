@@ -11,7 +11,7 @@ function countId(id){
 }
 test("L'interface affiche chaque commande utilisée par le JavaScript une seule fois",()=>{
  const ids=["mode","connection-mode","connection-status","search","verify","alicia-avatar","avatar-status","expression-mode","voice-choice","voice-style","preview-voice","auto-voice","laugh-sound","cry-sound","fear-sound","anger-sound","conversation","new","question","voice","speak","review","send","access","save-note","clear-notes","notes-list","clear-access","note","status","chat-form","tool-query","data-file-a","mac-report"];
- for(const id of ids)assert.equal(countId(id),1,\`Élément #\${id} manquant ou en double\`);
+ for(const id of ids)assert.equal(countId(id),1,`Élément #${id} manquant ou en double`);
 });
 test("Les cinq modes rapides pointent vers de vraies options du moteur",()=>{
  for(const value of ["general","code","repair","create","teach"]){
