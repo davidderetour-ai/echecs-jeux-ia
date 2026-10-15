@@ -22,12 +22,27 @@
 <label class="check"><input id="search" type="checkbox"> Naviguer sur Internet en direct</label>
 <small class="web-search-info">Si désactivé : Alicia utilise les connaissances de son modèle IA, sans consulter Internet. Si activé : elle lit les pages HTTPS publiques que tu lui donnes ou lance une recherche Web via Puter. Les pages consultées sont indiquées comme sources quand disponibles. La recherche peut utiliser davantage de crédits Puter, avec des limites selon le site et le modèle.</small>
 <small id="connection-status" role="status">Sur iPhone, un compte Puter permet des échanges IA en ligne avec une allocation gratuite limitée. Aucun achat automatique.</small>
-<div class="wifi-policy" id="wifi-policy">
- <div class="wifi-policy-title">📶 Wi-Fi uniquement sur iPhone</div>
- <button type="button" id="wifi-confirm" class="secondary">Je suis connecté au Wi-Fi</button>
- <p id="wifi-state" role="status">Vérifie que l'icône Wi-Fi apparaît sur ton iPhone avant de connecter Alicia.</p>
- <small>Safari ne peut pas garantir l'absence de 4G/5G. Pour une protection réelle, désactive les données cellulaires d'Alicia (si affichée) ou de Safari et l'option Assistance Wi-Fi dans les réglages de ton iPhone.</small>
-</div>
+<details class="network-settings" id="wifi-policy">
+ <summary class="network-summary">
+   <span class="network-icon" id="network-icon" aria-hidden="true">◌</span>
+   <span id="network-label">Vérification du réseau…</span>
+   <span id="network-dot" class="network-dot unknown" aria-hidden="true"></span>
+   <span class="network-chevron" aria-hidden="true">⌄</span>
+ </summary>
+ <div class="network-details">
+   <label for="network-choice">Connexion utilisée (si Safari ne l'identifie pas)
+     <select id="network-choice">
+       <option value="auto">Détection automatique</option>
+       <option value="wifi-primary">📶 Mon Wi-Fi principal (déclaré)</option>
+       <option value="ethernet">🔌 Ethernet (déclaré)</option>
+       <option value="other">🌐 Autre connexion / inconnu</option>
+     </select>
+   </label>
+   <button type="button" id="wifi-confirm" class="secondary">Confirmer le réseau pour cette session</button>
+   <p id="wifi-state" role="status">Safari ne peut généralement pas identifier le Wi-Fi ni le réseau exact sur iPhone.</p>
+   <small>Le type sélectionné manuellement est une déclaration, pas une détection. Le nom du réseau Wi-Fi (SSID) et le passage éventuel sur la 4G/5G ne sont pas vérifiables par Safari. Sur iPhone, désactive les données cellulaires pour Safari/Alicia et « Assistance Wi-Fi » si tu veux vraiment empêcher leur utilisation.</small>
+ </div>
+</details>
 <a href="./installer-iphone.html" class="iphone-install-guide">📲 Installer Alicia sur l’écran d’accueil iPhone — guide</a>
 <div id="puter-panel" class="puter-panel" hidden>
  <button id="puter-connect" class="primary" type="button">Connecter mon compte IA (Puter)</button>
