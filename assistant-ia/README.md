@@ -26,5 +26,19 @@ Prototype d'assistant IA en français utilisable dans le navigateur et installab
 - *État réel du prototype* : l'interface actuelle peut discuter et proposer du code, mais **ne dispose pas encore d'outils permettant de manipuler les fichiers ou d'installer des logiciels sur l'appareil**. Ce protocole est une règle de conception pour les futures intégrations, pas une exécution déjà disponible.
 - Pour commencer les tests : \`cd assistant-ia && npm test\`. Les tests unitaires ne valident pas le modèle externe, qui requiert une clé API et le déploiement.
 
+
+## Analyse et comparaison des données (v1, gratuite et hors ligne)
+Dans **📊 Analyse et comparaison de données**, charge un fichier CSV/TSV, ou deux fichiers à comparer.
+- Les fichiers restent dans le navigateur : ils ne sont **pas envoyés à l'API ni au serveur**.
+- Calculs reproductibles : nombre de valeurs valides/exclues, somme, moyenne, médiane, minimum et maximum ; écart absolu et relatif des moyennes entre deux fichiers utilisant le même nom de colonne.
+- CSV séparés par des virgules, points-virgules ou tabulations ; nombres français (virgule décimale) reconnus.
+- Les nombres ambigus, unités mélangées et données manquantes sont exclus ou signalés, **jamais devinés**.
+- Pour comparer deux groupes, contrôler les unités, les définitions, la période et les biais : le même titre de colonne ne prouve pas la même mesure.
+- Aucun accès automatique à des bases de données, aucun résultat inféré par l'IA. L'analyse textuelle par modèle conversationnel et la vérification Web exigent encore un moteur configuré, distinct de cet outil local.
+- Fonctionne hors ligne lorsque les fichiers de la PWA ont été mis en cache une première fois ; limite de 1,5 Mo et 10 000 lignes par fichier.
+
+## Fiabilité des réponses
+Le mode **Analyse et vérification de données** invite Alicia à distinguer observation, calcul et hypothèse ; ne pas inventer de sources, de mesures ou de résultats et expliquer les limites. Une seconde vérification linguistique ne garantit **jamais zéro erreur**. Les chiffres de l'outil CSV sont calculés de façon déterministe, et couverts par des tests unitaires.
+
 ## Limitations de cette V1
 Pas de clonage du modèle interne de ChatGPT, pas d'entraînement continu, pas d'accès aux fichiers de l'utilisateur, pas de modification du code GitHub sans revue. L'application est une interface à un service IA distant, pas un modèle local autonome. Pour la production grand public : ajouter authentification utilisateur robuste, contrôles d'abus et quotas, chiffrement et politique de conservation des données. Le stockage de code d'accès dans \`sessionStorage\` est un compromis pour prototype personnel, pas une solution multiutilisateur. Aucune clé d'API n'est envoyée au navigateur.
