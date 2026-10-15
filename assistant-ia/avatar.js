@@ -1,3 +1,4 @@
+import { chooseExpression, normalizeExpression, EXPRESSIONS } from "./expression-core.mjs";
 /* Alicia : avatar WebGL 3D stylise et interaction vocale.
    Fonctionnement hors ligne pour les formes et la lecture vocale si le systeme le permet. */
 (()=>{
@@ -7,6 +8,14 @@ const canvas=$("alicia-avatar"),statusNode=$("avatar-status");
 if(!canvas)return;
 const sayStatus=value=>{if(statusNode)statusNode.textContent=value};
 let yaw=0.12,pitch=-0.04,speaking=false,mouth=0;
+let expression="neutral",intent="neutral",gazeX=0,gazeY=0,gazeTargetX=0,gazeTargetY=0;
+function setExpression(value){
+ intent=normalizeExpression(value);
+ const configured=$("expression-mode")?.value||"auto";
+ expression=configured==="auto"?intent:normalizeExpression(configured);
+ const label=$("expression-status");if(label)label.textContent="Expression : "+EXPRESSIONS[expression];
+}
+$("expression-mode")?.addEventListener("change",()=>setExpression(intent));
 const synth=window.speechSynthesis;
 const voices=()=>synth?.getVoices?.().filter(v=>v.lang?.toLowerCase().startsWith("fr"))||[];
 function updateVoices(){
@@ -33,14 +42,20 @@ function listen(){
  if(!API){sayStatus("Dictée vocale indisponible sur ce navigateur");return;}
  try{
  const rec=new API();rec.lang="fr-FR";rec.interimResults=false;rec.maxAlternatives=1;
- rec.onstart=()=>sayStatus("Alicia écoute…");
+ rec.onstart=()=>{setExpression("curious");sayStatus("Alicia écoute…")};
  rec.onresult=e=>{const said=e.results?.[0]?.[0]?.transcript;if(!said)return;const q=$("question");q.value+=(q.value?" ":"")+said;q.focus();sayStatus("Dictée reçue : vérifie puis envoie")};
  rec.onerror=e=>sayStatus("Micro ou dictée indisponible : "+(e.error||"erreur"));
  rec.onend=()=>{if(statusNode?.textContent==="Alicia écoute…")sayStatus("Alicia est prête")};
  rec.start();
  }catch{sayStatus("Impossible de démarrer le microphone")}
 }
-window.AliciaAvatar={speak,listen,onAssistantMessage:text=>{if($("auto-voice")?.checked)speak(text)}};
+window.AliciaAvatar={
+ speak,listen,setExpression,
+ onUserMessage(text,mode){setExpression(chooseExpression({text,mode,phase:"user"}))},
+ onThinking(){setExpression("thoughtful")},
+ onAssistantMessage(text,mode){setExpression(chooseExpression({text,mode,phase:"reply"}));if($("auto-voice")?.checked)speak(text)},
+ reset(){setExpression("neutral")}
+};
 const gl=canvas.getContext("webgl",{antialias:true,alpha:true,powerPreference:"low-power"});
 if(!gl){canvas.hidden=true;sayStatus("WebGL indisponible : l'écrit et la voix restent accessibles");return;}
 const vs=[
@@ -129,18 +144,26 @@ function draw(t){
  ball([0,.08+bob,.76],[.11,.20,.15],"skin");
  ball([0,-.10+bob,.78],[.20,.075,.12],"skin");
  const phase=(t%4800)/4800,blink=phase>.87&&phase<.91?Math.max(.07,Math.abs(phase-.89)*48):1;
+ gazeX+=(gazeTargetX-gazeX)*.065;gazeY+=(gazeTargetY-gazeY)*.065;
+ const joyful=expression==="joyful",supportive=expression==="supportive";
+ const thoughtful=expression==="thoughtful",curious=expression==="curious",creative=expression==="creative";
+ const eyeHeight=blink*(joyful?.82:thoughtful?.92:1);
+ const lookX=gazeX*.058,lookY=gazeY*.046;
  for(const side of [-1,1]){
-  ball([side*.30,.50+bob,.588],[.226,.132*blink,.082],"white");
-  ball([side*.30,.50+bob,.666],[.114,.113*blink,.04],"navy");
-  ball([side*.30,.50+bob,.697],[.089,.089*blink,.036],"blue");
-  ball([side*.30,.50+bob,.732],[.048,.06*blink,.016],"black");
-  ball([side*.265,.543+bob,.75],[.025,.027*blink,.012],"sparkle");
-  ball([side*.30,.735+bob,.591],[.25,.039,.04],"brow");
-  ball([side*.42,-.05+bob,.54],[.26,.135,.04],"cheeks");
+  ball([side*.30,.50+bob,.588],[.226,.132*eyeHeight,.082],"white");
+  ball([side*.30+lookX,.50+bob+lookY,.666],[.114,.113*eyeHeight,.04],"navy");
+  ball([side*.30+lookX,.50+bob+lookY,.697],[.089,.089*eyeHeight,.036],"blue");
+  ball([side*.30+lookX,.50+bob+lookY,.732],[.048,.06*eyeHeight,.016],"black");
+  ball([side*.265+lookX,.543+bob+lookY,.75],[.025,.027*eyeHeight,.012],"sparkle");
+  ball([side*.30,.735+bob+(curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
+  ball([side*.42,-.05+bob,.54],[.26,joyful?.18:.135,.04],"cheeks");
  }
  mouth+=((speaking ? .65 : 0)-mouth)*.13;
- const mh=.034+mouth*(.06+.026*Math.sin(t/115));
- ball([0,-.35+bob,.643],[.225,mh+.015,.065],"lips");
+ const mh=.034+mouth*(.06+.026*Math.sin(t/115))+(joyful?.025:supportive?.012:0);
+ ball([0,-.35+bob,.643],[joyful?.255:.225,mh+.015,.065],"lips");
+ if(joyful||creative){
+  for(const side of [-1,1])ball([side*.21,-.30+bob,.64],[.052,.042,.038],"lipLight");
+ }
  ball([0,-.377+bob,.682],[.17,Math.max(.014,mh*.48),.028],"lipLight");
  ball([0,1.10+bob,-.005],[.86,.46,.67],"blonde");
  ball([-.32,.995+bob,.48],[.52,.23,.31],"gold");
@@ -152,6 +175,7 @@ function draw(t){
 }
 requestAnimationFrame(draw);
 let start=null;
+window.addEventListener("pointermove",e=>{if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;gazeTargetX=Math.max(-1,Math.min(1,(e.clientX/window.innerWidth-.5)*2));gazeTargetY=Math.max(-1,Math.min(1,(.5-e.clientY/window.innerHeight)*2));},{passive:true});
 canvas.style.touchAction="pan-y";
 canvas.addEventListener("pointerdown",e=>{start={x:e.clientX,y:e.clientY,yaw,pitch};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener("pointermove",e=>{if(!start)return;yaw=Math.max(-.65,Math.min(.65,start.yaw+(e.clientX-start.x)*.007));pitch=Math.max(-.25,Math.min(.25,start.pitch+(e.clientY-start.y)*.004))});
