@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="shell">
-<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.5.0">v0.5.0</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.5.0</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
+<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.5.0">v0.5.0</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.5.0</small></div></div><div class="header-actions"><a href="#intelligence-panel" class="alicia-level-pill" aria-label="Voir le niveau mesuré d'Alicia"><span>✦ Niveau Alicia</span><strong id="alicia-level">Non évaluée</strong></a><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
 <label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox"> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
@@ -44,7 +44,7 @@
 <select id="expression-mode" aria-label="Expression d'Alicia">
 <option value="auto">Automatique (selon la conversation)</option>
 <option value="neutral">Neutre</option>
-<option value="joyful">Joyeuse</option>
+<option value="joyful">Joyeuse</option><option value="sad">Triste</option><option value="afraid">Effrayée</option><option value="angry">En colère</option>
 <option value="thoughtful">Concentrée</option>
 <option value="curious">Curieuse</option>
 <option value="supportive">Bienveillante</option>
@@ -57,9 +57,48 @@
 </div>
 <label class="auto-voice"><input id="auto-voice" type="checkbox"> Répondre aussi à l'oral</label>
     <label class="voice-picker">Voix française<select id="voice-choice"><option value="">Voix française automatique</option></select></label>
+    <label class="voice-picker">Style de voix
+      <select id="voice-style"><option value="douce">Douce et calme</option><option value="naturelle">Naturelle</option><option value="dynamique">Dynamique</option></select>
+    </label>
+    <button type="button" id="preview-voice" class="secondary">▶ Écouter la voix d'Alicia</button>
+    <div class="emotion-controls" role="group" aria-label="Bruitages d'Alicia">
+      <button type="button" id="laugh-sound">😂 Rire</button><button type="button" id="cry-sound">😢 Tristesse</button>
+      <button type="button" id="fear-sound">😨 Peur</button><button type="button" id="anger-sound">😠 Colère</button>
+    </div>
+    <small>Bruitages de synthèse gratuits, déclenchés uniquement par tes boutons. Son et voix selon le navigateur.</small>
     <small>Voix et reconnaissance selon le navigateur et les voix disponibles. La dictée peut nécessiter Internet.</small>
   </div>
 </section>
+<details class="intelligence-panel glass-panel" id="intelligence-panel">
+ <summary>🧠 Évaluer le niveau d'Alicia <span class="small-muted">(tests réels, sans QI inventé)</span></summary>
+ <div class="intelligence-body">
+  <p>Le niveau affiché en haut mesure uniquement les réponses correctes d'Alicia à de courts exercices de logique, calcul, géométrie, programmation et français. Il ne mesure pas l'intelligence globale.</p>
+  <p id="alicia-level-caption" role="status">Aucun test du modèle exécuté</p>
+  <label class="check"><input type="checkbox" id="intelligence-extended"> Tester 10 exercices (au lieu de 5 : plus long)</label>
+  <div class="intelligence-actions"><button id="intelligence-start" type="button" class="primary">Évaluer Alicia (modèle connecté)</button><button id="intelligence-reset" class="secondary" type="button">Effacer le niveau</button></div>
+  <p id="intelligence-progress" role="status" aria-live="polite">Lance des tests avec le modèle local ou Puter (allocation gratuite limitée). Une confirmation est demandée avant tout test Puter. Le mode API potentiellement payant est exclu.</p>
+  <p id="intelligence-detail">Aucun score attribué avant de tester le moteur IA actif.</p>
+  <details class="capability-evaluator">
+   <summary>Comparer les compétences observables d'une personne, d'une IA, d'un animal ou d'un objet</summary>
+   <p>Cette grille facultative utilise les observations saisies par toi. Elle ne diagnostique personne et ne mesure pas le QI. Le résultat ne sera jamais affiché à la place du niveau d'Alicia.</p>
+   <label>Type de sujet
+    <select id="capability-kind"><option value="human">Personne volontaire</option><option value="ai">IA / logiciel</option><option value="animal">Animal dans une situation définie</option><option value="inert">Objet passif (évaluation d'intelligence non pertinente)</option></select>
+   </label>
+   <label class="check"><input type="checkbox" id="capability-consent"> La personne participe volontairement (si c'est une personne).</label>
+   <label>Exemples vérifiables / résultats observés <textarea id="capability-evidence" rows="3" placeholder="Explique les tâches, essais, réussites et limites observables. Aucun nom complet nécessaire."></textarea></label>
+   <p>Pour chaque critère, choisis ce qui est réellement observé ; ne déduis pas un QI de ces réponses.</p>
+   <div class="capability-grid">
+    <label>Résolution de problème<select data-capability-rating><option value="0">Non observé</option><option value="1">Non démontré</option><option value="2">Partiellement observé</option><option value="3">Observé</option></select></label>
+    <label>Adaptation<select data-capability-rating><option value="0">Non observé</option><option value="1">Non démontré</option><option value="2">Partiellement observé</option><option value="3">Observé</option></select></label>
+    <label>Précision<select data-capability-rating><option value="0">Non observé</option><option value="1">Non démontré</option><option value="2">Partiellement observé</option><option value="3">Observé</option></select></label>
+    <label>Apprentissage ou amélioration<select data-capability-rating><option value="0">Non observé</option><option value="1">Non démontré</option><option value="2">Partiellement observé</option><option value="3">Observé</option></select></label>
+    <label>Création de solutions<select data-capability-rating><option value="0">Non observé</option><option value="1">Non démontré</option><option value="2">Partiellement observé</option><option value="3">Observé</option></select></label>
+   </div>
+   <button id="capability-evaluate" class="secondary" type="button">Calculer la grille descriptive</button>
+   <p id="capability-result" role="status" aria-live="polite">Aucun résultat. Toutes les données restent sur l'appareil et ne sont pas enregistrées.</p>
+  </details>
+ </div>
+</details>
 <details class="design-studio" id="design-studio">
  <summary>📐 Atelier de conception — meubles, architecture, mécanique et plans</summary>
  <p>Conçois un meuble ouvert aux dimensions de ton choix, avec aperçu coté et fichiers téléchargeables. Pour le bâtiment, les pièces mécaniques et la cartographie, Alicia prépare les spécifications et indique les outils professionnels adaptés ; elle n'y est pas encore directement connectée.</p>
@@ -260,5 +299,5 @@
 </details>
 </div>
 </div>
-<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script type="module" src="./web-browse.js"></script><script type="module" src="./design-studio.js"></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
+<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script type="module" src="./web-browse.js"></script><script type="module" src="./design-studio.js"></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script type="module" src="./emotion-ui.js"></script><script type="module" src="./intelligence-lab.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
 </body></html>
