@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -106,9 +108,15 @@ class _AliciaScreenState extends State<AliciaScreen> {
  ]));
  Widget hero()=>glass(Row(children:[
   Expanded(flex:56,child:ClipRRect(borderRadius:const BorderRadius.horizontal(left:Radius.circular(18)),
-   child:Image.asset('assets/alicia_portrait.jpg',height:236,fit:BoxFit.cover,
-    errorBuilder:(c,e,s)=>Container(height:236,color:const Color(0xff302952),
-     child:const Icon(Icons.face_3,size:100,color:icy))))),
+   child:FutureBuilder<String>(
+    future:rootBundle.loadString('assets/alicia_portrait.b64'),
+    builder:(c,snapshot) {
+     if(!snapshot.hasData)return const SizedBox(height:236,child:Icon(Icons.face_3,size:100,color:icy));
+     try{
+      return Image.memory(base64Decode(snapshot.data!.trim()),height:236,fit:BoxFit.cover,
+       gaplessPlayback:true,errorBuilder:(c,e,trace)=>const SizedBox(height:236,child:Icon(Icons.face_3,size:100,color:icy)));
+     }catch(_){return const SizedBox(height:236,child:Icon(Icons.face_3,size:100,color:icy));}
+    }))),
   Expanded(flex:44,child:Padding(padding:const EdgeInsets.all(10),child:Column(
    crossAxisAlignment:CrossAxisAlignment.start,mainAxisAlignment:MainAxisAlignment.center,children:[
     Row(children:[const Icon(Icons.circle,color:Colors.greenAccent,size:9),const SizedBox(width:7),
