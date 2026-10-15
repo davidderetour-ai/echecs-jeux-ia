@@ -10,7 +10,7 @@ const LEARN_KEY="alicia-chatgpt-conseils-v1";
 let attachment=null;
 function announce(message){
  preview.hidden=false;
- preview.replaceChildren();
+ if(!attachment)preview.replaceChildren();
  const p=document.createElement("p");p.textContent=message;preview.append(p);
 }
 function learnings(){
@@ -71,7 +71,7 @@ for(const key of Object.keys(inputMap)){
 async function askChatGPT(){
  const prompt=createAdvicePrompt($("question")?.value||"");
  toggle(false);
- const intro="Question prête pour ChatGPT. Seul ce texte sera proposé ; aucune connexion automatique entre les applications.";
+ const intro="Question prête pour ChatGPT. Aucun fichier n’est joint à cette question ; seuls les mots affichés ci-dessous seront copiés.";
  announce(intro);
  const textArea=document.createElement("textarea");textArea.value=prompt;textArea.readOnly=true;textArea.rows=5;
  textArea.setAttribute("aria-label","Question à coller dans ChatGPT");
@@ -80,7 +80,9 @@ async function askChatGPT(){
  copy.addEventListener("click",async()=>{
   try{
    await navigator.clipboard.writeText(prompt);
-   announce("Question copiée. Ouvre ChatGPT, colle-la, puis copie sa réponse dans « Apprendre de ChatGPT ».");
+   const status=document.createElement("p");
+   status.textContent="Question copiée. Ouvre ChatGPT, colle-la, puis importe volontairement sa réponse dans Alicia.";
+   preview.append(status);
   }catch{ textArea.focus();textArea.select(); }
  });
  const link=document.createElement("a");link.href="https://chatgpt.com/";
