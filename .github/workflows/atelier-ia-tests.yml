@@ -30,6 +30,11 @@ jobs:
           node --check mac-core.mjs
           node --check mac-lab.js
           node --check local-server.mjs
+          node --check github-health.js
+          node --check github-proposal-core.mjs
+          node --check github-maintainer.mjs
+          node --check permission-policy.mjs
+          node --check success-metrics.mjs
           bash -n mac-audit.sh
           bash -n mac-improve.sh
           bash mac-improve.sh --help
