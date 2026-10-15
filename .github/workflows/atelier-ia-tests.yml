@@ -34,6 +34,7 @@ jobs:
           node --check github-proposal-core.mjs
           node --check github-maintainer.mjs
           node --check github-draft.mjs
+          node --check puter-engine.js
           node --check copy-learning.js
           node --check copy-learning-core.mjs
           node --check github-portfolio.mjs
