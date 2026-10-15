@@ -159,3 +159,33 @@
 .attach-preview audio.attach-player{min-height:48px}
 .attach-preview video.attach-player{object-fit:contain}
 .attach-preview button{min-height:40px}
+
+/* Alicia v0.3.2 : partage volontaire des URL sans ouverture ni lecture automatique. */
+.share-link-panel{margin:10px 0;padding:13px;background:#1c304d;border:1px solid #6483ad;border-radius:14px;display:flex;flex-direction:column;gap:9px}
+.share-link-panel[hidden]{display:none!important}
+.share-link-panel label{font-size:14px;font-weight:750;color:#e0ecff}
+.share-link-panel input{width:100%;min-height:45px;background:#0e1c34;color:#fff;border:1px solid #5f79a3;border-radius:10px;padding:10px 12px;font-size:15px}
+.share-link-panel small,.share-link-panel p{margin:0;color:#b9c9e9;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.share-link-panel .link-actions{display:flex;gap:8px;flex-wrap:wrap}
+.share-link-panel button{flex:1 1 145px;min-height:42px}
+@media(max-width:640px){.share-link-panel .link-actions{display:grid;grid-template-columns:1fr 1fr}.share-link-panel button{font-size:12px;padding:9px 7px}.share-link-panel #share-link-attach{grid-column:span 2}}
+
+/* Atelier de conception technique : formulaire accessible sur iPhone. */
+.design-studio{margin:16px 18px;padding:16px;border:1px solid #58699b;background:#16253f;border-radius:16px}
+.design-studio summary{cursor:pointer;font-weight:800;color:#e7efff;font-size:15px}
+.design-studio p{font-size:12px;line-height:1.6;color:#bacbe8}
+.design-studio label{display:flex;flex-direction:column;gap:6px;color:#e1ebff;font-size:12px;font-weight:650;margin:10px 0}
+.design-studio input,.design-studio select,.design-studio textarea{width:100%;min-width:0;min-height:42px;background:#0e1a30;border:1px solid #5a76a8;border-radius:9px;color:#eff5ff;padding:9px;font:inherit}
+.design-fields-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:6px 12px}
+.design-studio [hidden]{display:none!important}
+.design-svg-preview{width:100%;overflow-x:auto;border-radius:10px;background:#fff}
+.design-svg-preview svg{display:block;width:100%;min-width:460px;height:auto}
+.design-output{max-width:100%;overflow-wrap:anywhere}
+.design-output table{border-collapse:collapse;width:100%;font-size:11px;margin-top:10px}
+.design-output table td,.design-output table th{border:1px solid #4d5f83;padding:7px 5px;text-align:left}
+.design-output table th{background:#334769}
+.design-output .design-caution,.design-studio .design-warning{padding:9px 11px;background:#493326;border:1px solid #bc936c;color:#ffe5b9;border-radius:8px;font-weight:600}
+.design-downloads{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.design-downloads button{flex:1 1 165px;min-height:43px}
+.design-professional a{color:#c1dbff;text-decoration:underline}
+@media(max-width:640px){.design-studio{margin:10px 11px;padding:12px}.design-fields-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.design-studio button{font-size:12px}}

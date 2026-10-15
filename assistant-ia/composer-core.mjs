@@ -48,3 +48,25 @@ export function cleanSharedAdvice(value){
   throw Error("Ce texte semble contenir un secret. Ne l'enregistre pas.");
  return v;
 }
+
+/** Prépare un lien pour le partager, sans jamais consulter son contenu.
+ * Seules les adresses Web HTTP(S) sont autorisées. Les URL avec mot de passe
+ * embarqué ou caractères de contrôle sont refusées avant d'ouvrir Safari.
+ */
+export function parseSharedLink(input){
+ const raw=String(input??"").trim();
+ if(!raw||raw.length>2048)throw Error("Saisis un lien Internet de 2 048 caractères maximum.");
+ if(/[\u0000-\u001f\u007f]/.test(raw))throw Error("Le lien contient des caractères non autorisés.");
+ let candidate=raw;
+ // Aide pour les liens « exemple.fr » sans préfixe.
+ if(!/^[a-z][a-z0-9+.-]*:/i.test(candidate)&&/^(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:[/:?#]|$)/i.test(candidate)){
+  candidate="https://"+candidate;
+ }
+ let url;
+ try{url=new URL(candidate);}
+ catch{throw Error("Ce lien est invalide. Exemple : https://www.exemple.fr");}
+ if(!["https:","http:"].includes(url.protocol))throw Error("Seuls les liens Web https:// ou http:// sont acceptés.");
+ if(url.username||url.password)throw Error("Les liens contenant un identifiant ou mot de passe sont refusés.");
+ if(!url.hostname||url.href.length>2500)throw Error("L'adresse du site est invalide ou trop longue.");
+ return {url:url.href,host:url.hostname,secure:url.protocol==="https:"};
+}

@@ -6,11 +6,11 @@
 <meta name="apple-mobile-web-app-title" content="Alicia">
 <meta name="description" content="Assistant IA polyvalent, programmation et diagnostic informatique.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><meta name="alicia-version" content="0.3.1"><title>Alicia — Assistant personnel</title>
+<link rel="stylesheet" href="./styles.css"><meta name="alicia-version" content="0.5.0"><title>Alicia — Assistant personnel</title>
 </head>
 <body>
 <div class="shell">
-<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.3.1">v0.3.1</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.3.1</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
+<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.5.0">v0.5.0</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.5.0</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
 <label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox"> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
@@ -19,7 +19,8 @@
 <option value="local">Hors ligne / local (gratuit)</option>
 <option value="online">En ligne (API facultative, potentiellement payante)</option>
 </select></label>
-<label class="check"><input id="search" type="checkbox"> Recherche Web</label>
+<label class="check"><input id="search" type="checkbox"> Naviguer sur Internet en direct</label>
+<small class="web-search-info">Si désactivé : Alicia utilise les connaissances de son modèle IA, sans consulter Internet. Si activé : elle lit les pages HTTPS publiques que tu lui donnes ou lance une recherche Web via Puter. Les pages consultées sont indiquées comme sources quand disponibles. La recherche peut utiliser davantage de crédits Puter, avec des limites selon le site et le modèle.</small>
 <small id="connection-status" role="status">Sur iPhone, un compte Puter permet des échanges IA en ligne avec une allocation gratuite limitée. Aucun achat automatique.</small>
 <div class="wifi-policy" id="wifi-policy">
  <div class="wifi-policy-title">📶 Wi-Fi uniquement sur iPhone</div>
@@ -59,6 +60,54 @@
     <small>Voix et reconnaissance selon le navigateur et les voix disponibles. La dictée peut nécessiter Internet.</small>
   </div>
 </section>
+<details class="design-studio" id="design-studio">
+ <summary>📐 Atelier de conception — meubles, architecture, mécanique et plans</summary>
+ <p>Conçois un meuble ouvert aux dimensions de ton choix, avec aperçu coté et fichiers téléchargeables. Pour le bâtiment, les pièces mécaniques et la cartographie, Alicia prépare les spécifications et indique les outils professionnels adaptés ; elle n'y est pas encore directement connectée.</p>
+ <label>Domaine de conception
+  <select id="design-domain">
+   <option value="furniture">Meuble — bibliothèque / rangement ouvert</option>
+   <option value="architecture">Architecture / rénovation</option>
+   <option value="mechanical">Pièce mécanique / impression 3D</option>
+   <option value="mapping">Cartographie / terrain</option>
+  </select>
+ </label>
+ <div class="design-fields" id="design-furniture-fields">
+  <label>Nom du meuble <input id="design-name" type="text" maxlength="64" value="Bibliothèque sur mesure"></label>
+  <div class="design-fields-grid">
+   <label>Largeur (mm) <input id="design-width" type="number" min="300" max="2400" step="1" value="800"></label>
+   <label>Hauteur (mm) <input id="design-height" type="number" min="300" max="2500" step="1" value="1200"></label>
+   <label>Profondeur totale (mm) <input id="design-depth" type="number" min="180" max="900" step="1" value="350"></label>
+   <label>Épaisseur des panneaux (mm) <input id="design-thickness" type="number" min="12" max="36" step="1" value="18"></label>
+   <label>Épaisseur du fond extérieur (mm) <input id="design-back" type="number" min="3" max="18" step="1" value="5"></label>
+   <label>Nombre d'étagères <input id="design-shelves" type="number" min="0" max="8" step="1" value="3"></label>
+  </div>
+  <label>Matériau envisagé
+   <select id="design-material"><option>Contreplaqué</option><option>Mélaminé</option><option>Bois massif</option></select>
+  </label>
+  <button id="design-generate" type="button" class="primary">📐 Générer mon plan de meuble</button>
+  <div id="design-output" class="design-output" role="status" aria-live="polite"></div>
+  <div id="design-downloads" class="design-downloads" hidden>
+   <button id="design-save-svg" type="button">Télécharger le plan SVG</button>
+   <button id="design-save-dxf" type="button">Télécharger les panneaux DXF</button>
+   <button id="design-save-csv" type="button">Télécharger la liste de découpe CSV</button>
+   <button id="design-send-chat" type="button" class="secondary">Demander conseil à Alicia sur ce plan</button>
+  </div>
+ </div>
+ <div id="design-professional-fields" class="design-professional" hidden>
+  <label>Décris ton projet et ses contraintes
+   <textarea id="design-pro-description" rows="4" placeholder="Ex. aménager une maison, modéliser une pièce pour imprimante 3D, préparer une carte à partir de mesures."></textarea>
+  </label>
+  <button id="design-pro-ask" type="button" class="secondary">Préparer un cahier des charges avec Alicia</button>
+  <p id="design-pro-status" role="status"></p>
+  <p>Outils externes à connecter ultérieurement selon le besoin :
+   <a href="https://www.freecad.org/" target="_blank" rel="noopener noreferrer">FreeCAD (CAO)</a>,
+   <a href="https://www.blender.org/" target="_blank" rel="noopener noreferrer">Blender (3D)</a>,
+   <a href="https://qgis.org/" target="_blank" rel="noopener noreferrer">QGIS (cartographie)</a>.
+   Les exportations actuelles ne remplacent pas les vérifications BIM, les calculs de structure, les certifications ni les logiciels de fabrication.
+  </p>
+ </div>
+ <p class="design-warning">⚠️ Plans préliminaires : contrôle des cotes, assemblages, charges, stabilité, matériaux et normes par un professionnel qualifié avant fabrication, construction ou installation. Aucun G-code machine ni validation structurelle automatique.</p>
+</details>
 <details class="tool-finder" id="tool-finder"><summary>🧰 Alicia trouve les outils dont elle a besoin</summary>
   <p>Suggestions de logiciels gratuits et libres pour créer des jeux, des vidéos, des traductions ou des modèles 3D. Alicia ne les installe jamais sans ta permission.</p>
   <div class="tool-query-row"><input id="tool-query" type="search" placeholder="Ex. créer un jeu 3D ou traduire une vidéo" aria-label="Outils recherchés">
@@ -155,6 +204,8 @@
    <button type="button" data-plus-action="camera">📷 Caméra</button>
    <button type="button" data-plus-action="photos">🖼️ Photos</button>
    <button type="button" data-plus-action="files">📎 Fichiers</button>
+   <button type="button" data-plus-action="link">🔗 Partager un lien</button>
+   <button type="button" data-plus-action="share-alicia">↗ Partager Alicia</button>
    <button type="button" data-plus-action="video">🎬 Importer une vidéo</button>
    <button type="button" data-plus-action="audio">🎵 Importer un audio</button>
    <button type="button" data-plus-action="plugins">🧩 Plugins et outils</button>
@@ -171,6 +222,20 @@
 <input id="attach-video" type="file" accept="video/mp4,video/quicktime,video/x-m4v,video/webm,.mp4,.mov,.m4v,.webm" hidden>
 <input id="attach-audio" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus" hidden>
 <div id="attach-preview" class="attach-preview" role="status" hidden></div>
+<div id="share-link-panel" class="share-link-panel" hidden>
+ <label for="share-link-input">🔗 Lien à partager</label>
+ <input id="share-link-input" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://www.exemple.fr" maxlength="2048">
+ <small>Tu peux envoyer ce lien à Alicia ou le partager sur ton iPhone. Alicia ne consulte pas automatiquement la page.</small>
+ <p id="share-link-status" role="status" aria-live="polite"></p>
+ <div class="link-actions">
+  <button id="share-link-attach" type="button" class="primary">Ajouter à ma question</button>
+  <button id="share-link-read" type="button" class="secondary">Lire cette page en direct</button>
+  <button id="share-link-copy" type="button" class="secondary">Copier le lien</button>
+  <button id="share-link-open" type="button" class="secondary">Ouvrir le lien</button>
+  <button id="share-link-share" type="button" class="secondary">Partager sur iPhone</button>
+  <button id="share-link-close" type="button" class="secondary">Fermer</button>
+ </div>
+</div>
 <details class="chatgpt-learning" id="chatgpt-learning" hidden>
  <summary>✦ Importer une connaissance depuis ChatGPT</summary>
  <p>Copie ici une explication utile de notre conversation, relis-la puis enregistre-la dans Alicia. Elle n'accède pas automatiquement à ChatGPT et n'entraîne pas son modèle : il s'agit d'une note locale que tu choisis de lui communiquer.</p>
@@ -188,12 +253,12 @@
 <textarea id="question" rows="2" placeholder="Écris ta question ou décris ton problème…" aria-label="Votre message" required></textarea><div class="actions"><button id="voice" class="secondary" type="button" title="Dicter une question">🎙️</button><button id="speak" class="secondary" type="button" title="Lire la dernière réponse">🔊</button><button id="review" class="secondary" type="button" title="Relire et corriger la dernière réponse" disabled>🔍 Corriger</button><span class="grow"></span><button id="send" class="primary" type="submit">Envoyer ➤</button></div></form>
 <p class="disclaimer">Alicia peut se tromper. Le mode Puter demande Internet et un compte (quota gratuit limité). Le mode local nécessite un moteur compatible. Aucun achat ni modification de ton appareil sans ta permission.</p>
 <details class="version-details" id="app-version-details">
- <summary>ℹ️ À propos d’Alicia — version 0.3.1</summary>
- <p><strong>Version de l’application : 0.3.1</strong> · publiée le 15 octobre 2026.</p>
+ <summary>ℹ️ À propos d’Alicia — version 0.5.0</summary>
+ <p><strong>Version de l’application : 0.5.0</strong> · publiée le 15 octobre 2026.</p>
  <p>Cette indication correspond à la version du code chargé sur ton appareil. Elle ne prouve pas que toutes les fonctions envisagées sont déjà disponibles. Pour récupérer la dernière version, ferme puis rouvre Alicia avec une connexion Wi-Fi, ou actualise sa page dans Safari.</p>
  <p>Le numéro interne du cache de l’application est différent du numéro de version.</p>
 </details>
 </div>
 </div>
-<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
+<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script type="module" src="./web-browse.js"></script><script type="module" src="./design-studio.js"></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
 </body></html>
