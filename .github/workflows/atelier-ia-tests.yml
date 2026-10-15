@@ -23,6 +23,16 @@ jobs:
         run: |
           node --check app.js
           node --check netlify/functions/chat.mjs
+          node --check avatar.js
+          node --check expression-core.mjs
+          node --check data-core.mjs
+          node --check data-lab.js
+          node --check mac-core.mjs
+          node --check mac-lab.js
+          node --check local-server.mjs
+          bash -n mac-audit.sh
+          bash -n mac-improve.sh
+          bash mac-improve.sh --help
       - name: Tests unitaires
         working-directory: assistant-ia
         run: npm test
