@@ -1,0 +1,45 @@
+name: Alicia — publier sur GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assistant-ia/**"
+      - ".github/workflows/alicia-pages.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: alicia-pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    name: Préparer et publier Alicia
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le projet
+        uses: actions/checkout@v4
+      - name: Vérifier les fichiers
+        run: |
+          test -f assistant-ia/index.html
+          test -f assistant-ia/app.js
+          test -f assistant-ia/puter-engine.js
+          test -f assistant-ia/manifest.webmanifest
+      - name: Préparer les fichiers statiques Alicia
+        run: |
+          mkdir -p _alicia_pages
+          cp -R assistant-ia/. _alicia_pages/
+          touch _alicia_pages/.nojekyll
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Publier l'archive
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _alicia_pages
+      - name: Déployer
+        id: deployment
+        uses: actions/deploy-pages@v4
