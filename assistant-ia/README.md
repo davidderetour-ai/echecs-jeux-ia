@@ -258,3 +258,12 @@ L'écran affiche **✦ Niveau Alicia : Non évaluée** tant que le modèle actif
 - **Personnes, animaux, logiciels et objets :** grille descriptive facultative de compétences observables, jamais présentée comme QI ni comme intelligence globale. Participation volontaire demandée pour une personne ; aucun jugement d'intelligence sur un objet passif. Leurs résultats ne remplacent pas le niveau d'Alicia.
 - **Interface :** thème bleu-violet, styles de voix française, rires, sanglots, peur, colère. Les sons sont générés localement, sans voix humaine enregistrée et déclenchés uniquement sur clic.
 - **Cache PWA :** version `alicia-shell-v21`. Actualiser depuis Safari ou le bouton ↻ pour télécharger le nouveau code, sans effacer les préférences. La publication sur la branche principale doit encore être synchronisée par l'hébergeur de l'application.
+
+## v0.6.1 — réseau principal Wi-Fi, Ethernet et connexion Puter
+
+- Le grand encadré Wi-Fi a été remplacé par une ligne `📶 / 🔌 / 🌐` avec voyant vert (connexion autorisée), rouge (coupée/bloquée) ou jaune (type de réseau non vérifiable).
+- `navigator.connection.type` peut éventuellement indiquer `wifi` ou `ethernet` sur certains navigateurs ; Safari sur iPhone ne permet généralement PAS de lire le type et ne fournit jamais de nom de réseau (SSID).
+- En l'absence de détection, l'utilisateur peut déclarer « Wi-Fi principal », « Ethernet » ou « Autre ». Il s'agit d'une **déclaration manuelle**, et non d'une preuve de connexion au réseau principal.
+- La connexion et la restauration de la session Puter existante sont lancées automatiquement **sur un réseau autorisé et reconnu**, sans ouvrir une fenêtre de connexion forcée ; le bouton de connexion n'apparaît que si la session n'est pas signée.
+- Sur iPhone en réseau indéterminé, l'utilisateur confirme d'abord Wi-Fi/Ethernet pour la session. Le cellulaire rapporté explicitement est bloqué. Pour empêcher réellement la 4G/5G, il faut configurer iOS (désactiver les données cellulaires pour Alicia/Safari et Assistance Wi-Fi).
+- Le cache hors ligne est `alicia-shell-v22` ; le code est associé à la version 0.6.1.
