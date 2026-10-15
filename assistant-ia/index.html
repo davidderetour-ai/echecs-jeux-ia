@@ -12,7 +12,7 @@
 <div class="shell">
 <header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA</strong><small>Assistant · Code · Diagnostic · Création</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
-<label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
+<label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox" checked> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
 <label class="check"><input id="search" type="checkbox"> Recherche Web</label>
 </section>
@@ -57,6 +57,16 @@
  <p id="data-message" role="status"></p><div id="data-results" aria-live="polite"></div>
  <small>Un chiffre non reconnu est exclu et signalé. Les moyennes de groupes différents ne prouvent pas une cause. Vérifie les unités, la période et l'origine des données.</small>
 </details>
+<details class="tool-finder" id="mac-lab">
+ <summary>🖥️ Améliorer mon Mac — diagnostic sûr</summary>
+ <p>Alicia peut analyser ton Mac avant de proposer une optimisation : espace libre, mémoire, version du système et compatibilité des logiciels. Elle ne modifie jamais macOS sans ton autorisation.</p>
+ <p>1. <a href="./mac-audit.sh" download="mac-audit.sh">Télécharger le petit diagnostic Mac (lecture seule)</a>. 2. Lis le fichier si tu le souhaites. 3. Sur le Mac, ouvre Terminal et saisis <code>bash ~/Downloads/mac-audit.sh</code>. 4. Copie le résultat ci-dessous.</p>
+ <label for="mac-report">Rapport de diagnostic à coller</label>
+ <textarea id="mac-report" rows="5" placeholder="ALICIA_MAC_AUDIT_V1&#10;OS_VERSION=11.7.11&#10;MAC_MODEL=..."></textarea>
+ <div class="tool-query-row"><button id="mac-analyze" type="button">Analyser et proposer des améliorations</button></div>
+ <div id="mac-results" aria-live="polite"></div>
+ <small>Le rapport reste sur ton appareil : aucun envoi automatique. Alicia n’installe, ne supprime et ne modifie aucun élément de macOS avec cette fonction. Une sauvegarde est nécessaire avant toute modification future.</small>
+</details>
 <main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
 <div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
 <p>Pose une question en français, demande un cours, une correction, un problème de mathématiques, une explication scientifique, historique ou artistique. Je peux aussi aider à programmer et à créer.</p>
@@ -69,5 +79,5 @@
 <p class="disclaimer">Une IA peut se tromper. Ne lance aucune commande risquée sans vérification ni sauvegarde. L'analyse nécessite Internet et une configuration API.</p>
 </div>
 </div>
-<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script>
+<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script>
 </body></html>
