@@ -6,11 +6,11 @@
 <meta name="apple-mobile-web-app-title" content="Alicia">
 <meta name="description" content="Assistant IA polyvalent, programmation et diagnostic informatique.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><meta name="alicia-version" content="0.3.1"><title>Alicia — Assistant personnel</title>
+<link rel="stylesheet" href="./styles.css"><meta name="alicia-version" content="0.3.2"><title>Alicia — Assistant personnel</title>
 </head>
 <body>
 <div class="shell">
-<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.3.1">v0.3.1</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.3.1</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
+<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.3.2">v0.3.2</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.3.2</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
 <label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox"> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
@@ -155,6 +155,8 @@
    <button type="button" data-plus-action="camera">📷 Caméra</button>
    <button type="button" data-plus-action="photos">🖼️ Photos</button>
    <button type="button" data-plus-action="files">📎 Fichiers</button>
+   <button type="button" data-plus-action="link">🔗 Partager un lien</button>
+   <button type="button" data-plus-action="share-alicia">↗ Partager Alicia</button>
    <button type="button" data-plus-action="video">🎬 Importer une vidéo</button>
    <button type="button" data-plus-action="audio">🎵 Importer un audio</button>
    <button type="button" data-plus-action="plugins">🧩 Plugins et outils</button>
@@ -171,6 +173,19 @@
 <input id="attach-video" type="file" accept="video/mp4,video/quicktime,video/x-m4v,video/webm,.mp4,.mov,.m4v,.webm" hidden>
 <input id="attach-audio" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus" hidden>
 <div id="attach-preview" class="attach-preview" role="status" hidden></div>
+<div id="share-link-panel" class="share-link-panel" hidden>
+ <label for="share-link-input">🔗 Lien à partager</label>
+ <input id="share-link-input" type="url" inputmode="url" autocomplete="url" spellcheck="false" placeholder="https://www.exemple.fr" maxlength="2048">
+ <small>Tu peux envoyer ce lien à Alicia ou le partager sur ton iPhone. Alicia ne consulte pas automatiquement la page.</small>
+ <p id="share-link-status" role="status" aria-live="polite"></p>
+ <div class="link-actions">
+  <button id="share-link-attach" type="button" class="primary">Ajouter à ma question</button>
+  <button id="share-link-copy" type="button" class="secondary">Copier le lien</button>
+  <button id="share-link-open" type="button" class="secondary">Ouvrir le lien</button>
+  <button id="share-link-share" type="button" class="secondary">Partager sur iPhone</button>
+  <button id="share-link-close" type="button" class="secondary">Fermer</button>
+ </div>
+</div>
 <details class="chatgpt-learning" id="chatgpt-learning" hidden>
  <summary>✦ Importer une connaissance depuis ChatGPT</summary>
  <p>Copie ici une explication utile de notre conversation, relis-la puis enregistre-la dans Alicia. Elle n'accède pas automatiquement à ChatGPT et n'entraîne pas son modèle : il s'agit d'une note locale que tu choisis de lui communiquer.</p>
@@ -188,8 +203,8 @@
 <textarea id="question" rows="2" placeholder="Écris ta question ou décris ton problème…" aria-label="Votre message" required></textarea><div class="actions"><button id="voice" class="secondary" type="button" title="Dicter une question">🎙️</button><button id="speak" class="secondary" type="button" title="Lire la dernière réponse">🔊</button><button id="review" class="secondary" type="button" title="Relire et corriger la dernière réponse" disabled>🔍 Corriger</button><span class="grow"></span><button id="send" class="primary" type="submit">Envoyer ➤</button></div></form>
 <p class="disclaimer">Alicia peut se tromper. Le mode Puter demande Internet et un compte (quota gratuit limité). Le mode local nécessite un moteur compatible. Aucun achat ni modification de ton appareil sans ta permission.</p>
 <details class="version-details" id="app-version-details">
- <summary>ℹ️ À propos d’Alicia — version 0.3.1</summary>
- <p><strong>Version de l’application : 0.3.1</strong> · publiée le 15 octobre 2026.</p>
+ <summary>ℹ️ À propos d’Alicia — version 0.3.2</summary>
+ <p><strong>Version de l’application : 0.3.2</strong> · publiée le 15 octobre 2026.</p>
  <p>Cette indication correspond à la version du code chargé sur ton appareil. Elle ne prouve pas que toutes les fonctions envisagées sont déjà disponibles. Pour récupérer la dernière version, ferme puis rouvre Alicia avec une connexion Wi-Fi, ou actualise sa page dans Safari.</p>
  <p>Le numéro interne du cache de l’application est différent du numéro de version.</p>
 </details>
