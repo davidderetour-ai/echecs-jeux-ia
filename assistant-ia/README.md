@@ -247,3 +247,14 @@ Tous les calculs sont réalisés localement dans le navigateur et ne consomment 
 Pour l'architecture, les pièces mécaniques et la cartographie, l'atelier construit un **cahier des charges à transmettre à Alicia** avec une liste d'outils professionnels pertinents (FreeCAD, Blender, QGIS ; Revit/SolidWorks/Autodesk pour travaux spécialisés). Les connecteurs effectifs vers ces logiciels, les imports IFC/STEP/LiDAR, les simulations par éléments finis et les fichiers machines sont **des développements futurs**, pas des capacités actuellement exécutées.
 
 Le jeu d'échecs du dépôt reste entièrement séparé et inchangé.
+
+## Alicia 0.6 : niveau mesuré, émotions et interface iPhone
+
+L'écran affiche **✦ Niveau Alicia : Non évaluée** tant que le modèle actif n'a pas passé d'exercices. Il n'y a pas de chiffre inventé ni de QI simulé. Le bouton « Évaluer Alicia » teste 5 domaines simples (ou 10 questions en mode étendu), compare les réponses à un barème déterministe, puis affiche le taux de réussite, le nombre de questions et la date. C'est une **mesure limitée des performances sur ces questions**, pas une mesure universelle d'intelligence. Une nouvelle évaluation peut remplacer l'ancienne ; résultat stocké uniquement sur l'appareil, effaçable et périmé après 30 jours.
+
+- **iPhone / Puter :** le test demande confirmation avant de lancer plusieurs requêtes utilisant l'allocation gratuite limitée de Puter, avec aucun achat automatique.
+- **Mode local :** utilise le serveur Alicia local et le modèle effectivement installé sur l'ordinateur.
+- **Mode API potentiellement payant :** évaluation bloquée pour éviter des dépenses.
+- **Personnes, animaux, logiciels et objets :** grille descriptive facultative de compétences observables, jamais présentée comme QI ni comme intelligence globale. Participation volontaire demandée pour une personne ; aucun jugement d'intelligence sur un objet passif. Leurs résultats ne remplacent pas le niveau d'Alicia.
+- **Interface :** thème bleu-violet, styles de voix française, rires, sanglots, peur, colère. Les sons sont générés localement, sans voix humaine enregistrée et déclenchés uniquement sur clic.
+- **Cache PWA :** version `alicia-shell-v21`. Actualiser depuis Safari ou le bouton ↻ pour télécharger le nouveau code, sans effacer les préférences. La publication sur la branche principale doit encore être synchronisée par l'hébergeur de l'application.
