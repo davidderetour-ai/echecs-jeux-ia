@@ -44,13 +44,30 @@ function normalizeReply(x){
  throw new Error("Le moteur n'a pas renvoyé de réponse en texte.");
 }
 async function refresh(){
- if(!navigator.onLine){setStatus("Hors ligne : le compte Puter nécessite Internet.");return false;}
- if(!ready()){setStatus("Chargement de Puter… si cela dure, ouvre Alicia dans Safari.");return false;}
+ if(!navigator.onLine){
+  if(connect)connect.hidden=false;
+  window.AliciaWiFi?.updateAuth(false);
+  setStatus("Hors ligne : le compte Puter nécessite Internet.");
+  return false;
+ }
+ if(!ready()){
+  if(connect)connect.hidden=false;
+  window.AliciaWiFi?.updateAuth(false);
+  setStatus("Chargement de Puter… si cela dure, ouvre Alicia dans Safari.");
+  return false;
+ }
  try{
-  const signed=await window.puter.auth.isSignedIn();
-  setStatus(signed?"Compte Puter connecté · allocation gratuite limitée.":"Compte Puter non connecté. Appuie sur « Connecter mon compte ».");
+  const signed=Boolean(await window.puter.auth.isSignedIn());
+  if(connect)connect.hidden=signed;
+  window.AliciaWiFi?.updateAuth(signed);
+  setStatus(signed?"Compte Puter déjà connecté · allocation gratuite limitée.":"Compte Puter non connecté. Appuie sur « Connecter mon compte ».");
   return signed;
- }catch(e){setStatus("Connexion Puter non vérifiée : "+String(e?.msg||e?.message||"erreur"));return false;}
+ }catch(e){
+  if(connect)connect.hidden=false;
+  window.AliciaWiFi?.updateAuth(false);
+  setStatus("Connexion Puter non vérifiée : "+String(e?.msg||e?.message||"erreur"));
+  return false;
+ }
 }
 connect?.addEventListener("click",async()=>{
  try{networkPermit()}catch(e){setStatus(e.message);return;}
