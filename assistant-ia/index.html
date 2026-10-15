@@ -14,7 +14,12 @@
 <section class="tools" aria-label="Réglages de l'assistant">
 <label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox" checked> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
+<label>Connexion IA<select id="connection-mode" aria-label="Connexion au modèle IA">
+<option value="local">Hors ligne / local (gratuit)</option>
+<option value="online">En ligne (API facultative, potentiellement payante)</option>
+</select></label>
 <label class="check"><input id="search" type="checkbox"> Recherche Web</label>
+<small id="connection-status" role="status">Le mode local nécessite un serveur Alicia et un modèle IA installés sur ton ordinateur. Aucune connexion payante automatique.</small>
 </section>
 <section class="avatar-shell" aria-label="Alicia, avatar interactif en trois dimensions">
   <div class="avatar-stage"><canvas id="alicia-avatar" width="560" height="350" role="img" aria-label="Avatar 3D stylisé d'Alicia, femme blonde au teint hâlé et aux yeux bleus. Glisser pour l'orienter."></canvas></div>
@@ -97,7 +102,7 @@
 </div></main>
 <div class="bottom">
 <div class="feedback"><details><summary>🧠 Ce que l'IA doit retenir sur cet appareil</summary><p>Enregistre volontairement une préférence ou une correction. Elle restera sur cet appareil et sera envoyée à l'IA lors de tes demandes. Ce n'est pas un entraînement du modèle.</p><textarea id="note" rows="2" placeholder="Exemple : explique les étapes en français simple."></textarea><div class="inline"><button id="save-note" type="button">Retenir</button><button id="clear-notes" class="secondary" type="button">Effacer les notes</button></div><ul id="notes-list"></ul></details></div>
-<div class="controls"><label class="secret">Code d'accès personnel <input id="access" type="password" autocomplete="off" placeholder="Code configuré sur Netlify"></label><button id="clear-access" class="secondary small" type="button" title="Effacer le code de cette session">Effacer</button></div>
+<div class="controls"><label class="secret">Code d’accès (serveur local partagé ou API en ligne) <input id="access" type="password" autocomplete="off" placeholder="Laisser vide sur son propre PC, en mode local"></label><button id="clear-access" class="secondary small" type="button" title="Effacer le code de cette session">Effacer</button></div>
 <form id="chat-form"><textarea id="question" rows="2" placeholder="Écris ta question ou décris ton problème…" aria-label="Votre message" required></textarea><div class="actions"><button id="voice" class="secondary" type="button" title="Dicter une question">🎙️</button><button id="speak" class="secondary" type="button" title="Lire la dernière réponse">🔊</button><button id="review" class="secondary" type="button" title="Relire et corriger la dernière réponse" disabled>🔍 Corriger</button><span class="grow"></span><button id="send" class="primary" type="submit">Envoyer ➤</button></div></form>
 <p class="disclaimer">Une IA peut se tromper. Ne lance aucune commande risquée sans vérification ni sauvegarde. L'analyse nécessite Internet et une configuration API.</p>
 </div>
