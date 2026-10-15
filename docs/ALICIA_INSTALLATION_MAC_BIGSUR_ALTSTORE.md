@@ -2,7 +2,7 @@
 
 **Projet : Alicia** · Mac personnel : **macOS Big Sur 11.7.11** · iPhone personnel · objectif : **renouvellement automatique de la signature tous les 7 jours**, sans compte développeur payant.
 
-> **Important :** ce guide prépare l’installation ; il ne la réalise pas. La version Flutter native d’Alicia, dans la branche \`alicia-flutter-native-v1\`, est pour l’instant du code source de démonstration, **sans fichier IPA compilé ni installation vérifiée**. Le Mac Big Sur peut faire tourner AltServer, mais il ne prend pas en charge les dernières chaînes de compilation Flutter/Xcode. Il faudra produire le fichier IPA sur un environnement macOS récent avant de l’installer via AltStore Classic.
+> **Important :** ce guide prépare l’installation ; il ne la réalise pas. La version Flutter native d’Alicia, dans la branche `alicia-flutter-native-v1`, est pour l’instant du code source de démonstration, **sans fichier IPA compilé ni installation vérifiée**. Le Mac Big Sur peut faire tourner AltServer, mais il ne prend pas en charge les dernières chaînes de compilation Flutter/Xcode. Il faudra produire le fichier IPA sur un environnement macOS récent avant de l’installer via AltStore Classic.
 
 ## 1. Installer le compagnon sur ton Mac
 
@@ -36,7 +36,7 @@ La signature iOS **reste obligatoire** : AltStore et AltServer l’effectuent au
 
 ## 4. Installer Alicia (seulement APRÈS la compilation du fichier IPA)
 
-1. Récupère un vrai fichier \`.ipa\` de l’application Alicia native, conçu pour iPhone. **Le projet Github ne produit pas encore cet IPA.**
+1. Récupère un vrai fichier `.ipa` de l’application Alicia native, conçu pour iPhone. **Le projet Github ne produit pas encore cet IPA.**
 2. Transfère cet IPA dans l’application **Fichiers** de l’iPhone.
 3. Ouvre **AltStore Classic → My Apps** et utilise le bouton **+** pour sélectionner l’IPA (selon la version d’AltStore).
 4. Laisse AltServer actif pendant l’installation.
