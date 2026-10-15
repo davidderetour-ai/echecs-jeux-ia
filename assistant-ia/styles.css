@@ -105,3 +105,9 @@
 .wifi-policy p{margin:0;color:#cce8d9;font-size:12px;line-height:1.5}
 .wifi-policy small{font-size:11px;line-height:1.5;color:#d1dce9}
 @media(max-width:650px){.wifi-policy button{max-width:none;width:100%}}
+
+/* Numéro de version visible directement dans l'en-tête, aussi sur iPhone. */
+.brand .app-version-label{display:block;margin-top:3px;font-size:11px;letter-spacing:.03em;color:#b5c4ff;font-weight:650}
+.version-details{margin-top:12px;padding:9px 10px;border:1px solid #394867;border-radius:10px;background:#162039;color:#d8e2f8;font-size:12px}
+.version-details summary{cursor:pointer;color:#cbdcff;font-weight:700}
+.version-details p{font-size:12px;line-height:1.5;color:#bfcee9;margin:8px 0}
