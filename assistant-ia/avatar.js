@@ -1,4 +1,5 @@
 import { chooseExpression, normalizeExpression, EXPRESSIONS } from "./expression-core.mjs";
+import { blinkAmount, mouthOpening, gazeFromPointer, moodLook, clamp } from "./avatar-motion.mjs";
 /* Alicia : avatar WebGL 3D stylise et interaction vocale.
    Fonctionnement hors ligne pour les formes et la lecture vocale si le systeme le permet. */
 (()=>{
@@ -7,7 +8,7 @@ const $=id=>document.getElementById(id);
 const canvas=$("alicia-avatar"),statusNode=$("avatar-status");
 if(!canvas)return;
 const sayStatus=value=>{if(statusNode)statusNode.textContent=value};
-let yaw=0.12,pitch=-0.04,speaking=false,mouth=0;
+let yaw=0.12,pitch=-0.04,speaking=false,mouth=0,lastBoundary=-1;
 let expression="neutral",intent="neutral",gazeX=0,gazeY=0,gazeTargetX=0,gazeTargetY=0;
 function setExpression(value){
  intent=normalizeExpression(value);
@@ -32,9 +33,10 @@ function speak(text){
  const u=new SpeechSynthesisUtterance(String(text).replace(/[*#_]/g,"").slice(0,2800));
  u.lang="fr-FR";u.rate=.9;u.pitch=1.12;u.volume=.88;
  const available=voices();const selected=available.find(v=>v.voiceURI===$("voice-choice")?.value);const preferred=available.find(v=>/amelie|aurelie|audrey|celine|julie|marie|sylvie|sophie|alice|lea/i.test(v.name));if(selected||preferred)u.voice=selected||preferred;
- u.onstart=()=>{speaking=true;sayStatus("Alicia parle…")};
- u.onend=()=>{speaking=false;sayStatus("Alicia est prête")};
- u.onerror=()=>{speaking=false;sayStatus("Lecture vocale indisponible")};
+ u.onstart=()=>{speaking=true;lastBoundary=performance.now();sayStatus("Alicia parle…")};
+ u.onboundary=()=>{lastBoundary=performance.now()};
+ u.onend=()=>{speaking=false;mouth=0;lastBoundary=-1;sayStatus("Alicia est prête")};
+ u.onerror=()=>{speaking=false;mouth=0;lastBoundary=-1;sayStatus("Lecture vocale indisponible")};
  synth.speak(u);
 }
 function listen(){
@@ -56,6 +58,10 @@ window.AliciaAvatar={
  onAssistantMessage(text,mode){setExpression(chooseExpression({text,mode,phase:"reply"}));if($("auto-voice")?.checked)speak(text)},
  reset(){setExpression("neutral")}
 };
+$("avatar-demo")?.addEventListener("click",()=>{
+ setExpression("joyful");
+ speak("Bonjour, je suis Alicia. Je cligne des yeux, je te regarde quand tu touches l'écran, et ma bouche bouge quand je parle.");
+});
 const gl=canvas.getContext("webgl",{antialias:true,alpha:true,powerPreference:"low-power"});
 if(!gl){canvas.hidden=true;sayStatus("WebGL indisponible : l'écrit et la voix restent accessibles");return;}
 const vs=[
@@ -111,10 +117,10 @@ buffer(posAttr,P);buffer(normAttr,N);
 const index=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I),gl.STATIC_DRAW);
 gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
 const palette={
- skin:[.82,.49,.32],tan:[.67,.34,.22],cheeks:[.8,.38,.33],
- blonde:[.93,.71,.28],gold:[.98,.84,.48],hairShadow:[.66,.42,.17],
+ skin:[.82,.52,.36],tan:[.71,.43,.29],cheeks:[.84,.46,.39],skinLight:[.91,.65,.49],ear:[.74,.41,.30],
+ blonde:[.94,.72,.34],gold:[1,.85,.52],hairShadow:[.59,.37,.15],hairLight:[1,.91,.63],
  white:[.95,.96,.96],blue:[.26,.65,.97],navy:[.09,.31,.57],black:[.07,.10,.17],
- lips:[.69,.31,.36],lipLight:[.89,.49,.48],brow:[.38,.24,.14],
+ lips:[.70,.29,.35],lipLight:[.92,.51,.48],lipShadow:[.29,.09,.13],brow:[.43,.26,.14],lashes:[.23,.16,.16],
  jacket:[.23,.22,.49],collar:[.92,.74,.56],sparkle:[1,1,1]
 };
 function ball(c,s,color){
@@ -122,7 +128,7 @@ function ball(c,s,color){
 }
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
 function draw(t){
- const dp=Math.min(devicePixelRatio||1,2);
+ const dp=Math.min(devicePixelRatio||1,1.65); // résolution modérée : Safari iPhone
  const w=Math.min(1000,Math.round(canvas.clientWidth*dp)),h=Math.min(1000,Math.round(canvas.clientHeight*dp));
  if(w&&h&&(canvas.width!==w||canvas.height!==h)){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h)}
  gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
@@ -132,22 +138,30 @@ function draw(t){
  ball([0,-1.65+bob,-.17],[1.12,1.0,.64],"jacket");
  ball([0,-1.10+bob,.1],[.33,.45,.32],"tan");
  ball([0,-1.06+bob,.2],[.29,.39,.28],"skin");
- ball([0,.28+bob,-.34],[.98,1.40,.46],"hairShadow");
+ ball([0,.24+bob,-.38],[.92,1.38,.49],"hairShadow");
  for(const side of [-1,1]){
   ball([side*.85,-.28+bob,-.11],[.27,1.13,.27],"blonde");
   ball([side*1.01,-.6+bob,.11],[.18,.72,.21],"gold");
   ball([side*.75,-1.02+bob,.05],[.22,.46,.2],"hairShadow");
  }
- ball([0,.30+bob,.08],[.75,1.0,.62],"skin");
- for(const side of [-1,1])ball([side*.72,.13+bob,.04],[.15,.23,.17],"tan");
- ball([0,.01+bob,.66],[.12,.21,.20],"tan");
- ball([0,.08+bob,.76],[.11,.20,.15],"skin");
- ball([0,-.10+bob,.78],[.20,.075,.12],"skin");
- const phase=(t%4800)/4800,blink=phase>.87&&phase<.91?Math.max(.07,Math.abs(phase-.89)*48):1;
+ // Visage plus ovale : front, joues et menton avec relief discret.
+ ball([0,.30+bob,.08],[.73,1.04,.59],"skin");
+ ball([0,-.31+bob,.26],[.49,.41,.39],"skin");
+ ball([0,-.57+bob,.37],[.31,.15,.22],"skin");
+ for(const side of [-1,1]){
+  ball([side*.715,.12+bob,.04],[.125,.225,.15],"ear");
+  ball([side*.726,.13+bob,.151],[.057,.116,.038],"tan");
+ }
+ ball([0,.01+bob,.64],[.105,.205,.16],"tan");
+ ball([0,.052+bob,.735],[.091,.195,.115],"skinLight");
+ ball([0,-.125+bob,.76],[.145,.057,.087],"skin");
+ for(const side of [-1,1])ball([side*.105,-.11+bob,.738],[.047,.018,.026],"ear");
+ const blink=blinkAmount(t,{reducedMotion:reduced});
+ const mood=moodLook(expression);
  gazeX+=(gazeTargetX-gazeX)*.065;gazeY+=(gazeTargetY-gazeY)*.065;
  const joyful=expression==="joyful",supportive=expression==="supportive";
  const thoughtful=expression==="thoughtful",curious=expression==="curious",creative=expression==="creative";
- const eyeHeight=blink*(joyful?.82:thoughtful?.92:1);
+ const eyeHeight=blink*mood.eye;
  const lookX=gazeX*.058,lookY=gazeY*.046;
  for(const side of [-1,1]){
   ball([side*.30,.50+bob,.588],[.226,.132*eyeHeight,.082],"white");
@@ -155,27 +169,59 @@ function draw(t){
   ball([side*.30+lookX,.50+bob+lookY,.697],[.089,.089*eyeHeight,.036],"blue");
   ball([side*.30+lookX,.50+bob+lookY,.732],[.048,.06*eyeHeight,.016],"black");
   ball([side*.265+lookX,.543+bob+lookY,.75],[.025,.027*eyeHeight,.012],"sparkle");
-  ball([side*.30,.735+bob+(curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
-  ball([side*.42,-.05+bob,.54],[.26,joyful?.18:.135,.04],"cheeks");
+  // Paupières et cils : silhouette visible même pendant un clignement.
+  ball([side*.30,.633+bob+(1-blink)*-.033,.623],[.233,.031+(1-blink)*.094,.036],"skin");
+  ball([side*.30,.639+bob+(1-blink)*-.04,.657],[.222,.017,.022],"lashes");
+  ball([side*.30,.372+bob+(1-blink)*.05,.618],[.22,.017+(1-blink)*.066,.04],"skin");
+  for(const edge of [-1,1])ball([side*.30+edge*.205,.619+bob,.625],[.019,.05,.022],"lashes");
+  ball([side*.30,.752+bob+mood.brow,.585],[.245,.033,.038],"brow");
+  ball([side*.43,-.06+bob,.56],[.19,joyful?.135:.095,.024],"cheeks");
  }
- mouth+=((speaking ? .65 : 0)-mouth)*.13;
- const mh=.034+mouth*(.06+.026*Math.sin(t/115))+(joyful?.025:supportive?.012:0);
- ball([0,-.35+bob,.643],[joyful?.255:.225,mh+.015,.065],"lips");
- if(joyful||creative){
-  for(const side of [-1,1])ball([side*.21,-.30+bob,.64],[.052,.042,.038],"lipLight");
+ // Mouvement approximatif associé à la synthèse vocale (pas phonèmes exacts).
+ const target=mouthOpening(t,{speaking,reducedMotion:reduced,lastBoundary});
+ mouth+=(target-mouth)*.19;
+ const open=.004+mouth*.16;
+ const smile=mood.smile;
+ ball([0,-.345+bob,.654],[.207+smile*.048,.029+open*.12,.049],"lips");
+ ball([0,-.355-open*.43+bob,.661],[.161+smile*.02,.009+open*.95,.034],open>.019?"lipShadow":"lips");
+ ball([0,-.38-open*.75+bob,.642],[.205+smile*.03,.031,.048],"lipLight");
+ for(const side of [-1,1]){
+  ball([side*(.18+smile*.045),-.35+smile*.031+bob,.637],[.047,.032,.034],"lips");
  }
- ball([0,-.377+bob,.682],[.17,Math.max(.014,mh*.48),.028],"lipLight");
- ball([0,1.10+bob,-.005],[.86,.46,.67],"blonde");
- ball([-.32,.995+bob,.48],[.52,.23,.31],"gold");
- ball([.34,1.045+bob,.38],[.48,.24,.32],"blonde");
- ball([-.68,.72+bob,.40],[.22,.35,.25],"gold");
- ball([.7,.65+bob,.34],[.19,.37,.24],"gold");
- ball([0,-1.34+bob,.47],[.50,.12,.21],"collar");
- requestAnimationFrame(draw);
+ // Cheveux blond doré : mèches frontales, volume à l'arrière, reflets.
+ ball([0,1.105+bob,-.012],[.86,.44,.63],"blonde");
+ ball([-.33,1.011+bob,.437],[.46,.205,.296],"hairLight");
+ ball([.33,1.064+bob,.392],[.49,.215,.308],"gold");
+ ball([-.68,.72+bob,.397],[.20,.31,.248],"gold");
+ ball([.70,.675+bob,.34],[.21,.38,.245],"gold");
+ for(const side of [-1,1]){
+  ball([side*.79,-.35+bob,.288],[.118,.83,.147],"blonde");
+  ball([side*.91,-.62+bob,.13],[.091,.41,.11],"hairLight");
+  ball([side*.66,.91+bob,.43],[.14,.33,.13],"blonde");
+ }
+ // Encolure et veste : buste plus détaillé en gardant peu de triangles.
+ ball([0,-1.35+bob,.46],[.45,.12,.21],"collar");
+ for(const side of [-1,1]){
+  ball([side*.43,-1.31+bob,.25],[.23,.20,.18],"collar");
+  ball([side*.72,-1.45+bob,.20],[.19,.23,.28],"jacket");
+ }
 }
-requestAnimationFrame(draw);
+let lastFrame=0;
+function animate(t){
+ if(document.visibilityState!=="hidden"&&t-lastFrame>=30){draw(t);lastFrame=t;}
+ requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
 let start=null;
-window.addEventListener("pointermove",e=>{if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;gazeTargetX=Math.max(-1,Math.min(1,(e.clientX/window.innerWidth-.5)*2));gazeTargetY=Math.max(-1,Math.min(1,(.5-e.clientY/window.innerHeight)*2));},{passive:true});
+function followPointer(e){
+ if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;
+ const next=gazeFromPointer({x:e.clientX,y:e.clientY,width:window.innerWidth,height:window.innerHeight});
+ gazeTargetX=next.x;gazeTargetY=next.y;
+}
+window.addEventListener("pointermove",followPointer,{passive:true});
+window.addEventListener("pointerdown",followPointer,{passive:true});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){gazeTargetX=0;gazeTargetY=0;}});
+
 canvas.style.touchAction="pan-y";
 canvas.addEventListener("pointerdown",e=>{start={x:e.clientX,y:e.clientY,yaw,pitch};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener("pointermove",e=>{if(!start)return;yaw=Math.max(-.65,Math.min(.65,start.yaw+(e.clientX-start.x)*.007));pitch=Math.max(-.25,Math.min(.25,start.pitch+(e.clientY-start.y)*.004))});

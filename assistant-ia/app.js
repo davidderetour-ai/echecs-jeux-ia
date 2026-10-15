@@ -67,6 +67,10 @@ connection.addEventListener("change",()=>{
 showConnection();
 async function callIA(review=false){
  const choice=connection.value;
+ if(choice!=="local"){
+  if(isApplePhone&&!window.AliciaWiFi)throw new Error("La protection Wi-Fi n'est pas chargée. Actualise Alicia pour éviter d'utiliser les données mobiles.");
+  window.AliciaWiFi?.requireConfirmed();
+ }
  if(choice==="puter"){
   if(!window.AliciaPuter)throw new Error("Module IA iPhone indisponible. Actualise Alicia dans Safari.");
   return window.AliciaPuter.answer({
