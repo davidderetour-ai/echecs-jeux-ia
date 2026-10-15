@@ -119,7 +119,7 @@ async function answer({messages=[],mode="general",notes=[],verify=false,review=f
  try{
   response=await window.puter.ai.chat(question,
    useSearchTool
-    ?{model:"openai/gpt-5.2-chat",normalize:true,tools:[{type:"web_search"}]}
+    ?{model:"openai/gpt-5.6-luna",normalize:true,tools:[{type:"web_search"}]}
     :{model,normalize:true}
   );
  }
