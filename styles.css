@@ -463,3 +463,10 @@ body.game-immersive[data-game-view="extras"] .extra-grid{max-height:none;}
 .extra-3d-status,.extra-3d-only{display:none}
 #bonus-3d.webgl-ready~.extra-3d-status{display:block;font-weight:800;text-align:center;margin:12px}
 #bonus-3d.webgl-ready~.extra-3d-only{display:inline-flex;margin:0 auto 12px}
+
+/* V3.8.5 : pendules compactes sous le plateau, sans masquer les pieces sur mobile. */
+.chess4-clock-stage .clock-four-corners{position:relative;inset:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:8px 0 0;pointer-events:auto;z-index:auto}
+.chess4-clock-stage .clock-corner{position:static;width:auto;height:auto;min-height:43px;padding:4px 2px;gap:0;box-shadow:none;border-radius:7px;font-size:10px;line-height:1.15}
+.chess4-clock-stage .clock-corner b{font-size:clamp(13px,3.2vw,19px);line-height:1.2}
+.chess4-clock-stage .clock-four-controls{position:static;grid-column:1/-1;transform:none;max-width:none;justify-content:center;width:100%;border-radius:7px;padding:4px;gap:7px}
+.chess4-clock-stage .clock-four-controls select,.chess4-clock-stage .clock-four-controls button{font-size:12px;padding:5px 8px}
