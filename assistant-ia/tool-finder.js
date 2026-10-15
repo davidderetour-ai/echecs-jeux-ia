@@ -20,7 +20,6 @@ const items=[
 ["GDevelop","Créer des jeux vidéo avec peu de code","https://github.com/4ian/GDevelop","jeu jeux debutant enfant sans code 2d programmation"]
 ].map(([name,description,url,terms])=>({name,description,url,terms}));
 const normal=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
-exportFunction();
 function rank(question){
  const q=normal(question);
  const words=q.split(/\s+/).filter(w=>w.length>2);
@@ -56,7 +55,6 @@ function searchOnGitHub(){
  const url="https://github.com/search?q="+encodeURIComponent(query)+"&type=repositories";
  window.open(url,"_blank","noopener,noreferrer");
 }
-function exportFunction(){ /* Ne donne à aucun logiciel le droit de s'installer automatiquement. */ }
 window.AliciaTools={rank,suggestForTask:question=>{
  const panel=$("tool-finder");const query=$("tool-query");
  if(query)query.value=question.slice(0,180);
