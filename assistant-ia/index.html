@@ -12,7 +12,7 @@
 <div class="shell">
 <header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA</strong><small>Assistant · Code · Diagnostic · Création</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
-<label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option></select></label>
+<label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
 <label class="check"><input id="verify" type="checkbox" checked> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
 <label class="check"><input id="search" type="checkbox"> Recherche Web</label>
 </section>
@@ -21,7 +21,18 @@
   <div class="avatar-side"><h2>Bonjour, je suis Alicia <span aria-hidden="true">✦</span></h2>
     <p>Écris-moi ou utilise le microphone. Je peux lire mes réponses avec une voix française de ton appareil.</p>
     <p id="avatar-status" aria-live="polite" class="avatar-status">Alicia est prête</p>
-    <label class="auto-voice"><input id="auto-voice" type="checkbox"> Répondre aussi à l'oral</label>
+    <label class="voice-picker">Expression du visage
+<select id="expression-mode" aria-label="Expression d'Alicia">
+<option value="auto">Automatique (selon la conversation)</option>
+<option value="neutral">Neutre</option>
+<option value="joyful">Joyeuse</option>
+<option value="thoughtful">Concentrée</option>
+<option value="curious">Curieuse</option>
+<option value="supportive">Bienveillante</option>
+<option value="creative">Inspirée</option>
+</select></label>
+<p id="expression-status" role="status" class="expression-status">Expression : Neutre</p>
+<label class="auto-voice"><input id="auto-voice" type="checkbox"> Répondre aussi à l'oral</label>
     <label class="voice-picker">Voix française<select id="voice-choice"><option value="">Voix française automatique</option></select></label>
     <small>Voix et reconnaissance selon le navigateur et les voix disponibles. La dictée peut nécessiter Internet.</small>
   </div>
@@ -48,8 +59,8 @@
 </details>
 <main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
 <div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
-<p>Pose une question, colle une erreur de programme, demande une application, ou fais diagnostiquer un ordinateur. Je propose des solutions et je peux revoir mes réponses.</p>
-<div class="examples"><button data-prompt="Explique-moi comment construire une application iPhone, Android, Windows et Mac, étape par étape.">Créer une application</button><button data-prompt="Aide-moi à diagnostiquer un ordinateur qui ne démarre plus. Pose-moi les questions utiles avant toute manipulation.">Réparer un PC</button><button data-prompt="Écris un exemple de programme Python débutant et explique comment le tester.">Apprendre Python</button></div>
+<p>Pose une question en français, demande un cours, une correction, un problème de mathématiques, une explication scientifique, historique ou artistique. Je peux aussi aider à programmer et à créer.</p>
+<div class="examples"><button data-prompt="Explique-moi comment construire une application iPhone, Android, Windows et Mac, étape par étape.">Créer une application</button><button data-prompt="Aide-moi à diagnostiquer un ordinateur qui ne démarre plus. Pose-moi les questions utiles avant toute manipulation.">Réparer un PC</button><button data-prompt="Écris un exemple de programme Python débutant et explique comment le tester.">Apprendre Python</button><button data-prompt="Corrige l’orthographe, la grammaire et la ponctuation de ce texte et explique chaque correction : " data-mode="french">Corriger mon français</button><button data-prompt="Explique les fractions avec trois exemples puis un exercice corrigé." data-mode="math">Apprendre les maths</button><button data-prompt="Aide-moi à écrire une chanson originale et à comprendre sa mélodie." data-mode="music">Créer une chanson</button></div>
 </div></main>
 <div class="bottom">
 <div class="feedback"><details><summary>🧠 Ce que l'IA doit retenir sur cet appareil</summary><p>Enregistre volontairement une préférence ou une correction. Elle restera sur cet appareil et sera envoyée à l'IA lors de tes demandes. Ce n'est pas un entraînement du modèle.</p><textarea id="note" rows="2" placeholder="Exemple : explique les étapes en français simple."></textarea><div class="inline"><button id="save-note" type="button">Retenir</button><button id="clear-notes" class="secondary" type="button">Effacer les notes</button></div><ul id="notes-list"></ul></details></div>
