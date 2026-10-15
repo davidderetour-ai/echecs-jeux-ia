@@ -11,7 +11,7 @@ import { stdin, stdout } from "node:process";
 import { validateProposal, summarizeRunResults, EXPECTED_REPOSITORY } from "./github-proposal-core.mjs";
 const API="https://api.github.com/repos/"+EXPECTED_REPOSITORY;
 const TOKEN=process.env.ALICIA_GITHUB_TOKEN||"";
-const BASE=process.env.ALICIA_GITHUB_BASE_BRANCH||"assistant-ia-autocorrection-v1";
+const BASE=process.env.ALICIA_GITHUB_BASE_BRANCH||"main";
 const ACTION=process.argv[2]||"help";
 
 async function request(path,{method="GET",data}={}){
