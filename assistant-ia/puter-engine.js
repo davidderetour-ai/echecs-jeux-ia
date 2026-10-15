@@ -27,7 +27,11 @@ const guidelines={
 };
 function setStatus(message){if(status)status.textContent=message;}
 function ready(){return window.puter?.ai?.chat&&window.puter?.auth?.signIn;}
-function networkPermit(){window.AliciaWiFi?.requireConfirmed();}
+function networkPermit(){
+ if(/iPhone|iPad|iPod/i.test(navigator.userAgent||"")&&!window.AliciaWiFi)
+  throw Error("Protection Wi-Fi manquante : actualise Alicia avant la connexion.");
+ window.AliciaWiFi?.requireConfirmed();
+}
 
 function normalizeReply(x){
  const content=x?.message?.content;
