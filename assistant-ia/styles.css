@@ -62,3 +62,11 @@
 .mac-action-plan ol{padding-left:22px}
 .mac-action-plan li{margin:9px 0;line-height:1.6;overflow-wrap:anywhere}
 .mac-action-plan strong{color:#f1e1b4}
+
+/* Amélioration continue : résultats observés depuis GitHub */
+#github-health .tool-query-row{align-items:center}
+#github-health .tool-query-row a{padding:8px 6px;color:#a3ccff;text-decoration:underline;font-size:12px}
+.github-health-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid #344563;font-size:12px}
+.github-health-row span{color:#c8d5ef}
+.github-health-row a{color:#a3ccff}
+#github-health-status{color:#d2e0fd;font-weight:650}
