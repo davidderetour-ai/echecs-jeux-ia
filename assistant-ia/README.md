@@ -98,3 +98,20 @@ La génération automatique de correctifs et de capacités nouvelles à partir d
 ### Périmètre d'autorisation
 
 Ton Mac personnel est le seul appareil prévu pour les optimisations locales. L'intervention sur **tout autre appareil** nécessite ton autorisation personnelle distincte. Les changements sensibles doivent être testés et accompagnés d'un plan de restauration ; en cas d'échec, suspendre l'intervention et proposer ou réaliser seulement la restauration déjà autorisée pour cette intervention.
+
+## Fonctionnement gratuit en mode local et mises à jour proposées
+
+L'interface propose maintenant **Connexion IA : Hors ligne / local (gratuit)** par défaut. Pour fonctionner, ce mode requiert un serveur Alicia démarré avec `node local-server.mjs` et un moteur Ollama local déjà installé avec un modèle (`ollama pull qwen3:1.7b`, puis `ollama serve` selon l'installation). Il n'y a pas de frais d'API OpenAI dans ce mode. L'application ne retombe **jamais automatiquement sur une API payante**. Le mode en ligne peut être choisi explicitement et exige une API et un mot de passe Netlify configurés. La recherche Internet est indisponible en mode local hors réseau.
+
+**Attention sur macOS Big Sur 11.7.11 : la version actuelle d'Ollama n'est pas compatible.** Pour ce Mac il faudra vérifier le processeur, la mémoire et choisir un moteur compatible avant d'annoncer un véritable chat IA hors ligne. Installer le serveur Node ou télécharger une PWA ne règle pas cette incompatibilité. L'accès depuis iPhone/Android n'est pas automatiquement équivalent à une IA locale sur le téléphone : il nécessite un moteur sur l'appareil ou un serveur joignable et sécurisé.
+
+### Génération locale de suggestions d'autocorrection
+
+Sur un ordinateur compatible équipé d'Ollama :
+1. Placer les fichiers Alicia localement. Dans `assistant-ia/`, exécuter `node github-draft.mjs "Décris précisément le bug à réparer"`.
+2. Le modèle lit uniquement un ensemble restreint de fichiers déjà présents (jamais de secrets), produit `alicia-proposition.json` **sans exécuter le code généré**, et ne remplace aucun fichier existant.
+3. Examiner le résultat : `node github-maintainer.mjs preview alicia-proposition.json`.
+4. Avant toute création de branche sur GitHub, installer personnellement un **jeton GitHub à portée réduite** dans une variable d'environnement `ALICIA_GITHUB_TOKEN`. Limiter son accès au dépôt `davidderetour-ai/echecs-jeux-ia`, avec uniquement **Contents: Read and write** et **Pull requests: Read and write**. Ne jamais l'inscrire dans une page web ou GitHub. Le jeton n'est pas créé par ChatGPT.
+5. Après contrôle et avec ton accord explicite dans le terminal, `node github-maintainer.mjs propose alicia-proposition.json` crée une branche séparée et une PR **en brouillon**. La CI vérifie son code ; la revue puis la fusion et le déploiement restent manuels.
+
+Les brouillons générés localement sont susceptibles de contenir des erreurs ; les tests doivent porter sur le code **proposé** dans la branche PR, pas simplement le code existant. Une fusion n'est jamais autorisée automatiquement par Alicia.
