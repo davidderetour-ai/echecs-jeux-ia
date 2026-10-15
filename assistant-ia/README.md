@@ -42,3 +42,13 @@ Le mode **Analyse et vérification de données** invite Alicia à distinguer obs
 
 ## Limitations de cette V1
 Pas de clonage du modèle interne de ChatGPT, pas d'entraînement continu, pas d'accès aux fichiers de l'utilisateur, pas de modification du code GitHub sans revue. L'application est une interface à un service IA distant, pas un modèle local autonome. Pour la production grand public : ajouter authentification utilisateur robuste, contrôles d'abus et quotas, chiffrement et politique de conservation des données. Le stockage de code d'accès dans \`sessionStorage\` est un compromis pour prototype personnel, pas une solution multiutilisateur. Aucune clé d'API n'est envoyée au navigateur.
+
+## Expressions faciales et disciplines éducatives
+- Six expressions **simulées** dans l'avatar 3D : neutre, joyeuse, concentrée, curieuse, bienveillante et inspirée. Un sélecteur permet de choisir l'expression ou le mode automatique selon les mots de la conversation.
+- L'avatar conserve le clignement des yeux et la bouche animée lors de la lecture vocale. Ses iris suivent le **curseur ou les gestes à l'écran**. Le suivi d'un visage par caméra et la véritable synchronisation labiale phonétique ne sont pas encore implémentés.
+- Alicia ne ressent pas ces émotions et ne les détecte pas chez l'interlocuteur ; ce sont des animations conventionnelles.
+- Nouveaux modes : français et orthographe, mathématiques, sciences, géographie, histoire, dessin et arts plastiques, musique et composition, chant et technique vocale.
+- Ces domaines ajoutent des consignes au modèle, **sans constituer une garantie d'exactitude** : les maths complexes demandent parfois un moteur de calcul, l'histoire et les sciences des sources fiables, et le chant audio un moteur spécialisé.
+- L'avatar et ses expressions sont utilisables depuis les fichiers de l'application en cache hors ligne ; les réponses IA conversationnelles demandent encore une connexion au moteur configuré.
+- Les tests automatisés couvrent les choix d'expressions et les outils de calcul, non la perfection des réponses du modèle.
+
