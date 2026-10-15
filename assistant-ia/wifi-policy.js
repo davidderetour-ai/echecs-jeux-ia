@@ -35,8 +35,12 @@ function show(){
  }else{
   if(connect)connect.disabled=state.loading;
   status.textContent=state.confirmed?
-    "Wi-Fi déclaré par toi pour cette session. iOS décide du réseau réel ; pour bloquer la 4G/5G, utilise Réglages > Données cellulaires.":
-    "Wi-Fi uniquement : vérifie l'icône Wi-Fi de l'iPhone, puis touche « Je suis en Wi-Fi » avant toute connexion IA. Safari ne peut pas vérifier ce réseau de façon fiable.";
+    (type==="wifi"?
+     "Wi-Fi reconnu par le navigateur : le service IA se reconnecte automatiquement.":
+     "Wi-Fi déclaré par toi pour cette session. iOS décide du réseau réel ; pour bloquer la 4G/5G, utilise Réglages > Données cellulaires."):
+    (type==="wifi"?
+     "Wi-Fi identifié : Alicia prépare automatiquement sa connexion IA.":
+     "Wi-Fi uniquement : vérifie l'icône Wi-Fi de l'iPhone, puis touche « Je suis en Wi-Fi » avant toute connexion IA. Safari ne peut pas vérifier ce réseau de façon fiable.");
  }
 }
 async function loadSDK(){
@@ -69,12 +73,26 @@ function revoke(){
  show();
  if($("puter-state"))$("puter-state").textContent="Vérifie à nouveau le Wi-Fi avant de te connecter.";
 }
+// Connexion automatique UNIQUEMENT lorsque le navigateur identifie vraiment un Wi-Fi.
+// Safari sur iPhone indique généralement "unknown" : confirmation manuelle obligatoire.
+async function reconnectIfVerifiedWiFi(){
+ if(networkType()==="wifi"&&navigator.onLine!==false){
+  if(!state.confirmed)await confirm();
+  else window.AliciaPuter?.refresh();
+ }else revoke();
+}
 window.addEventListener("offline",revoke);
-window.addEventListener("online",revoke);
-(navigator.connection||navigator.webkitConnection)?.addEventListener?.("change",revoke);
+window.addEventListener("online",reconnectIfVerifiedWiFi);
+(navigator.connection||navigator.webkitConnection)?.addEventListener?.("change",reconnectIfVerifiedWiFi);
 document.addEventListener("visibilitychange",()=>{
- if(document.visibilityState==="visible"&&networkType()==="cellular")revoke();
+ if(document.visibilityState==="visible"){
+  // Réévaluation après sortie d'arrière-plan pour éviter une reprise cellulaire silencieuse.
+  reconnectIfVerifiedWiFi();
+ }
 });
-window.AliciaWiFi={isApproved,requireConfirmed,show};
+window.AliciaWiFi={isApproved,requireConfirmed,show,reconnectIfVerifiedWiFi};
 show();
+if(networkType()==="wifi"&&navigator.onLine!==false){
+ reconnectIfVerifiedWiFi();
+}
 })();

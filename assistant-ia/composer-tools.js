@@ -5,9 +5,10 @@ import {fileKind,createAdvicePrompt,cleanSharedAdvice} from "./composer-core.mjs
  */
 const $=id=>document.getElementById(id);
 const plus=$("plus"),menu=$("plus-menu"),preview=$("attach-preview");
-const inputMap={camera:"attach-camera",photos:"attach-photos",files:"attach-files"};
+const inputMap={camera:"attach-camera",photos:"attach-photos",files:"attach-files",video:"attach-video",audio:"attach-audio"};
 const LEARN_KEY="alicia-chatgpt-conseils-v1";
 let attachment=null;
+let activeMediaURL=null;
 function announce(message){
  preview.hidden=false;
  if(!attachment)preview.replaceChildren();
@@ -23,9 +24,97 @@ function toggle(force){
  const show=force??menu.hidden;
  menu.hidden=!show;plus.setAttribute("aria-expanded",String(show));
 }
-function clearAttachment(){attachment=null;preview.hidden=true;preview.replaceChildren();}
+function revokeMediaURL(){
+ if(activeMediaURL){URL.revokeObjectURL(activeMediaURL);activeMediaURL=null;}
+}
+function clearAttachment(){
+ attachment=null;revokeMediaURL();
+ preview.hidden=true;preview.replaceChildren();
+}
 function clear(){clearAttachment();toggle(false);}
 function current(){return attachment;}
+function setAttachment(next){
+ revokeMediaURL();
+ attachment=next;
+ renderAttachment();
+}
+function label(value){
+ const el=document.createElement("span");el.textContent=value;return el;
+}
+function explanation(text){
+ const el=document.createElement("small");el.textContent=text;return el;
+}
+function addAction(title,handler,variant="secondary"){
+ const button=document.createElement("button");
+ button.type="button";button.className=variant;button.textContent=title;
+ button.addEventListener("click",handler);
+ preview.append(button);
+ return button;
+}
+async function transcribeAudio(button){
+ const selected=attachment;
+ if(selected?.kind!=="audio"||!selected.file)return;
+ try{
+  if(!window.AliciaWiFi?.requireConfirmed)throw Error("Protection Wi-Fi absente : actualise Alicia.");
+  window.AliciaWiFi.requireConfirmed();
+  if(!window.puter?.ai?.speech2txt)throw Error("Le moteur de transcription Puter n'est pas chargé. Confirme le Wi-Fi dans Alicia.");
+  if(!(await window.puter.auth?.isSignedIn?.()))throw Error("Connecte ton compte Puter avant la transcription.");
+  button.disabled=true;button.textContent="Transcription en cours…";
+  const result=await window.puter.ai.speech2txt(selected.file);
+  const text=typeof result==="string"?result:result?.text;
+  if(typeof text!=="string"||!text.trim())throw Error("Aucun texte reconnu dans cet enregistrement.");
+  if(attachment!==selected)return;
+  setAttachment({kind:"text",name:"Transcription de "+selected.name,text:text.slice(0,7500)});
+  announce("Transcription terminée. Lis le texte avant de toucher « Envoyer ». Des crédits Puter peuvent avoir été utilisés.");
+ }catch(e){
+  if(attachment===selected){button.disabled=false;button.textContent="Transcrire avec l'IA";announce(e.message||"La transcription a échoué.");}
+ }
+}
+function captureVideoFrame(video){
+ if(attachment?.kind!=="video")return;
+ if(!video.videoWidth||!video.videoHeight){announce("Démarre la vidéo et sélectionne l'image souhaitée avant de la capturer.");return;}
+ try{
+  video.pause();
+  const factor=Math.min(1,1280/Math.max(video.videoWidth,video.videoHeight));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(video.videoWidth*factor));
+  canvas.height=Math.max(1,Math.round(video.videoHeight*factor));
+  const ctx=canvas.getContext("2d");
+  if(!ctx)throw Error("Capture vidéo indisponible sur cet iPhone.");
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  const dataUrl=canvas.toDataURL("image/jpeg",.8);
+  if(dataUrl.length>5.6e6)throw Error("Cette image est trop volumineuse. Essaie une autre vidéo.");
+  const name="Image de "+attachment.name;
+  setAttachment({kind:"image",name,dataUrl});
+  announce("Une seule image du film a été préparée. Elle ne sera envoyée à Puter que si tu touches « Envoyer ». Le reste de la vidéo ne sera pas envoyé.");
+ }catch(e){announce(e.message||"Impossible d'extraire l'image de la vidéo.");}
+}
+function renderAttachment(){
+ preview.hidden=false;preview.replaceChildren();
+ if(!attachment)return;
+ const names={image:"📷 Photo : ",audio:"🎵 Audio : ",video:"🎬 Vidéo : ",text:"📄 Texte : "};
+ preview.append(label((names[attachment.kind]||"📎 Fichier : ")+attachment.name));
+ if(attachment.kind==="image"){
+  const image=document.createElement("img");image.src=attachment.dataUrl;
+  image.alt="Aperçu de la photo choisie";image.className="attach-thumb";preview.append(image);
+  preview.append(explanation("Seule cette image sera transmise au moteur IA Puter après avoir touché « Envoyer »."));
+ }else if(attachment.kind==="audio"||attachment.kind==="video"){
+  const media=document.createElement(attachment.kind);
+  media.controls=true;media.preload="metadata";
+  media.src=attachment.objectUrl;
+  media.className="attach-player";
+  if(attachment.kind==="video")media.playsInline=true;
+  preview.append(media);
+  preview.append(explanation(attachment.kind==="audio"?
+   "Écoute ton audio sur cet iPhone. « Transcrire avec l'IA » enverra l'enregistrement à Puter seulement avec ton accord, et peut utiliser des crédits.":
+   "Regarde la vidéo localement. Tu peux capturer une image pour la faire analyser. Le film entier n'est pas transmis à l'IA."));
+  if(attachment.kind==="audio")addAction("Transcrire avec l'IA",event=>transcribeAudio(event.currentTarget));
+  else addAction("Capturer l'image affichée",()=>captureVideoFrame(media));
+ }else{
+  preview.append(explanation("Le texte du fichier sera joint à ta prochaine question quand tu toucheras « Envoyer »."));
+ }
+ addAction("Retirer la pièce jointe",clearAttachment);
+}
 async function readFile(file){
  const type=fileKind(file);
  if(type.kind==="error"){clearAttachment();announce(type.reason);return;}
@@ -39,27 +128,16 @@ async function readFile(file){
    });
    if(typeof dataUrl!=="string"||!/^data:image\/(jpeg|png|webp|gif);base64,/i.test(dataUrl))
     throw Error("Format de photo non compatible avec l'analyse IA.");
-   attachment={kind:"image",name:file.name||"photo",dataUrl};
+   setAttachment({kind:"image",name:file.name||"photo",dataUrl});
+  }else if(type.kind==="audio"||type.kind==="video"){
+   clearAttachment();
+   activeMediaURL=URL.createObjectURL(file);
+   attachment={kind:type.kind,name:file.name||type.kind,file,objectUrl:activeMediaURL};
+   renderAttachment();
   }else{
    const text=await file.text();
-   attachment={kind:"text",name:file.name,text:text.slice(0,90000)};
+   setAttachment({kind:"text",name:file.name,text:text.slice(0,90000)});
   }
-  preview.hidden=false;preview.replaceChildren();
-  const name=document.createElement("span");
-  name.textContent=(attachment.kind==="image"?"📷 Photo : ":"📄 Texte : ")+attachment.name;
-  preview.append(name);
-  if(attachment.kind==="image"){
-   const image=document.createElement("img");image.src=attachment.dataUrl;
-   image.alt="Aperçu de la photo choisie";image.className="attach-thumb";preview.append(image);
-  }
-  const info=document.createElement("small");
-  info.textContent=attachment.kind==="image"?
-    "Cette image sera transmise à Puter uniquement lorsque tu appuieras sur Envoyer en mode IA iPhone.":
-    "Le texte de ce fichier sera joint à ta prochaine question lorsque tu appuieras sur Envoyer.";
-  preview.append(info);
-  const discard=document.createElement("button");discard.type="button";discard.className="secondary";
-  discard.textContent="Retirer la pièce jointe";discard.addEventListener("click",clearAttachment);
-  preview.append(discard);
  }catch(err){clearAttachment();announce(err.message||"Impossible de lire le fichier.");}
 }
 for(const key of Object.keys(inputMap)){

@@ -104,6 +104,13 @@ async function callIA(review=false){
 $("chat-form").addEventListener("submit",async event=>{
  event.preventDefault();if(busy)return;const q=$("question").value.trim();if(!q)return;
  const attachment=attach();
+ if(attachment?.kind==="audio"||attachment?.kind==="video"){
+  $("status").textContent=attachment.kind==="audio"?
+   "Transcris d'abord l'audio avec le bouton sous son aperçu, ou retire-le.":
+   "Capture d'abord une image de la vidéo avec le bouton sous son aperçu, ou retire-la.";
+  $("attach-preview").scrollIntoView({behavior:"smooth",block:"nearest"});
+  return;
+ }
  const contents=attachment?.kind==="text"?
   q+"\n\n[Fichier local : "+attachment.name+" — extrait jusqu’à 7 500 caractères]\n"+attachment.text.slice(0,7500):q;
  const notice=$("conversation-notice");if(notice)notice.hidden=true;

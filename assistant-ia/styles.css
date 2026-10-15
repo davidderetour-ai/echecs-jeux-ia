@@ -153,3 +153,9 @@
  .header-actions #new{padding:7px 9px;font-size:12px}
  .brand .app-version-label{font-size:10px}
 }
+
+/* Audio et vidéo importés : aperçu local avant toute éventuelle analyse. */
+.attach-preview .attach-player{width:100%;max-width:480px;max-height:320px;border-radius:12px;background:#050b1a;display:block}
+.attach-preview audio.attach-player{min-height:48px}
+.attach-preview video.attach-player{object-fit:contain}
+.attach-preview button{min-height:40px}

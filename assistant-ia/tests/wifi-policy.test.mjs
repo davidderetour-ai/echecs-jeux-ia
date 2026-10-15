@@ -40,13 +40,29 @@ test("Le réseau cellulaire explicitement connu bloque le chat",async()=>{
  assert.equal(e.window.AliciaWiFi.isApproved(),false);
  assert.equal(e.created.length,0);
 });
-test("Une coupure réseau ou un changement révoque l'accord",async()=>{
+test("Détecter un Wi-Fi réel lance automatiquement Puter sans cliquer",async()=>{
  const e=setup("wifi");
+ await Promise.resolve();
+ assert.equal(e.window.AliciaWiFi.isApproved(),true);
+ assert.equal(e.created.length,1);
+ assert.equal(e.created[0].src,"https://js.puter.com/v2/");
+});
+test("Sur Safari sans type réseau connu, la confirmation reste obligatoire",async()=>{
+ const e=setup("unknown");
+ assert.equal(e.window.AliciaWiFi.isApproved(),false);
+ assert.equal(e.created.length,0);
  await e.events["wifi-confirm:click"]();
+ assert.equal(e.window.AliciaWiFi.isApproved(),true);
+});
+test("Une coupure réseau annule l'autorisation et la reconnexion Wi-Fi avérée la restaure",async()=>{
+ const e=setup("wifi");
+ await Promise.resolve();
  assert.equal(e.window.AliciaWiFi.isApproved(),true);
  e.events["window:offline"]();
  assert.equal(e.window.AliciaWiFi.isApproved(),false);
- await e.events["wifi-confirm:click"]();
- e.events["network:change"]();
+ await e.events["window:online"]();
+ assert.equal(e.window.AliciaWiFi.isApproved(),true);
+ e.navigator.connection.type="cellular";
+ await e.events["network:change"]();
  assert.equal(e.window.AliciaWiFi.isApproved(),false);
 });

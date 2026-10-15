@@ -208,3 +208,20 @@ Le bouton **+** de la zone d'écriture présente :
 - **Apprendre de ChatGPT** : colle volontairement une réponse de ChatGPT, prévisualise-la, accepte son enregistrement et garde jusqu'à cinq conseils **localement dans le navigateur**. Ces conseils sont transmis comme contexte aux prochaines requêtes IA, avec une limite de longueur. **Il ne s'agit pas d'un entraînement du modèle IA** et aucune réponse n'est jugée vraie sans vérification.
 
 Le moteur Puter n'a pas accès directement au compte ChatGPT du propriétaire, à ses mémoires, ni aux fichiers de ChatGPT. La communication automatique nécessiterait une API officielle et une autorisation distincte, avec conditions tarifaires possibles. La protection Wi-Fi existante reste applicable aux appels IA. Le jeu d'échecs et ses fichiers ne sont pas modifiés.
+
+## Alicia v0.3.1 — importer un audio ou une vidéo sur iPhone
+
+Le menu **+** comporte deux nouveaux boutons :
+- **🎵 Importer un audio** : sélectionner un fichier MP3, M4A, AAC, WAV, OGG ou Opus (20 Mo maximum) et l'écouter localement dans Alicia. Le bouton **Transcrire avec l'IA** envoie *uniquement après cette action explicite* l'enregistrement au service Puter `puter.ai.speech2txt(file)`, sous réserve de connexion au compte, de Wi-Fi confirmé, de compatibilité du format et de crédits disponibles. Une transcription obtenue est convertie en pièce jointe texte, relue avant envoi à la conversation. La transcription distante peut consommer des crédits ; elle n'est ni gratuite sans limite ni hors ligne.
+- **🎬 Importer une vidéo** : sélectionner un film MP4, MOV, M4V ou WebM (80 Mo maximum), puis le lire **localement** sur l'iPhone grâce au lecteur HTML5. Avec **Capturer l'image affichée**, seule la trame vidéo choisie est préparée comme photo JPEG (max 1280 pixels sur le plus grand côté) pour une question ultérieure. Le film complet n'est **jamais transmis automatiquement** et l'application n'analyse pas encore l'intégralité d'une vidéo.
+
+Tant qu'un média audio/vidéo est simplement importé, le bouton « Envoyer » bloque l'envoi de la question et explique comment préparer une transcription ou une image. Retirer une pièce jointe libère son URL temporaire locale. Les vérifications de formats et de volumes restent avant l'import. Le mode Wi-Fi et l'autorisation de Puter sont obligatoires pour la transcription, pas pour une lecture locale. Safari sur iPhone peut ne pas prendre en charge tous les codecs même lorsque l'extension est reconnue.
+
+
+## Alicia — reconnexion automatique au réseau (Wi-Fi préféré)
+
+La connexion aux réseaux Wi-Fi enregistrés est gérée **par iOS et non par Alicia**. Sur l'iPhone : **Réglages → Wi-Fi → bouton (i) du réseau utilisé → Connexion auto**, à activer si cette option est disponible. Alicia ne peut pas saisir le mot de passe Wi-Fi, sélectionner le réseau ou actionner les radios de l'iPhone.
+
+Dans l'application, si le navigateur expose explicitement `navigator.connection.type === "wifi"`, Alicia reprend automatiquement sa connexion au moteur Puter (sans achat ni reconnexion au compte si la session est déjà valide), au lancement, après rétablissement du réseau et au retour au premier plan. Si la connexion est reconnue cellulaire, le moteur reste bloqué. **Safari iPhone ne communique généralement pas le type réel du réseau** : dans ce cas, Alicia conserve sa demande de confirmation manuelle. Ne pas persister cette confirmation indéfiniment : l'app ne peut pas garantir qu'iOS n'a pas basculé vers la 4G/5G. Pour une protection réseau réelle, désactiver les données cellulaires du navigateur ou de l'application dans les réglages iOS.
+
+Il n'y a pas de connexion automatique au compte Puter si l'utilisateur n'a pas déjà autorisé la session. La connexion initiale demeure un acte volontaire.
