@@ -97,3 +97,11 @@
 .avatar-test button{max-width:350px;border:1px solid #7374ba;min-height:43px}
 .avatar-test small{color:#bdc8e2;line-height:1.5}
 @media(max-width:640px){.avatar-test button{max-width:none;width:100%}}
+
+/* Wi-Fi uniquement : avertissement visible, connexion explicite. */
+.wifi-policy{width:100%;border:1px solid #55809b;background:#192f43;border-radius:15px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.wifi-policy-title{font-weight:750;color:#d0ffeb}
+.wifi-policy button{max-width:350px;min-height:42px}
+.wifi-policy p{margin:0;color:#cce8d9;font-size:12px;line-height:1.5}
+.wifi-policy small{font-size:11px;line-height:1.5;color:#d1dce9}
+@media(max-width:650px){.wifi-policy button{max-width:none;width:100%}}
