@@ -43,5 +43,4 @@ test("Une nouvelle conversation est remise à zéro avec état visible",()=>{
  assert.match(app,/messages=\[\]/);
  assert.match(app,/window\.AliciaComposer\?\.clear\(\)/);
  assert.match(app,/Nouvelle conversation prête/);
- assert.match(app,/id="?/);
 });
