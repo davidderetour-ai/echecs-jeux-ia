@@ -3,8 +3,11 @@ import assert from "node:assert/strict";
 import {chooseExpression,normalizeExpression,EXPRESSIONS} from "../expression-core.mjs";
 
 test("Expressions définies et mode inconnu neutre",()=>{
- assert.equal(Object.keys(EXPRESSIONS).length,6);
+ assert.equal(Object.keys(EXPRESSIONS).length,9);
  assert.equal(normalizeExpression("joyful"),"joyful");
+ assert.equal(normalizeExpression("sad"),"sad");
+ assert.equal(normalizeExpression("afraid"),"afraid");
+ assert.equal(normalizeExpression("angry"),"angry");
  assert.equal(normalizeExpression("quelque-chose-d'autre"),"neutral");
 });
 test("Une activité intellectuelle passe par la concentration",()=>{
