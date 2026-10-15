@@ -7,6 +7,7 @@ require 'json'
 require 'securerandom'
 require 'socket'
 require 'thread'
+require 'time'
 
 MODE_LAN=ARGV.include?('--lan')
 HOST=MODE_LAN ? '0.0.0.0' : '127.0.0.1'
