@@ -56,3 +56,9 @@
 .mac-note{padding:11px 13px;margin:7px 0;border:1px solid #334460;border-radius:10px}
 .mac-note p{margin:4px 0;color:#c5d3ea}
 .mac-note.warning{border-left:3px solid #e7ba69}
+
+.mac-action-plan{border:1px solid #55689a;border-radius:14px;padding:13px 15px;margin:15px 0;background:#232c48}
+.mac-action-plan h3{font-size:15px;color:#f3f5ff;margin:0 0 8px}
+.mac-action-plan ol{padding-left:22px}
+.mac-action-plan li{margin:9px 0;line-height:1.6;overflow-wrap:anywhere}
+.mac-action-plan strong{color:#f1e1b4}
