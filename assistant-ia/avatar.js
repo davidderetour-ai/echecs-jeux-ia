@@ -58,6 +58,10 @@ window.AliciaAvatar={
  onAssistantMessage(text,mode){setExpression(chooseExpression({text,mode,phase:"reply"}));if($("auto-voice")?.checked)speak(text)},
  reset(){setExpression("neutral")}
 };
+$("avatar-demo")?.addEventListener("click",()=>{
+ setExpression("joyful");
+ speak("Bonjour, je suis Alicia. Je cligne des yeux, je te regarde quand tu touches l'écran, et ma bouche bouge quand je parle.");
+});
 const gl=canvas.getContext("webgl",{antialias:true,alpha:true,powerPreference:"low-power"});
 if(!gl){canvas.hidden=true;sayStatus("WebGL indisponible : l'écrit et la voix restent accessibles");return;}
 const vs=[
