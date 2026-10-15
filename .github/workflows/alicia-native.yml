@@ -1,0 +1,57 @@
+name: Alicia native Flutter — tests et Android
+
+on:
+  push:
+    paths:
+      - "native/alicia/**"
+      - ".github/workflows/alicia-native.yml"
+  pull_request:
+    paths:
+      - "native/alicia/**"
+      - ".github/workflows/alicia-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-android:
+    name: Vérifier Flutter et construire Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code GitHub
+        uses: actions/checkout@v4
+      - name: Préparer Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Installer Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Créer les projets Android natifs
+        working-directory: native/alicia
+        run: flutter create --platforms=android --project-name alicia_native .
+      - name: Configurer les autorisations réseau et micro
+        working-directory: native/alicia
+        run: python3 scripts/configure_platforms.py
+      - name: Installer les dépendances
+        working-directory: native/alicia
+        run: flutter pub get
+      - name: Contrôler la syntaxe et les dépendances
+        working-directory: native/alicia
+        run: flutter analyze
+      - name: Tester les contrôles de sécurité
+        working-directory: native/alicia
+        run: flutter test
+      - name: Compiler un APK Android de test
+        working-directory: native/alicia
+        run: flutter build apk --debug --no-pub
+      - name: Mettre l'APK dans les fichiers du job (7 jours)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Alicia-Android-APK-test
+          path: native/alicia/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
