@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alicia — liaison iPhone ↔ Mac</title>
+<style>
+:root{font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e6eafe;background:#11182d}
+body{max-width:700px;margin:0 auto;padding:22px}
+h1{font-size:25px}h2{font-size:18px}
+section{background:#202941;border:1px solid #3a4a6b;border-radius:16px;padding:17px;margin:18px 0}
+input,select,textarea,button{box-sizing:border-box;font:inherit;border-radius:10px;padding:12px;border:1px solid #4c5b7c;color:#fff;background:#101a30}
+input,textarea{width:100%}textarea{min-height:100px}
+button{background:#695dea;cursor:pointer;margin:8px 5px 0 0}
+label{display:block;margin:8px 0}
+p,small{color:#b8c6de}small{display:block}
+article.message{background:#141e36;border-radius:10px;margin:10px 0;padding:10px 13px}
+.message p{white-space:pre-wrap;overflow-wrap:anywhere;color:#eef2ff;margin:5px 0}
+</style></head><body>
+<h1>Alicia — iPhone ↔ Mac</h1>
+<p>Échange des messages texte entre Safari sur l’iPhone et le Mac, sur le même réseau Wi-Fi. Aucun contrôle à distance de macOS.</p>
+<section><h2>1. Associer les appareils</h2>
+<form id="pair"><label>Code de liaison affiché dans le Terminal du Mac<input id="code" type="password" autocomplete="off" placeholder="32 caractères" required></label><button type="submit">Se connecter</button></form>
+<p id="state" role="status">En attente du code d’association.</p>
+<small>Ce serveur utilise HTTP local, sans chiffrement de bout en bout. Réservé à un Wi-Fi de confiance, sans informations sensibles. Le code n’est pas enregistré par Safari.</small>
+</section>
+<section><h2>2. Envoyer un message</h2>
+<form id="send"><label>Appareil utilisé<select id="source"><option value="iphone">iPhone</option><option value="mac">Mac</option></select></label>
+<label>Message à transmettre<textarea id="text" maxlength="1500" placeholder="Bonjour Alicia…"></textarea></label>
+<button type="submit">Envoyer</button></form></section>
+<section><h2>3. Lire les messages</h2>
+<button id="refresh" type="button">Actualiser</button><button id="forget" type="button">Terminer la liaison</button>
+<div id="history" aria-live="polite"></div></section>
+<script src="./iphone-link.js" defer></script>
+</body></html>
