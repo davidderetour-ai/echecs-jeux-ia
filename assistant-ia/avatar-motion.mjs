@@ -41,6 +41,9 @@ export function moodLook(expression){
  const presets={
   neutral:{brow:0,eye:1,smile:0},
   joyful:{brow:.05,eye:.88,smile:.8},
+  sad:{brow:-.08,eye:.77,smile:-.45},
+  afraid:{brow:.17,eye:1.24,smile:-.48},
+  angry:{brow:-.14,eye:.66,smile:-.50},
   thoughtful:{brow:-.055,eye:.9,smile:.02},
   curious:{brow:.12,eye:1.08,smile:.13},
   supportive:{brow:.035,eye:.95,smile:.34},
