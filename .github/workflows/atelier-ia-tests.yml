@@ -1,0 +1,44 @@
+name: Tests Atelier IA
+on:
+  push:
+    paths:
+      - "assistant-ia/**"
+      - ".github/workflows/atelier-ia-tests.yml"
+  pull_request:
+    paths:
+      - "assistant-ia/**"
+      - ".github/workflows/atelier-ia-tests.yml"
+permissions:
+  contents: read
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérifier la syntaxe
+        working-directory: assistant-ia
+        run: |
+          node --check app.js
+          node --check netlify/functions/chat.mjs
+          node --check avatar.js
+          node --check expression-core.mjs
+          node --check data-core.mjs
+          node --check data-lab.js
+          node --check mac-core.mjs
+          node --check mac-lab.js
+          node --check local-server.mjs
+          node --check github-health.js
+          node --check github-proposal-core.mjs
+          node --check github-maintainer.mjs
+          node --check github-draft.mjs
+          node --check permission-policy.mjs
+          node --check success-metrics.mjs
+          bash -n mac-audit.sh
+          bash -n mac-improve.sh
+          bash mac-improve.sh --help
+      - name: Tests unitaires
+        working-directory: assistant-ia
+        run: npm test

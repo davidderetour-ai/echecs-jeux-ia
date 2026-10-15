@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111a32"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Alicia">
+<meta name="description" content="Assistant IA polyvalent, programmation et diagnostic informatique.">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css"><title>Alicia — Assistant personnel</title>
+</head>
+<body>
+<div class="shell">
+<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA</strong><small>Assistant · Code · Diagnostic · Création</small></div></div><div class="header-actions"><span id="status" role="status">Prêt</span><button id="new" class="secondary" type="button">Nouveau</button></div></header>
+<section class="tools" aria-label="Réglages de l'assistant">
+<label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
+<label class="check"><input id="verify" type="checkbox" checked> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
+<label>Connexion IA<select id="connection-mode" aria-label="Connexion au modèle IA">
+<option value="local">Hors ligne / local (gratuit)</option>
+<option value="online">En ligne (API facultative, potentiellement payante)</option>
+</select></label>
+<label class="check"><input id="search" type="checkbox"> Recherche Web</label>
+<small id="connection-status" role="status">Le mode local nécessite un serveur Alicia et un modèle IA installés sur ton ordinateur. Aucune connexion payante automatique.</small>
+</section>
+<section class="avatar-shell" aria-label="Alicia, avatar interactif en trois dimensions">
+  <div class="avatar-stage"><canvas id="alicia-avatar" width="560" height="350" role="img" aria-label="Avatar 3D stylisé d'Alicia, femme blonde au teint hâlé et aux yeux bleus. Glisser pour l'orienter."></canvas></div>
+  <div class="avatar-side"><h2>Bonjour, je suis Alicia <span aria-hidden="true">✦</span></h2>
+    <p>Écris-moi ou utilise le microphone. Je peux lire mes réponses avec une voix française de ton appareil.</p>
+    <p id="avatar-status" aria-live="polite" class="avatar-status">Alicia est prête</p>
+    <label class="voice-picker">Expression du visage
+<select id="expression-mode" aria-label="Expression d'Alicia">
+<option value="auto">Automatique (selon la conversation)</option>
+<option value="neutral">Neutre</option>
+<option value="joyful">Joyeuse</option>
+<option value="thoughtful">Concentrée</option>
+<option value="curious">Curieuse</option>
+<option value="supportive">Bienveillante</option>
+<option value="creative">Inspirée</option>
+</select></label>
+<p id="expression-status" role="status" class="expression-status">Expression : Neutre</p>
+<label class="auto-voice"><input id="auto-voice" type="checkbox"> Répondre aussi à l'oral</label>
+    <label class="voice-picker">Voix française<select id="voice-choice"><option value="">Voix française automatique</option></select></label>
+    <small>Voix et reconnaissance selon le navigateur et les voix disponibles. La dictée peut nécessiter Internet.</small>
+  </div>
+</section>
+<details class="tool-finder" id="tool-finder"><summary>🧰 Alicia trouve les outils dont elle a besoin</summary>
+  <p>Suggestions de logiciels gratuits et libres pour créer des jeux, des vidéos, des traductions ou des modèles 3D. Alicia ne les installe jamais sans ta permission.</p>
+  <div class="tool-query-row"><input id="tool-query" type="search" placeholder="Ex. créer un jeu 3D ou traduire une vidéo" aria-label="Outils recherchés">
+    <button id="find-tools" class="secondary" type="button">Trouver</button><button id="find-online" class="secondary" type="button">Chercher sur GitHub ↗</button></div>
+  <div id="tool-results" aria-live="polite"></div>
+</details>
+<details class="tool-finder" id="data-lab">
+ <summary>📊 Analyse et comparaison de données — gratuit, même hors ligne</summary>
+ <p>Importe un fichier CSV/TSV, ou deux pour comparer les mêmes colonnes. Les calculs ont lieu dans ton appareil ; tes fichiers ne sont pas envoyés au serveur.</p>
+ <div class="data-inputs">
+  <label>Fichier 1 <input id="data-file-a" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values"></label>
+  <label>Fichier 2 (facultatif) <input id="data-file-b" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values"></label>
+ </div>
+ <div class="data-actions"><label>Colonne à analyser <select id="data-column" disabled></select></label>
+  <button id="analyze-data" type="button">Analyser / comparer</button>
+  <button id="reset-data" type="button" class="secondary">Effacer</button>
+ </div>
+ <p id="data-message" role="status"></p><div id="data-results" aria-live="polite"></div>
+ <small>Un chiffre non reconnu est exclu et signalé. Les moyennes de groupes différents ne prouvent pas une cause. Vérifie les unités, la période et l'origine des données.</small>
+</details>
+<details class="tool-finder" id="mac-lab">
+ <summary>🖥️ Améliorer mon Mac — diagnostic sûr</summary>
+ <p>Alicia peut analyser ton Mac avant de proposer une optimisation : espace libre, mémoire, version du système et compatibilité des logiciels. Elle ne modifie jamais macOS sans ton autorisation.</p>
+ <p>1. <a href="./mac-audit.sh" download="mac-audit.sh">Télécharger le petit diagnostic Mac (lecture seule)</a>. 2. Lis le fichier si tu le souhaites. 3. Sur le Mac, ouvre Terminal et saisis <code>bash ~/Downloads/mac-audit.sh</code>. 4. Copie le résultat ci-dessous.</p>
+ <label for="mac-report">Rapport de diagnostic à coller</label>
+ <textarea id="mac-report" rows="5" placeholder="ALICIA_MAC_AUDIT_V1&#10;OS_VERSION=11.7.11&#10;MAC_MODEL=..."></textarea>
+ <div class="tool-query-row"><button id="mac-analyze" type="button">Analyser et proposer des améliorations</button></div>
+ <div id="mac-results" aria-live="polite"></div>
+<div id="mac-action-plan" class="mac-action-plan">
+ <h3>Première amélioration réversible : réduire l’animation du Dock</h3>
+ <p>Cette modification facultative supprime l’animation lors de l’ouverture d’applications depuis le Dock. Elle peut rendre l’interface plus sobre, <strong>mais n’accélère pas le processeur</strong> et ne change pas la compatibilité de macOS.</p>
+ <p><a href="./mac-improve.sh" download="mac-improve.sh">Télécharger l’outil Mac de modification contrôlée</a>, puis examiner son contenu avant usage.</p>
+ <ol>
+  <li>Prévisualiser : <code>bash ~/Downloads/mac-improve.sh preview</code></li>
+  <li>Appliquer uniquement si tu acceptes : <code>bash ~/Downloads/mac-improve.sh apply</code></li>
+  <li>Vérifier : <code>bash ~/Downloads/mac-improve.sh verify</code></li>
+  <li>Revenir en arrière : <code>bash ~/Downloads/mac-improve.sh undo</code></li>
+ </ol>
+ <p>Le script présente exactement ce qu’il fera et demande de saisir <strong>OUI ALICIA</strong> dans le Terminal pour chaque changement. Il sauvegarde la valeur précédente et ne demande jamais <code>sudo</code>.</p>
+</div>
+ <small>Le rapport reste sur ton appareil : aucun envoi automatique. Le diagnostic n’applique aucun changement. Le script d’amélioration distinct ne modifie que le réglage du Dock et uniquement après confirmation explicite dans le Terminal. Une sauvegarde est nécessaire avant toute modification future.</small>
+</details>
+<details class="tool-finder" id="github-health">
+ <summary>🔧 Alicia améliore son code — suivi GitHub</summary>
+ <p>Surveille les erreurs, compare les tests et prépare des corrections dans une branche distincte. Aucun code n'est fusionné ni déployé sans ta décision.</p>
+ <div class="tool-query-row">
+  <button id="github-health-check" class="secondary" type="button">Vérifier les tests GitHub</button>
+  <a href="https://github.com/davidderetour-ai/echecs-jeux-ia/pull/2" target="_blank" rel="noopener noreferrer">Voir les améliorations proposées ↗</a>
+ </div>
+ <p id="github-health-status" role="status">Taux inconnu : consulte GitHub pour connaître les tests réellement exécutés.</p>
+ <div id="github-health-history" aria-live="polite"></div>
+ <small>Ce calcul mesure les exécutions de tests réussies, non la probabilité que l'IA ait toujours raison. En cas d'échec, la surveillance crée un ticket une fois activée sur la branche principale. Pour créer une nouvelle proposition de code, un accès GitHub privé et des tests sont nécessaires ; jamais de mot de passe dans cette page.</small>
+</details>
+<main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
+<div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
+<p>Pose une question en français, demande un cours, une correction, un problème de mathématiques, une explication scientifique, historique ou artistique. Je peux aussi aider à programmer et à créer.</p>
+<div class="examples"><button data-prompt="Explique-moi comment construire une application iPhone, Android, Windows et Mac, étape par étape.">Créer une application</button><button data-prompt="Aide-moi à diagnostiquer un ordinateur qui ne démarre plus. Pose-moi les questions utiles avant toute manipulation.">Réparer un PC</button><button data-prompt="Écris un exemple de programme Python débutant et explique comment le tester.">Apprendre Python</button><button data-prompt="Corrige l’orthographe, la grammaire et la ponctuation de ce texte et explique chaque correction : " data-mode="french">Corriger mon français</button><button data-prompt="Explique les fractions avec trois exemples puis un exercice corrigé." data-mode="math">Apprendre les maths</button><button data-prompt="Aide-moi à écrire une chanson originale et à comprendre sa mélodie." data-mode="music">Créer une chanson</button></div>
+</div></main>
+<div class="bottom">
+<div class="feedback"><details><summary>🧠 Ce que l'IA doit retenir sur cet appareil</summary><p>Enregistre volontairement une préférence ou une correction. Elle restera sur cet appareil et sera envoyée à l'IA lors de tes demandes. Ce n'est pas un entraînement du modèle.</p><textarea id="note" rows="2" placeholder="Exemple : explique les étapes en français simple."></textarea><div class="inline"><button id="save-note" type="button">Retenir</button><button id="clear-notes" class="secondary" type="button">Effacer les notes</button></div><ul id="notes-list"></ul></details></div>
+<div class="controls"><label class="secret">Code d’accès (serveur local partagé ou API en ligne) <input id="access" type="password" autocomplete="off" placeholder="Laisser vide sur son propre PC, en mode local"></label><button id="clear-access" class="secondary small" type="button" title="Effacer le code de cette session">Effacer</button></div>
+<form id="chat-form"><textarea id="question" rows="2" placeholder="Écris ta question ou décris ton problème…" aria-label="Votre message" required></textarea><div class="actions"><button id="voice" class="secondary" type="button" title="Dicter une question">🎙️</button><button id="speak" class="secondary" type="button" title="Lire la dernière réponse">🔊</button><button id="review" class="secondary" type="button" title="Relire et corriger la dernière réponse" disabled>🔍 Corriger</button><span class="grow"></span><button id="send" class="primary" type="submit">Envoyer ➤</button></div></form>
+<p class="disclaimer">Une IA peut se tromper. Ne lance aucune commande risquée sans vérification ni sauvegarde. L'analyse nécessite Internet et une configuration API.</p>
+</div>
+</div>
+<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script>
+</body></html>

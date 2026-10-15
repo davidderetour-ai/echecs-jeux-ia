@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Alicia — Assistant personnel",
+  "short_name": "Alicia",
+  "description": "Assistant polyvalent : programmation, diagnostic, création et professeur.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111a32",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
