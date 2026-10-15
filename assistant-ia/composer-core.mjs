@@ -5,7 +5,7 @@ export const MAX_IMAGE_BYTES=4*1024*1024;
 export const MAX_TEXT_BYTES=140*1024;
 export const MAX_AUDIO_BYTES=20*1024*1024;
 export const MAX_VIDEO_BYTES=80*1024*1024;
-const AUDIO_EXT=/\.(?:mp3|m4a|aac|wav|ogg|opus|mp4)$/i;
+const AUDIO_EXT=/\.(?:mp3|m4a|aac|wav|ogg|opus)$/i;
 const VIDEO_EXT=/\.(?:mp4|mov|m4v|webm)$/i;
 
 const TEXT_EXT=/\.(?:txt|md|csv|tsv|json|log|xml)$/i;
