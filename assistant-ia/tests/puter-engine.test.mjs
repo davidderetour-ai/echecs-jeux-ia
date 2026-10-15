@@ -59,3 +59,27 @@ test("Refuse les questions si le Wi-Fi n'est pas confirmé",async()=>{
  runInNewContext(code,isolated);
  await assert.rejects(isolated.window.AliciaPuter.answer({messages:[{role:"user",content:"bonjour"}]}),/Wi-Fi non confirmé/);
 });
+
+test("Transmet une photo volontairement jointe uniquement au dernier message",async()=>{
+ const e=env();
+ const img="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAE=";
+ const response=await e.engine.answer({
+  messages:[{role:"user",content:"Que vois-tu sur cette photo ?"}],
+  attachment:{kind:"image",name:"photo.png",dataUrl:img}
+ });
+ assert.equal(response.answer,"Bonjour, je suis Alicia.");
+ const msgs=e.calls[0].msg;
+ const last=msgs.at(-1);
+ assert.equal(last.role,"user");
+ assert.equal(last.content[0].type,"text");
+ assert.equal(last.content[1].type,"image_url");
+ assert.equal(last.content[1].image_url.url,img);
+});
+test("Rejette une image non autorisée sans l'envoyer à Puter",async()=>{
+ const e=env();
+ await assert.rejects(e.engine.answer({
+  messages:[{role:"user",content:"Analyse ceci"}],
+  attachment:{kind:"image",name:"test.svg",dataUrl:"data:image/svg+xml;base64,PHN2Zz4="}
+ }),/Format image non autorisé/);
+ assert.equal(e.calls.length,0);
+});
