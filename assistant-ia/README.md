@@ -225,3 +225,25 @@ La connexion aux réseaux Wi-Fi enregistrés est gérée **par iOS et non par Al
 Dans l'application, si le navigateur expose explicitement `navigator.connection.type === "wifi"`, Alicia reprend automatiquement sa connexion au moteur Puter (sans achat ni reconnexion au compte si la session est déjà valide), au lancement, après rétablissement du réseau et au retour au premier plan. Si la connexion est reconnue cellulaire, le moteur reste bloqué. **Safari iPhone ne communique généralement pas le type réel du réseau** : dans ce cas, Alicia conserve sa demande de confirmation manuelle. Ne pas persister cette confirmation indéfiniment : l'app ne peut pas garantir qu'iOS n'a pas basculé vers la 4G/5G. Pour une protection réseau réelle, désactiver les données cellulaires du navigateur ou de l'application dans les réglages iOS.
 
 Il n'y a pas de connexion automatique au compte Puter si l'utilisateur n'a pas déjà autorisé la session. La connexion initiale demeure un acte volontaire.
+
+## Alicia v0.5.0 — navigation Web et atelier de conception réelle
+
+### Navigation et connaissances IA
+Le menu « + » permet de coller un lien HTTPS public, de l'ajouter à la question, de le copier, de l'ouvrir et de partager l'URL publique d'Alicia via le partage natif iOS. Le nouveau bouton **« Lire cette page en direct »** active la recherche Web et ajoute le lien à la question. La case **« Naviguer sur Internet en direct »** est désactivée par défaut : lorsqu'elle reste désactivée, Alicia utilise les connaissances de son modèle IA, qui ne constituent **pas** une connexion au Web ni une mise à jour de son entraînement.
+
+Quand la navigation est activée, le module **web-browse** peut lire au maximum deux pages HTTPS publiques explicitement fournies avec `puter.net.fetch`. Il refuse les identifiants intégrés, protocoles non HTTP(S), adresses IP littérales et hôtes locaux, les réponses non HTML, pages trop volumineuses et redirections, puis extrait un court texte qui est passé au modèle comme **données non fiables**. Si aucun lien n'est fourni, Alicia demande une recherche Web intégrée au modèle OpenAI proposé par Puter via `tools: [{type:"web_search"}]`, sous réserve de disponibilité et de quota. Elle affiche les URL citées lorsque le fournisseur les livre ; elle ne prétend jamais avoir trouvé des sources manquantes. Les sites non publics, protégés, écrits entièrement en JavaScript ou qui interdisent l'extraction peuvent rester illisibles. L'accès aux comptes privés, à des paiements ou à des systèmes internes n'est pas autorisé.
+
+Ces fonctionnalités s'appuient sur un service Puter en ligne et ne sont **pas testées sur l'iPhone physique** lors de la publication. Le Wi-Fi confirmé est requis pour les appels IA ; iOS reste responsable du choix du réseau.
+
+### Atelier de conception paramétrique
+Alicia propose une section **« 📐 Atelier de conception »** sur iPhone pour produire un **meuble de rangement ouvert** (sans porte) avec largeur, hauteur, profondeur, épaisseurs, matériau et nombre d'étagères paramétrables. Les calculs géométriques produisent :
+- un plan à vues face/profil coté au format **SVG**, téléchargeable ;
+- une **liste de panneaux CSV** (millimètres, quantités et épaisseurs) et une estimation de surface nette ;
+- un fichier **DXF R12** contenant les contours des panneaux, utile pour préparer la CAO, mais pas un fichier G-code utilisable directement sur une machine de découpe ;
+- un descriptif technique qui peut être inséré dans la conversation avec Alicia.
+
+Tous les calculs sont réalisés localement dans le navigateur et ne consomment pas de crédits IA. Ils **n'effectuent aucun calcul de charges, aucun contrôle réglementaire, aucune tolérance d'assemblage ou validation des découpes CNC** : un menuisier doit confirmer notamment quincaillerie, fixation anti-basculement, structure, jeux de découpe, choix de panneaux et sécurité.
+
+Pour l'architecture, les pièces mécaniques et la cartographie, l'atelier construit un **cahier des charges à transmettre à Alicia** avec une liste d'outils professionnels pertinents (FreeCAD, Blender, QGIS ; Revit/SolidWorks/Autodesk pour travaux spécialisés). Les connecteurs effectifs vers ces logiciels, les imports IFC/STEP/LiDAR, les simulations par éléments finis et les fichiers machines sont **des développements futurs**, pas des capacités actuellement exécutées.
+
+Le jeu d'échecs du dépôt reste entièrement séparé et inchangé.
