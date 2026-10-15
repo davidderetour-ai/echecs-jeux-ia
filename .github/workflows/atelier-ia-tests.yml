@@ -33,6 +33,7 @@ jobs:
           node --check github-health.js
           node --check github-proposal-core.mjs
           node --check github-maintainer.mjs
+          node --check github-draft.mjs
           node --check permission-policy.mjs
           node --check success-metrics.mjs
           bash -n mac-audit.sh
