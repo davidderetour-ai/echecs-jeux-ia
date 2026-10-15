@@ -71,7 +71,20 @@ $("review").addEventListener("click",async()=>{
  try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){last.querySelector(".message-text").textContent=data.answer;last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
 });
 $("new").addEventListener("click",()=>{if(messages.length&&!confirm("Démarrer une nouvelle conversation ?"))return;messages=[];log.replaceChildren();messageEl("assistant","Bonjour ! Je peux t'aider en programmation, réparation informatique, création et formation.");$("review").disabled=true;window.AliciaAvatar?.reset()});
-document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{if(btn.dataset.mode)$("mode").value=btn.dataset.mode;$("question").value=btn.dataset.prompt;$("question").focus()}));
+const expertiseSelect=$("mode");
+const expertiseChips=[...document.querySelectorAll("[data-expertise-mode]")];
+function syncExpertise(){
+ const current=expertiseSelect.value;
+ for(const chip of expertiseChips)chip.setAttribute("aria-pressed",String(chip.dataset.expertiseMode===current));
+}
+expertiseChips.forEach(chip=>chip.addEventListener("click",()=>{
+ expertiseSelect.value=chip.dataset.expertiseMode;
+ syncExpertise();
+ const target=$("question");if(target&&window.matchMedia("(min-width:750px)").matches)target.focus();
+}));
+expertiseSelect.addEventListener("change",syncExpertise);
+syncExpertise();
+document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{if(btn.dataset.mode){expertiseSelect.value=btn.dataset.mode;syncExpertise()}$("question").value=btn.dataset.prompt;$("question").focus()}));
 $("question").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){ev.preventDefault();$("chat-form").requestSubmit()}});
 $("speak").addEventListener("click",()=>{
  const text=[...messages].reverse().find(m=>m.role==="assistant")?.content;
