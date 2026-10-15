@@ -5,6 +5,9 @@
 export const EXPRESSIONS = Object.freeze({
  neutral:"Neutre",
  joyful:"Joyeuse",
+ sad:"Triste",
+ afraid:"Effrayée",
+ angry:"En colère",
  thoughtful:"Concentrée",
  curious:"Curieuse",
  supportive:"Bienveillante",
