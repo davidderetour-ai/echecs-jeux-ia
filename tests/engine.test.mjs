@@ -48,3 +48,43 @@ test('une sequence de 12 coups ne fait pas planter le moteur',()=>{
  }
  assert.ok(g.ply>=3,'au moins trois coups effectues');
 });
+
+
+test('24 coups : chaque coup conserve un plateau valide et un historique borne',()=>{
+ let g=newChess('chess4');
+ for(let i=0;i<24;i++){
+  if(g.over)break;
+  const moves=legalMoves(g);
+  if(!moves.length)break;
+  const before=JSON.stringify(g);
+  const next=playMove(g,moves[i%moves.length]);
+  assert.ok(next,`coup ${i+1}`);
+  assert.equal(JSON.stringify(g),before,'le coup ne modifie pas la position precedente');
+  assert.equal(next.board.length,14);
+  assert.ok(next.board.every(row=>row.length===14));
+  assert.ok(next.history.length<=40);
+  g=next;
+ }
+ assert.ok(g.ply>=3);
+});
+
+test('coup impossible refuse sans modifier la partie',()=>{
+ const g=newChess('chess4');
+ const before=JSON.stringify(g);
+ const result=playMove(g,{from:{r:0,c:0},to:{r:1,c:1}});
+ assert.equal(result,null);
+ assert.equal(JSON.stringify(g),before);
+});
+
+test('sauvegarde JSON et restauration conservent les coups possibles',()=>{
+ let g=newChess('chess4');
+ for(let i=0;i<4;i++){
+  const moves=legalMoves(g);
+  assert.ok(moves.length);
+  g=playMove(g,moves[0]);
+  assert.ok(g);
+ }
+ const restored=JSON.parse(JSON.stringify(g));
+ assert.deepEqual(restored.board,g.board);
+ assert.deepEqual(legalMoves(restored),legalMoves(g));
+});
