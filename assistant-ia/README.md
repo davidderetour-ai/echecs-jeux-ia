@@ -158,3 +158,18 @@ Les messages utilisent Puter et ses sous-traitants IA ; ils **ne restent pas exc
 - Code : `puter-engine.js`, `app.js`, `installer-iphone.html`.
 - Tests automatisés : `tests/puter-engine.test.mjs`, qui simule le SDK et vérifie le routage des réponses, le refus hors ligne ou sans connexion et l'absence de bascule implicite vers une API facturable.
 - L'authentification Safari, la disponibilité réelle du modèle Puter et les réglages Netlify requièrent un **test manuel sur iPhone** après la publication.
+
+
+## Publication iPhone après l'erreur « Site not found » de Netlify
+
+L'adresse `https://echecs-jeux-ia.netlify.app/assistant-ia/` a renvoyé **Site not found** sur iPhone. Ne pas la communiquer comme installation valide sans vérification.
+
+Une seconde méthode est préparée avec le workflow `.github/workflows/alicia-pages.yml`. Il publie uniquement le dossier `assistant-ia/` en site HTTPS via **GitHub Pages**. Le code du jeu à la racine du dépôt n'est pas écrasé. Pour activer l'hébergement lors de la première utilisation :
+
+1. Dans GitHub, ouvrir `https://github.com/davidderetour-ai/echecs-jeux-ia/settings/pages`.
+2. Sous **Build and deployment**, régler **Source : GitHub Actions**. Cette première activation est une action du propriétaire du compte GitHub.
+3. Aller dans GitHub → **Actions** → **Alicia — publier sur GitHub Pages** et lancer `Run workflow` sur `main` si la publication n'est pas déjà passée au vert.
+4. Lorsque le workflow `Déployer` réussit, contrôler dans Safari l'adresse calculée par GitHub Pages, généralement `https://davidderetour-ai.github.io/echecs-jeux-ia/`. Ne pas installer avant d'avoir vérifié que la page affiche **ALICIA**.
+5. Safari → Partager → Sur l'écran d'accueil → Ajouter, puis connecter Puter volontairement.
+
+Un succès du workflow « Tests Atelier IA » ne signifie pas que le site est déployé. Un succès Netlify Preview ne garantit pas que le domaine de production Netlify existe. GitHub Pages nécessite l'activation préalable dans Settings par un administrateur ; les identifiants et paramètres personnels du compte ne sont pas manipulés par Alicia.
