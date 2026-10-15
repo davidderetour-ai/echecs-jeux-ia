@@ -1,4 +1,4 @@
-# Atelier IA — prototype multiplateforme (PWA)
+# Alicia — assistant IA multiplateforme (PWA)
 
 Prototype d'assistant IA en français utilisable dans le navigateur et installable sur **iPhone, Android, Windows et macOS** en tant qu'application web progressive (PWA). Il est isolé dans le dossier \`assistant-ia/\` du dépôt de jeux pour **ne pas remplacer le jeu d'échecs**.
 
