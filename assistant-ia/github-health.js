@@ -4,7 +4,7 @@ const summary=document.getElementById("github-health-status");
 const history=document.getElementById("github-health-history");
 const button=document.getElementById("github-health-check");
 const REPO="davidderetour-ai/echecs-jeux-ia";
-const BRANCH="assistant-ia-autocorrection-v1";
+const BRANCH="main";
 const ENDPOINT="https://api.github.com/repos/"+REPO+"/actions/workflows/atelier-ia-tests.yml/runs?per_page=30&branch="+encodeURIComponent(BRANCH);
 const statusNames={success:"Réussite",failure:"Échec",cancelled:"Annulé",timed_out:"Délai dépassé",null:"En cours"};
 function line(tag,text){const node=document.createElement(tag);node.textContent=text;return node;}
