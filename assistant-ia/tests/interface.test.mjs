@@ -10,7 +10,7 @@ function countId(id){
  return [...html.matchAll(/\bid="([^"]+)"/g)].filter(m=>m[1]===id).length;
 }
 test("L'interface affiche chaque commande utilisée par le JavaScript une seule fois",()=>{
- const ids=["mode","connection-mode","connection-status","search","verify","alicia-avatar","avatar-status","expression-mode","voice-choice","voice-style","preview-voice","auto-voice","laugh-sound","cry-sound","fear-sound","anger-sound","conversation","new","question","voice","speak","review","send","access","save-note","clear-notes","notes-list","clear-access","note","status","chat-form","tool-query","data-file-a","mac-report"];
+ const ids=["mode","connection-mode","connection-status","search","verify","alicia-avatar","avatar-status","expression-mode","voice-choice","voice-style","preview-voice","auto-voice","laugh-sound","cry-sound","fear-sound","anger-sound","conversation","new","question","voice","speak","review","send","access","save-note","clear-notes","notes-list","clear-access","note","status","alicia-level","intelligence-start","intelligence-reset","intelligence-progress","capability-evaluate","capability-kind","capability-result","chat-form","tool-query","data-file-a","mac-report"];
  for(const id of ids)assert.equal(countId(id),1,`Élément #${id} manquant ou en double`);
 });
 test("Les cinq modes rapides pointent vers de vraies options du moteur",()=>{
@@ -34,5 +34,5 @@ test("Interface soignée et responsive intégrée sans bibliothèque externe",()
  assert.match(css,/\.alicia-dashboard/);
  assert.match(css,/@media\(max-width:620px\)/);
  assert.match(css,/prefers-reduced-motion/);
- assert.match(sw,/alicia-shell-v13/);
+ assert.match(sw,/alicia-shell-v14/);
 });
