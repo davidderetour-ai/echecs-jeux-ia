@@ -34,5 +34,5 @@ test("Interface soignée et responsive intégrée sans bibliothèque externe",()
  assert.match(css,/\.alicia-dashboard/);
  assert.match(css,/@media\(max-width:620px\)/);
  assert.match(css,/prefers-reduced-motion/);
- assert.match(sw,/alicia-shell-v12/);
+ assert.match(sw,/alicia-shell-v13/);
 });
