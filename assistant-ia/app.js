@@ -22,7 +22,7 @@ function messageEl(role,text,sources=[]){
  }
  log.append(article);log.scrollTop=log.scrollHeight;return article;
 }
-function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt"}
+function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
 async function callIA(review=false){
  const code=$("access").value.trim();if(!code)throw new Error("Saisis d'abord ton code d'accès personnel (défini sur Netlify).");
  sessionStorage.setItem("atelier-code",code);
@@ -35,16 +35,16 @@ async function callIA(review=false){
 $("chat-form").addEventListener("submit",async event=>{
  event.preventDefault();if(busy)return;const q=$("question").value.trim();if(!q)return;
  const welcome=log.querySelector(".welcome");if(welcome)welcome.remove();
- messages.push({role:"user",content:q});messageEl("user",q);window.AliciaTools?.suggestForTask(q);$("question").value="";setBusy(true);
- try{const data=await callIA(false);messages.push({role:"assistant",content:data.answer});messageEl("assistant",data.answer,data.sources);window.AliciaAvatar?.onAssistantMessage(data.answer);if(data.verified)$("status").textContent="Réponse revérifiée"}catch(err){messages.pop();messageEl("assistant","⚠️ "+err.message);$("question").value=q}finally{setBusy(false)}
+ messages.push({role:"user",content:q});messageEl("user",q);window.AliciaAvatar?.onUserMessage(q,$("mode").value);window.AliciaTools?.suggestForTask(q);$("question").value="";setBusy(true);
+ try{const data=await callIA(false);messages.push({role:"assistant",content:data.answer});messageEl("assistant",data.answer,data.sources);window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);if(data.verified)$("status").textContent="Réponse revérifiée"}catch(err){messages.pop();messageEl("assistant","⚠️ "+err.message);window.AliciaAvatar?.setExpression("supportive");$("question").value=q}finally{setBusy(false)}
 });
 $("review").addEventListener("click",async()=>{
  if(busy||!messages.length||messages[messages.length-1].role!=="assistant")return;
  setBusy(true);
- try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){last.querySelector(".message-text").textContent=data.answer;last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
+ try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){last.querySelector(".message-text").textContent=data.answer;last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
 });
-$("new").addEventListener("click",()=>{if(messages.length&&!confirm("Démarrer une nouvelle conversation ?"))return;messages=[];log.replaceChildren();messageEl("assistant","Bonjour ! Je peux t'aider en programmation, réparation informatique, création et formation.");$("review").disabled=true});
-document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{$("question").value=btn.dataset.prompt;$("question").focus()}));
+$("new").addEventListener("click",()=>{if(messages.length&&!confirm("Démarrer une nouvelle conversation ?"))return;messages=[];log.replaceChildren();messageEl("assistant","Bonjour ! Je peux t'aider en programmation, réparation informatique, création et formation.");$("review").disabled=true;window.AliciaAvatar?.reset()});
+document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{if(btn.dataset.mode)$("mode").value=btn.dataset.mode;$("question").value=btn.dataset.prompt;$("question").focus()}));
 $("question").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){ev.preventDefault();$("chat-form").requestSubmit()}});
 $("speak").addEventListener("click",()=>{
  const text=[...messages].reverse().find(m=>m.role==="assistant")?.content;
