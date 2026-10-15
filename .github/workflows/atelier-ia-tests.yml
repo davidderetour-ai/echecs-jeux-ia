@@ -35,6 +35,8 @@ jobs:
           node --check github-maintainer.mjs
           node --check github-draft.mjs
           node --check puter-engine.js
+          node --check composer-core.mjs
+          node --check composer-tools.js
           node --check wifi-policy.js
           node --check avatar-motion.mjs
           node --check copy-learning.js
