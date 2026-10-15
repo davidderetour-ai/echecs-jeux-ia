@@ -159,3 +159,13 @@
 .attach-preview audio.attach-player{min-height:48px}
 .attach-preview video.attach-player{object-fit:contain}
 .attach-preview button{min-height:40px}
+
+/* Alicia v0.3.2 : partage volontaire des URL sans ouverture ni lecture automatique. */
+.share-link-panel{margin:10px 0;padding:13px;background:#1c304d;border:1px solid #6483ad;border-radius:14px;display:flex;flex-direction:column;gap:9px}
+.share-link-panel[hidden]{display:none!important}
+.share-link-panel label{font-size:14px;font-weight:750;color:#e0ecff}
+.share-link-panel input{width:100%;min-height:45px;background:#0e1c34;color:#fff;border:1px solid #5f79a3;border-radius:10px;padding:10px 12px;font-size:15px}
+.share-link-panel small,.share-link-panel p{margin:0;color:#b9c9e9;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.share-link-panel .link-actions{display:flex;gap:8px;flex-wrap:wrap}
+.share-link-panel button{flex:1 1 145px;min-height:42px}
+@media(max-width:640px){.share-link-panel .link-actions{display:grid;grid-template-columns:1fr 1fr}.share-link-panel button{font-size:12px;padding:9px 7px}.share-link-panel #share-link-attach{grid-column:span 2}}
