@@ -111,3 +111,45 @@
 .version-details{margin-top:12px;padding:9px 10px;border:1px solid #394867;border-radius:10px;background:#162039;color:#d8e2f8;font-size:12px}
 .version-details summary{cursor:pointer;color:#cbdcff;font-weight:700}
 .version-details p{font-size:12px;line-height:1.5;color:#bfcee9;margin:8px 0}
+
+/* Alicia v0.3.0 : version immédiatement identifiable et Nouvelle discussion accessible. */
+.brand strong{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand .version-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:10px;background:#475ec2;border:1px solid #7784ec;color:#fff;font-size:11px;font-weight:750;letter-spacing:0}
+.header-actions{flex-shrink:0}
+.header-actions .refresh-app{padding:7px 11px;min-width:35px;font-size:22px;line-height:1}
+.conversation-notice{border:1px solid #5878b0;background:#20305c;padding:12px 14px;border-radius:12px;color:#c5ffe5;font-size:13px;line-height:1.5}
+.conversation-notice[hidden]{display:none}
+/* Menu + : commandes utilisables d'une seule main sur Safari iPhone. */
+.composer-attach{display:flex;gap:10px;align-items:center;position:relative;margin:0 0 8px}
+.composer-attach-description{font-size:11px;color:#b9c7e4}
+.plus-container{position:relative;flex-shrink:0}
+.plus-button{min-width:45px;min-height:44px;border:1px solid #6474ad;border-radius:14px;font-size:30px;line-height:1;padding:2px 8px}
+.plus-menu{position:absolute;bottom:calc(100% + 10px);left:0;z-index:50;width:min(320px,calc(100vw - 40px));background:#1c2846;border:1px solid #56658d;border-radius:18px;padding:9px;display:flex;flex-direction:column;gap:5px;box-shadow:0 10px 30px #060b1e99}
+.plus-menu[hidden]{display:none!important}
+.plus-menu button{width:100%;text-align:left;border:0;border-radius:10px;background:transparent;min-height:47px;font-size:14px;padding:9px 11px;color:#f0f5ff}
+.plus-menu button:hover,.plus-menu button:focus-visible{background:#34466a}
+.plus-menu button span{display:block;font-size:10px;color:#b8caff}
+.attach-preview{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid #6073a0;border-radius:12px;background:#263757;color:#e6f1ff;margin:0 0 9px}
+.attach-preview[hidden]{display:none!important}
+.attach-preview img.attach-thumb{width:min(100%,210px);max-height:145px;object-fit:contain;align-self:flex-start;border-radius:8px}
+.attach-preview span{font-weight:700;font-size:13px}
+.attach-preview p,.attach-preview small{margin:0;color:#dae4f7;font-size:12px;line-height:1.5}
+.attach-preview textarea{width:100%;min-height:110px;background:#15213a;color:white;border:1px solid #5b6b92;border-radius:9px;padding:10px}
+.attach-preview a{color:#b6d2ff;text-decoration:underline}
+.attach-preview button{align-self:flex-start}
+.chatgpt-learning{padding:10px 12px;background:#1d304a;border:1px solid #4b6c99;border-radius:12px;margin:10px 0}
+.chatgpt-learning[hidden]{display:none!important}
+.chatgpt-learning summary{cursor:pointer;font-weight:700;color:#d9e9ff}
+.chatgpt-learning p{line-height:1.55;font-size:12px;color:#b9d4ed}
+.chatgpt-learning textarea{display:block;width:100%;min-height:100px;background:#0f1c32;color:#fff;border:1px solid #4a638b;border-radius:8px;padding:10px}
+.chatgpt-learning .check{display:flex;gap:8px;align-items:flex-start;font-size:12px}
+.chatgpt-learning .learning-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chatgpt-learning .learning-buttons button{font-size:12px}
+@media(max-width:640px){
+ header{gap:6px}
+ .brand .version-badge{font-size:10px;padding:2px 5px}
+ .header-actions{gap:5px}
+ .header-actions .refresh-app{min-width:29px;padding:5px}
+ .header-actions #new{padding:7px 9px;font-size:12px}
+ .brand .app-version-label{font-size:10px}
+}

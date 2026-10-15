@@ -193,3 +193,18 @@ Le propriétaire souhaite utiliser le **Wi-Fi de son iPhone**, sans consommation
 **Limite incontournable :** Safari iOS n'expose généralement pas le type du réseau, et la confirmation manuelle ne détecte pas une bascule silencieuse du Wi-Fi vers 4G/5G. Une application web ne peut donc pas garantir ce choix. Pour **empêcher effectivement les données cellulaires**, le propriétaire doit intervenir dans iOS : **Réglages → Données cellulaires**, couper les données pour Alicia si l'app apparaît (sinon pour Safari), et désactiver l'option « Assistance Wi-Fi » en bas de la liste si présente. Le système iOS est la protection effective, et les autres applications peuvent rester autorisées. L'affichage et le cache de l'interface peuvent toujours être téléchargés lors d'une ouverture initiale si iOS autorise le cellulaire.
 
 Aucune permission réseau permanente n'est conférée à Alicia et son bouton ne modifie aucun paramètre de l'iPhone.
+
+
+## Alicia 0.3.0 — Menu « + » et conseils avec ChatGPT
+
+L'en-tête présente **v0.3.0**, avec « Actualiser » et « Nouveau ». **Nouveau** remet en place une conversation vide, affiche une confirmation visible et réinitialise le brouillon et la pièce jointe, sans effacer les notes enregistrées. « Actualiser » demande au service worker de chercher une mise à jour puis recharge la page (réseau Wi-Fi si requis par les réglages du propriétaire).
+
+Le bouton **+** de la zone d'écriture présente :
+- **Caméra** et **Photos** : sélection d'une image JPEG/PNG/WebP/GIF de **4 Mo maximum**, aperçu avant transmission. Seul le clic sur « Envoyer » peut transmettre la photo au moteur IA **Puter**. Les images sont envoyées sous forme de données multimodales à Puter et à son fournisseur de modèle. Le modèle et Safari doivent accepter cette fonction ; le traitement réel reste à vérifier sur iPhone.
+- **Fichiers** : documents texte `.txt`, `.md`, `.csv`, `.tsv`, `.json`, `.log` et `.xml` avec lecture locale et aperçu du nom. Seul l'extrait des **7 500 premiers caractères** est joint à la question envoyée ; la lecture de PDF et Word n'est **pas** implémentée, un message l'indique au lieu de prétendre les analyser.
+- **Plugins et outils** : ouvre la liste de suggestions d'outils libres d'Alicia. Cela ne connecte pas les plugins du compte ChatGPT et n'installe rien.
+- **Double vérification** : active ou désactive le deuxième passage du moteur IA ; il peut consommer davantage de crédits de l'allocation Puter.
+- **Demander conseil à ChatGPT** : prépare une question claire avec l'objectif saisi dans le champ, la copie (si autorisée par Safari) et ouvre le site ChatGPT au choix de l'utilisateur. **Il n'existe pas de dialogue automatique direct entre Alicia et le compte ChatGPT**.
+- **Apprendre de ChatGPT** : colle volontairement une réponse de ChatGPT, prévisualise-la, accepte son enregistrement et garde jusqu'à cinq conseils **localement dans le navigateur**. Ces conseils sont transmis comme contexte aux prochaines requêtes IA, avec une limite de longueur. **Il ne s'agit pas d'un entraînement du modèle IA** et aucune réponse n'est jugée vraie sans vérification.
+
+Le moteur Puter n'a pas accès directement au compte ChatGPT du propriétaire, à ses mémoires, ni aux fichiers de ChatGPT. La communication automatique nécessiterait une API officielle et une autorisation distincte, avec conditions tarifaires possibles. La protection Wi-Fi existante reste applicable aux appels IA. Le jeu d'échecs et ses fichiers ne sont pas modifiés.

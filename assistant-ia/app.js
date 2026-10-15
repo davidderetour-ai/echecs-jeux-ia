@@ -4,6 +4,8 @@ const log = $("conversation");
 let messages = [];
 let busy = false;
 const NOTE_KEY = "atelier-ia-notes-v1";
+function attach(){return window.AliciaComposer?.current?.()||null;}
+function getSharedAdvice(){return window.AliciaComposer?.learnings?.()||[];}
 function getNotes(){try{return JSON.parse(localStorage.getItem(NOTE_KEY)||"[]").filter(x=>typeof x==="string").slice(0,8)}catch{return []}}
 function setNotes(items){localStorage.setItem(NOTE_KEY,JSON.stringify(items.slice(0,8)));renderNotes()}
 function renderNotes(){const list=$("notes-list");list.replaceChildren();getNotes().forEach(n=>{const li=document.createElement("li");li.textContent=n;list.append(li)})}
@@ -38,7 +40,7 @@ function messageEl(role,text,sources=[]){
  }
  log.append(article);log.scrollTop=log.scrollHeight;return article;
 }
-function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
+function setBusy(state){busy=state;$("send").disabled=state;$("new").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
 const CONNECTION_KEY="alicia-connection-v1";
 const connection=$("connection-mode");
 const savedMode=localStorage.getItem(CONNECTION_KEY);
@@ -71,10 +73,14 @@ async function callIA(review=false){
   if(isApplePhone&&!window.AliciaWiFi)throw new Error("La protection Wi-Fi n'est pas chargée. Actualise Alicia pour éviter d'utiliser les données mobiles.");
   window.AliciaWiFi?.requireConfirmed();
  }
+ if(choice!=="puter"&&attach()?.kind==="image"){
+  throw Error("Pour analyser cette image, sélectionne le mode iPhone — IA en ligne (Puter). Aucune image n’a été envoyée.");
+ }
  if(choice==="puter"){
   if(!window.AliciaPuter)throw new Error("Module IA iPhone indisponible. Actualise Alicia dans Safari.");
   return window.AliciaPuter.answer({
-   messages,mode:$("mode").value,verify:$("verify").checked,review,notes:getNotes()
+   messages,mode:$("mode").value,verify:$("verify").checked,review,
+   notes:[...getNotes(),...getSharedAdvice()].slice(-8),attachment:review?null:attach()
   });
  }
  const code=$("access").value.trim();
@@ -86,7 +92,7 @@ async function callIA(review=false){
  const url=isLocal?"./api/local/chat":"./.netlify/functions/chat";
  const response=await fetch(url,{
   method:"POST",headers,
-  body:JSON.stringify({messages,mode:$("mode").value,verify:$("verify").checked,web:!isLocal&&$("search").checked,review,notes:getNotes()})
+  body:JSON.stringify({messages,mode:$("mode").value,verify:$("verify").checked,web:!isLocal&&$("search").checked,review,notes:[...getNotes(),...getSharedAdvice()].slice(-8)})
  });
  let result;
  try{result=await response.json();}
@@ -97,16 +103,37 @@ async function callIA(review=false){
 }
 $("chat-form").addEventListener("submit",async event=>{
  event.preventDefault();if(busy)return;const q=$("question").value.trim();if(!q)return;
+ const attachment=attach();
+ const contents=attachment?.kind==="text"?
+  q+"\n\n[Fichier local : "+attachment.name+" — extrait jusqu’à 7 500 caractères]\n"+attachment.text.slice(0,7500):q;
+ const notice=$("conversation-notice");if(notice)notice.hidden=true;
+ const newLabel=$("new");if(newLabel)newLabel.textContent="Nouveau";
  const welcome=log.querySelector(".welcome");if(welcome)welcome.remove();
- messages.push({role:"user",content:q});messageEl("user",q);window.AliciaAvatar?.onUserMessage(q,$("mode").value);window.AliciaTools?.suggestForTask(q);$("question").value="";setBusy(true);
- try{const data=await callIA(false);messages.push({role:"assistant",content:data.answer});messageEl("assistant",data.answer,data.sources);window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);if(data.verified)$("status").textContent="Réponse revérifiée"}catch(err){messages.pop();messageEl("assistant","⚠️ "+err.message);window.AliciaAvatar?.setExpression("supportive");$("question").value=q}finally{setBusy(false)}
+ messages.push({role:"user",content:contents});messageEl("user",q+(attachment?"\n📎 "+attachment.name:""));window.AliciaAvatar?.onUserMessage(q,$("mode").value);window.AliciaTools?.suggestForTask(q);$("question").value="";setBusy(true);
+ try{const data=await callIA(false);messages.push({role:"assistant",content:data.answer});messageEl("assistant",data.answer,data.sources);window.AliciaComposer?.clear();window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);if(data.verified)$("status").textContent="Réponse revérifiée"}catch(err){messages.pop();messageEl("assistant","⚠️ "+err.message);window.AliciaAvatar?.setExpression("supportive");$("question").value=q}finally{setBusy(false)}
 });
 $("review").addEventListener("click",async()=>{
  if(busy||!messages.length||messages[messages.length-1].role!=="assistant")return;
  setBusy(true);
  try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){formatMessageText(last.querySelector(".message-text"),data.answer);last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
 });
-$("new").addEventListener("click",()=>{if(messages.length&&!confirm("Démarrer une nouvelle conversation ?"))return;messages=[];log.replaceChildren();messageEl("assistant","Bonjour ! Je peux t'aider en programmation, réparation informatique, création et formation.");$("review").disabled=true;window.AliciaAvatar?.reset()});
+$("new").addEventListener("click",()=>{
+ if(busy){$("new").textContent="Patiente…";return;}
+ if(messages.length&&!confirm("Commencer une nouvelle conversation et effacer la discussion affichée ?"))return;
+ messages=[];
+ log.replaceChildren();
+ $("question").value="";
+ window.AliciaComposer?.clear();
+ const message=$("conversation-notice");
+ if(message){message.textContent="✓ Nouvelle conversation prête. Écris ta question ci-dessous.";message.hidden=false;log.prepend(message);}
+ messageEl("assistant","Bonjour ! Nouvelle conversation prête. Quelle question souhaites-tu me poser ?");
+ $("review").disabled=true;
+ $("status").textContent="Nouvelle conversation prête";
+ $("new").textContent="✓ Nouvelle";
+ window.AliciaAvatar?.reset();
+ $("chat-form").scrollIntoView({behavior:"smooth",block:"nearest"});
+ $("question").focus({preventScroll:true});
+});
 document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{if(btn.dataset.mode)$("mode").value=btn.dataset.mode;$("question").value=btn.dataset.prompt;$("question").focus()}));
 $("question").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){ev.preventDefault();$("chat-form").requestSubmit()}});
 $("speak").addEventListener("click",()=>{
@@ -125,6 +152,12 @@ $("voice").addEventListener("click",()=>{
  r.onresult=e=>{$("question").value+=($("question").value?" ":"")+e.results[0][0].transcript};
  r.onerror=()=>{$("status").textContent="Dictée indisponible"};
  r.start();
+});
+$("update-app")?.addEventListener("click",async()=>{
+ const btn=$("update-app");btn.disabled=true;btn.textContent="…";
+ try{const registration=await navigator.serviceWorker?.getRegistration?.();await registration?.update?.();}
+ catch{}
+ window.location.reload();
 });
 renderNotes();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
