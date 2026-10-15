@@ -31,6 +31,7 @@
 <option value="auto">Automatique (selon la conversation)</option>
 <option value="neutral">Neutre</option>
 <option value="joyful">Joyeuse</option>
+<option value="sad">Triste (larmes)</option>
 <option value="thoughtful">Concentrée</option>
 <option value="curious">Curieuse</option>
 <option value="supportive">Bienveillante</option>
@@ -41,6 +42,11 @@
     <label class="voice-picker">Voix française<select id="voice-choice"><option value="">Voix française automatique</option></select></label>
     <label class="voice-picker">Style de voix<select id="voice-style"><option value="douce">Douce et calme (conseillée)</option><option value="naturelle">Naturelle</option><option value="dynamique">Dynamique</option></select></label>
     <button type="button" id="preview-voice" class="secondary">▶ Écouter la voix d'Alicia</button>
+    <div class="emotion-controls" role="group" aria-label="Bruitages et mimiques d'Alicia">
+      <button type="button" id="laugh-sound" class="secondary" title="Faire rire Alicia ou arrêter le rire">😂 Faire rire Alicia</button>
+      <button type="button" id="cry-sound" class="secondary" title="Faire sangloter Alicia ou arrêter les pleurs">😢 Faire pleurer Alicia</button>
+    </div>
+    <small>Rire et sanglots simulés avec des sons originaux créés sur l'appareil. Appuie à nouveau sur un bouton pour arrêter. Aucun son enregistré ni service payant.</small>
     <small>Voix de synthèse française disponible sur l'appareil, sans copie de la voix d'une personne réelle et sans API payante. Le timbre dépend de l'iPhone, du Mac ou du navigateur. La dictée peut nécessiter Internet.</small>
   </div>
 </section>
