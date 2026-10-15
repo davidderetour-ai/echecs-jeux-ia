@@ -115,3 +115,26 @@ Sur un ordinateur compatible équipé d'Ollama :
 5. Après contrôle et avec ton accord explicite dans le terminal, `node github-maintainer.mjs propose alicia-proposition.json` crée une branche séparée et une PR **en brouillon**. La CI vérifie son code ; la revue puis la fusion et le déploiement restent manuels.
 
 Les brouillons générés localement sont susceptibles de contenir des erreurs ; les tests doivent porter sur le code **proposé** dans la branche PR, pas simplement le code existant. Une fusion n'est jamais autorisée automatiquement par Alicia.
+
+
+## Alicia Original et copies — collaboration volontaire
+
+**Alicia Original** désigne l'installation appartenant au créateur de ce projet, qui en conserve la gestion. **Une installation téléchargée publiquement depuis GitHub est une copie par défaut.** Sur le Mac du propriétaire, l'utilitaire `Activer Alicia Original.command` permet une vérification ponctuelle de l'identité GitHub `davidderetour-ai` grâce à `/user` ; aucun jeton n'est enregistré. Le statut est inscrit uniquement dans le dossier utilisateur `~/Library/Application Support/Alicia/original-status.json` et survit aux mises à jour. C'est un **marqueur local non infalsifiable**, pas une protection anticopie ou une preuve cryptographique de propriété.
+
+### Apprendre des copies sans surveiller les utilisateurs
+
+Un panneau **Alicia Original ↔ copies** permet :
+1. À l'utilisateur d'une copie de **décrire volontairement** un bogue, une solution déjà testée, une idée ou une alerte de sécurité. Il doit cocher son accord, voir un aperçu, retirer toute information personnelle puis ouvrir lui-même le formulaire GitHub Issues. La proposition est publique dans ce dépôt public. **Aucun message, historique, fichier ou information de l'appareil n'est transmis automatiquement.**
+2. Au propriétaire d'Alicia Original de lire les retours, de comparer les sources, de reproduire les tests puis, **seulement après revue**, de publier les conseils dans `copy-learning-catalog.json` avec une référence GitHub (Issue/PR) et `reviewed: true`.
+3. Aux copies de **consulter à leur demande** les fiches publiées et, si elles le souhaitent, d'ajouter un conseil à une question. Cette opération n'installe pas de code et ne change pas les paramètres de l'appareil.
+4. À tout utilisateur de consulter les alertes de `copy-safety.json`, notamment les versions déconseillées. Le fichier permet des avis informatifs **sans exécution distante**.
+
+**Important :** cette boucle est une mémoire documentaire partagée, pas un réentraînement automatique du modèle. Une solution soumise n'est ni acceptée ni traitée comme vraie avant vérification. Les fiches ne sont pas chargées automatiquement dans les réponses de l'IA. Un signalement malveillant, une erreur ou une instruction cachée ne doivent jamais être exécutés comme une commande.
+
+Les copies peuvent être modifiées ou fonctionner hors ligne. Alicia Original **ne peut pas garantir d'accéder à toutes les copies, les désactiver, les supprimer à distance ou contrôler les appareils de leurs utilisateurs**. Elle peut publier des correctifs et des alertes, retirer une version de la distribution qu'elle administre et suspendre l'accès à des services qu'elle contrôle, selon les autorisations existantes. L'utilitaire `Désinstaller cette copie.command` ouvre seulement un dossier local et laisse à l'utilisateur la décision de retirer ses fichiers.
+
+### Mac Big Sur 11.7.11
+
+L'installateur `INSTALLER_MAC_BIG_SUR.command` copie l'interface dans `~/Applications/Alicia`, crée un raccourci sur le Bureau si possible et conserve le marqueur Original privé lors des mises à jour. Une mise à jour d'une installation existante exige une confirmation et enregistre d'abord une sauvegarde. Les fonctionnalités locales de l'interface peuvent fonctionner sans modèle IA ; une conversation hors ligne requiert un moteur adapté à la configuration réelle du Mac.
+
+L'iPhone peut échanger des messages texte avec le Mac sur un Wi-Fi privé grâce à `Lancer liaison iPhone.command`, mais **le protocole HTTP n'est pas chiffré** : ne jamais y transmettre de données sensibles. Le programme `Voir mes projets GitHub.command` liste les dépôts que le propriétaire autorise après saisie locale d'un jeton personnel. L'interface web ne doit jamais recevoir ce jeton.
