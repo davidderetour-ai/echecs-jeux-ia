@@ -34,6 +34,18 @@ jobs:
           node --check github-proposal-core.mjs
           node --check github-maintainer.mjs
           node --check github-draft.mjs
+          node --check copy-learning.js
+          node --check copy-learning-core.mjs
+          node --check github-portfolio.mjs
+          bash -n INSTALLER_MAC_BIG_SUR.command
+          bash -n 'Ouvrir Alicia.command'
+          bash -n 'Lancer liaison iPhone.command'
+          bash -n 'Voir mes projets GitHub.command'
+          bash -n 'Activer Alicia Original.command'
+          bash -n 'Désinstaller cette copie.command'
+          ruby -c original-activate.rb
+          ruby -c github-mac.rb
+          ruby -c mac-iphone-bridge.rb
           node --check permission-policy.mjs
           node --check success-metrics.mjs
           bash -n mac-audit.sh

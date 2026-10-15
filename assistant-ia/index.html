@@ -95,6 +95,32 @@
  <div id="github-health-history" aria-live="polite"></div>
  <small>Ce calcul mesure les exécutions de tests réussies, non la probabilité que l'IA ait toujours raison. En cas d'échec, la surveillance crée un ticket une fois activée sur la branche principale. Pour créer une nouvelle proposition de code, un accès GitHub privé et des tests sont nécessaires ; jamais de mot de passe dans cette page.</small>
 </details>
+<details class="tool-finder" id="copy-learning">
+ <summary>🔄 Alicia Original ↔ copies : apprendre des expériences partagées</summary>
+ <p>Chaque copie peut envoyer volontairement une solution, un bug ou une suggestion. Le responsable d'Alicia Original examine les retours et publie des fiches vérifiées. Rien n'est aspiré depuis ton appareil.</p>
+ <p>Une installation GitHub est une <strong>copie par défaut</strong>. Seul le propriétaire peut activer le statut local Original après vérification GitHub sur son Mac. Ce statut n'accorde jamais d'accès aux appareils des autres.</p>
+ <h3>Partager un apprentissage (facultatif)</h3>
+ <label>Nature du retour
+  <select id="copy-type">
+   <option value="solution">Solution que j'ai essayée</option><option value="bug">Bug rencontré</option><option value="suggestion">Suggestion</option><option value="security">Problème de sécurité</option>
+  </select>
+ </label>
+ <label>Ce qui a fonctionné ou échoué
+  <textarea id="copy-feedback" rows="4" maxlength="1100" placeholder="Décris uniquement les étapes, les tests réalisés et le résultat, sans données personnelles."></textarea>
+ </label>
+ <label class="check"><input id="copy-consent" type="checkbox"> J'accepte d'ouvrir un formulaire GitHub public après avoir relu mon retour. Aucun envoi automatique.</label>
+ <div class="tool-query-row"><button id="copy-preview" class="secondary" type="button">Aperçu avant partage</button></div>
+ <div id="copy-feedback-preview" aria-live="polite"></div>
+ <h3>Recevoir les solutions vérifiées</h3>
+ <div class="tool-query-row"><button id="copy-receive" type="button">Consulter les conseils publiés</button></div>
+ <p id="copy-learning-status" role="status">Aucune donnée d'une autre copie n'a été récupérée.</p>
+ <div id="copy-learning-results"></div>
+ <h3>Vérifier les alertes de sécurité</h3>
+ <div class="tool-query-row"><button id="copy-safety-check" class="secondary" type="button">Vérifier les alertes officielles</button></div>
+ <p id="copy-safety-status" role="status">Alertes non vérifiées.</p>
+ <div id="copy-safety-results"></div>
+ <small>Les signalements sont potentiellement visibles publiquement sur GitHub. Toute correction ou nouvelle capacité doit être revue, testée et approuvée. Les alertes n'effacent jamais une copie sur un autre appareil. Les conseils sont des notes consultables, pas un réentraînement du modèle IA.</small>
+</details>
 <main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
 <div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
 <p>Pose une question en français, demande un cours, une correction, un problème de mathématiques, une explication scientifique, historique ou artistique. Je peux aussi aider à programmer et à créer.</p>
@@ -107,5 +133,5 @@
 <p class="disclaimer">Une IA peut se tromper. Ne lance aucune commande risquée sans vérification ni sauvegarde. L'analyse nécessite Internet et une configuration API.</p>
 </div>
 </div>
-<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script>
+<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
 </body></html>

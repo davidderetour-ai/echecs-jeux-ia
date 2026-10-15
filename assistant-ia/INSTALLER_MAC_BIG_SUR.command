@@ -33,6 +33,12 @@ FILES=(
  "Voir mes projets GitHub.command"
  "original-policy.json"
  "Désinstaller cette copie.command"
+ "original-activate.rb"
+ "Activer Alicia Original.command"
+ "copy-learning.js"
+ "copy-learning-core.mjs"
+ "copy-learning-catalog.json"
+ "copy-safety.json"
 )
 echo "=== Installation Alicia pour macOS Big Sur 11 ==="
 echo "Installation dans : $DEST"
@@ -53,11 +59,24 @@ done
 if [ -e "$DEST" ] && [ ! -d "$DEST" ];then
  echo "Un fichier porte déjà le nom $DEST. Rien n'a été modifié.";exit 3
 fi
+if [ -f "$DEST/index.html" ]; then
+ echo "Une installation Alicia est déjà présente."
+ echo "Le statut Original, s'il a été activé, est conservé dans ton dossier utilisateur privé."
+ if [ ! -t 0 ];then echo "Mise à jour refusée sans confirmation dans un Terminal interactif.";exit 5;fi
+ printf 'Pour mettre à jour les fichiers, écris MAJ ALICIA : '
+ IFS= read -r answer || exit 5
+ if [ "$answer" != "MAJ ALICIA" ];then echo "Mise à jour annulée.";exit 0;fi
+ BACKUP_ROOT="$HOME/Library/Application Support/Alicia/backups"
+ mkdir -p "$BACKUP_ROOT" || exit 5
+ BACKUP_DIR="$BACKUP_ROOT/$(date +%Y%m%d-%H%M%S)-$RANDOM"
+ cp -R "$DEST" "$BACKUP_DIR" || { echo "Sauvegarde échouée, aucune mise à jour.";exit 5; }
+ echo "Ancienne version sauvegardée dans $BACKUP_DIR"
+fi
 mkdir -p "$DEST"
 for f in "${FILES[@]}";do
  cp "$BASE/$f" "$DEST/$f"
 done
-chmod u+x "$DEST/Ouvrir Alicia.command" "$DEST/Lancer liaison iPhone.command" "$DEST/Voir mes projets GitHub.command" "$DEST/Désinstaller cette copie.command"
+chmod u+x "$DEST/Ouvrir Alicia.command" "$DEST/Lancer liaison iPhone.command" "$DEST/Voir mes projets GitHub.command" "$DEST/Désinstaller cette copie.command" "$DEST/Activer Alicia Original.command"
 # Ne jamais remplacer silencieusement un fichier existant du Bureau.
 if [ -d "$HOME/Desktop" ] && [ ! -e "$SHORTCUT" ];then
  cat >"$SHORTCUT" <<'LAUNCH'

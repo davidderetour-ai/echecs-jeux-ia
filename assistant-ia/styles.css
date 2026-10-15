@@ -70,3 +70,13 @@
 .github-health-row span{color:#c8d5ef}
 .github-health-row a{color:#a3ccff}
 #github-health-status{color:#d2e0fd;font-weight:650}
+
+/* Apprentissage collaboratif : partage volontaire, affichage texte sans HTML injecté. */
+#copy-learning h3{margin:15px 0 6px;font-size:14px;color:#edf4ff}
+#copy-learning textarea{display:block;box-sizing:border-box;width:100%;margin:8px 0;padding:12px;background:#111b31;color:#fff;border:1px solid #4b5d7e;border-radius:10px;resize:vertical}
+#copy-learning select{display:block;box-sizing:border-box;width:100%;margin:8px 0;padding:10px;background:#111b31;color:#fff;border:1px solid #4b5d7e;border-radius:10px}
+#copy-learning .check{display:flex;gap:10px;align-items:flex-start;line-height:1.6}
+#copy-learning .check input{margin-top:5px}
+#copy-learning a{color:#a5cfff;text-decoration:underline;display:inline-block;margin:8px 7px 8px 0;overflow-wrap:anywhere}
+#copy-learning pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#101b30;border-radius:8px;padding:12px;font-size:12px;max-height:220px;overflow:auto}
+#copy-learning section button{margin-top:7px}

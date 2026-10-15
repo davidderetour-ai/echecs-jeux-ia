@@ -22,6 +22,8 @@ jobs:
           node --check github-maintainer.mjs
           node --check github-proposal-core.mjs
           node --check local-server.mjs
+          node --check copy-learning-core.mjs
+          node --check copy-learning.js
           node --check permission-policy.mjs
           node --check success-metrics.mjs
           node --check app.js
