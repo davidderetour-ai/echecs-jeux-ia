@@ -89,3 +89,11 @@
 .puter-panel small{display:block;color:#c8d1e5;line-height:1.5;font-size:11px}
 .controls[hidden]{display:none!important}
 @media(max-width:650px){.puter-panel{padding:12px 10px}.puter-panel button{width:100%}}
+
+/* Portrait Alicia : scène plus profonde, boutons de démonstration accessibles au toucher. */
+.avatar-stage{position:relative;background:radial-gradient(ellipse at 50% 35%,rgba(126,113,207,.24),transparent 67%),linear-gradient(145deg,#191b3a,#252345 45%,#18152f);border-radius:25px;overflow:hidden}
+.avatar-stage::after{content:"";position:absolute;inset:auto 15% 5% 15%;height:12%;background:radial-gradient(ellipse,rgba(104,111,207,.18),transparent 73%);pointer-events:none}
+.avatar-test{display:flex;flex-direction:column;gap:8px;margin:10px 0 13px}
+.avatar-test button{max-width:350px;border:1px solid #7374ba;min-height:43px}
+.avatar-test small{color:#bdc8e2;line-height:1.5}
+@media(max-width:640px){.avatar-test button{max-width:none;width:100%}}
