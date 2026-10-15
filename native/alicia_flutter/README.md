@@ -23,3 +23,7 @@ La date enregistrée sur le Mac n'est pas synchronisée avec l'iPhone. Il faut l
 ## État du projet
 
 Les sources Flutter sont enregistrées sur GitHub mais n'ont pas encore été compilées en APK, IPA ou application Mac. Aucune application n'a été installée sur un appareil. Le moteur de conversation IA native et la dictée ne sont pas encore connectés. Le code de l'interface est une étape de développement distincte de l'application web actuellement installée. Les identifiants Apple ne doivent jamais être placés dans ce dépôt.
+
+## Guide pour le Mac Big Sur
+
+Consulter le [guide d'installation et de renouvellement automatique AltStore avec macOS Big Sur](INSTALLATION_IPHONE_MAC_BIGSUR_ALTSTORE.md). Cette procédure nécessite encore un vrai fichier IPA compilé pour Alicia native ; le Mac Big Sur sert de relais AltServer et non de machine de compilation Flutter récente.
