@@ -27,3 +27,20 @@
 .tool-result span{flex-basis:100%;line-height:1.4;color:#b9c8e0}
 .tool-result a{color:#a3ccff;text-decoration:underline;font-size:12px}
 @media(max-width:700px){.avatar-shell{grid-template-columns:1fr;padding:11px 15px;gap:8px}.avatar-stage{min-height:220px}.avatar-side{gap:7px}.avatar-side h2{font-size:20px}.avatar-side p{font-size:12px}.avatar-stage #alicia-avatar{height:225px}.tool-finder{margin:10px 10px 0}.avatar-side small{font-size:10px}}
+
+
+/* Donnees : tableau deterministe hors ligne */
+#data-lab .data-inputs{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+#data-lab .data-inputs label{display:flex;flex:1;flex-direction:column;gap:6px;min-width:220px;font-weight:600}
+#data-lab input[type=file]{max-width:100%;background:#101b2f;border:1px solid #4b5b7e;border-radius:9px;padding:10px;font-size:12px}
+#data-lab .data-actions{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin-bottom:10px}
+#data-lab .data-actions label{display:flex;gap:7px;flex-direction:column;flex:1;min-width:200px;font-weight:600}
+#data-lab .data-actions select{background:#111b31;color:#fff;border:1px solid #4b5b7e;border-radius:9px;padding:9px;max-width:100%}
+#data-lab small{display:block;color:#a5b6d2;line-height:1.5;margin-top:10px}
+#data-results{overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.data-table th,.data-table td{text-align:left;vertical-align:top;border-bottom:1px solid #344563;padding:8px 9px}
+.data-table th{color:#dfe8ff;font-weight:700;background:#293450;white-space:nowrap}
+.data-table td{font-variant-numeric:tabular-nums}
+.data-warning{color:#ffd58a!important;font-weight:600}
+.data-footnote{color:#b1bfdc!important;font-size:12px}
