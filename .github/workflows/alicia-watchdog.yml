@@ -1,0 +1,55 @@
+name: Alicia — surveillance des erreurs
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controler:
+    name: Vérifications sans déploiement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérifier le programme
+        working-directory: assistant-ia
+        run: |
+          node --check github-maintainer.mjs
+          node --check github-proposal-core.mjs
+          node --check local-server.mjs
+          node --check permission-policy.mjs
+          node --check success-metrics.mjs
+          node --check app.js
+          node --check avatar.js
+          node --check netlify/functions/chat.mjs
+          bash -n mac-audit.sh
+          bash -n mac-improve.sh
+          npm test
+
+  signaler:
+    needs: controler
+    if: ${{ always() && needs.controler.result == 'failure' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Signaler un échec détecté et confirmé
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="[Alicia] Échec des tests automatiques"
+          if gh issue list --state open --limit 100 --json title --jq '.[].title' | grep -Fxq "$title"; then
+            echo "Une anomalie est déjà signalée. Voir les tests : $RUN_URL"
+          else
+            gh issue create --title "$title" --body "Les vérifications d'Alicia ont échoué sur la branche principale. Rapport : $RUN_URL. Aucun correctif n'a été appliqué automatiquement. Examiner les journaux, préparer un correctif en branche et tester avant validation."
+          fi
