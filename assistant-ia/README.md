@@ -52,3 +52,17 @@ Pas de clonage du modèle interne de ChatGPT, pas d'entraînement continu, pas d
 - L'avatar et ses expressions sont utilisables depuis les fichiers de l'application en cache hors ligne ; les réponses IA conversationnelles demandent encore une connexion au moteur configuré.
 - Les tests automatisés couvrent les choix d'expressions et les outils de calcul, non la perfection des réponses du modèle.
 
+
+## Diagnostic et amélioration du Mac — première étape
+
+Alicia inclut un module **Améliorer mon Mac** en lecture seule, prévu notamment pour macOS Big Sur 11.7.11 :
+1. Télécharger le script `mac-audit.sh` depuis Alicia.
+2. Examiner son contenu puis, sur le Mac, ouvrir Terminal et exécuter `bash ~/Downloads/mac-audit.sh`.
+3. Copier le rapport dans le module Mac d’Alicia. L'analyse des valeurs a lieu **localement dans le navigateur**.
+4. Examiner les recommandations : stockage, mémoire, compatibilité logicielle et sauvegardes. Aucun correctif ne s'exécute automatiquement.
+
+Ce script lit uniquement la version de macOS, le modèle, l'architecture, la RAM totale et l'espace disque disponible. Il ne récolte pas de numéro de série, de mots de passe, de fichiers personnels ou de journaux. Il ne se connecte pas à Internet et ne modifie pas macOS.
+
+**Limitations :** l'application Ollama officielle exige macOS 14 ou plus récent ; une optimisation ne peut pas rendre arbitrairement compatible une version plus récente d'un programme. Une mise à niveau macOS doit être vérifiée selon le modèle exact du Mac, sauvegardée et décidée par le propriétaire. Les futures opérations de nettoyage, mise à jour ou installation demanderont un consentement distinct, des contrôles et une possibilité de retour en arrière. Le module actuel n'exécute aucune modification du Mac.
+
+Sources : https://ollama.com/download/mac et https://support.apple.com/en-us/108382
