@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'services/emotion_audio.dart';
 import 'services/network_status.dart';
+import 'widgets/signature_card.dart';
 
 void main() { WidgetsFlutterBinding.ensureInitialized(); runApp(const AliciaApp()); }
 const navy=Color(0xff09112a), muted=Color(0xffb8c5e7), icy=Color(0xff8bcaff);
@@ -82,7 +83,7 @@ class _AliciaScreenState extends State<AliciaScreen> {
    child:Column(children:[
     header(),
     Expanded(child:SingleChildScrollView(padding:const EdgeInsets.all(11),child:Column(children:[
-     hero(),const SizedBox(height:12),rowPanels(),const SizedBox(height:12),
+     hero(),const SizedBox(height:12),const SignatureCard(),const SizedBox(height:12),rowPanels(),const SizedBox(height:12),
      modes(),const SizedBox(height:12),chat()
     ]))),
     composer()
