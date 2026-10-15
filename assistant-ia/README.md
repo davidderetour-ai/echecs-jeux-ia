@@ -138,3 +138,23 @@ Les copies peuvent être modifiées ou fonctionner hors ligne. Alicia Original *
 L'installateur `INSTALLER_MAC_BIG_SUR.command` copie l'interface dans `~/Applications/Alicia`, crée un raccourci sur le Bureau si possible et conserve le marqueur Original privé lors des mises à jour. Une mise à jour d'une installation existante exige une confirmation et enregistre d'abord une sauvegarde. Les fonctionnalités locales de l'interface peuvent fonctionner sans modèle IA ; une conversation hors ligne requiert un moteur adapté à la configuration réelle du Mac.
 
 L'iPhone peut échanger des messages texte avec le Mac sur un Wi-Fi privé grâce à `Lancer liaison iPhone.command`, mais **le protocole HTTP n'est pas chiffré** : ne jamais y transmettre de données sensibles. Le programme `Voir mes projets GitHub.command` liste les dépôts que le propriétaire autorise après saisie locale d'un jeton personnel. L'interface web ne doit jamais recevoir ce jeton.
+
+
+## Alicia sur iPhone — assistant IA avec compte Puter (octobre 2026)
+
+La PWA propose un troisième moteur pour l'iPhone : **« iPhone — IA en ligne (compte Puter, quota gratuit) »**, sélectionné automatiquement au premier démarrage sur iPhone/iPad. Un bouton **« Connecter mon compte IA (Puter) »** lance l'identification dans Safari. Après identification, le formulaire Alicia envoie les messages à `puter.ai.chat()` en utilisant un modèle conversationnel fourni par Puter, sans clé API propriétaire, puis affiche la réponse et peut la lire à voix haute si la synthèse vocale de l'appareil est disponible.
+
+Important sur les coûts : [Puter utilise son modèle « User-Pays »](https://docs.puter.com/user-pays-model/). **Le compte Puter comprend une allocation mensuelle gratuite limitée** ; une utilisation au-delà peut nécessiter des crédits payants auprès de Puter. Alicia ne souscrit aucun abonnement et ne fait aucun achat ; elle affiche l'erreur de quota plutôt que d'activer un moteur payant en cachette. Le mode **Auto-vérifier les réponses** est désactivé par défaut pour ne pas doubler les requêtes de manière inattendue ; l'utilisateur peut l'activer.
+
+### Installation iPhone
+1. Publier le dossier `assistant-ia/` sur une **adresse HTTPS** accessible depuis Safari. Avec le site Netlify du dépôt de jeux, l'URL visée est `https://echecs-jeux-ia.netlify.app/assistant-ia/` si le déploiement publie bien le dossier ; **vérifier l'URL sur l'iPhone avant de considérer l'installation réussie**.
+2. Depuis Safari, ouvrir Alicia, choisir Puter puis toucher « Connecter mon compte IA (Puter) ». Un compte Puter distinct peut être nécessaire. Le bouton doit être touché explicitement pour que Safari autorise la fenêtre de connexion.
+3. Tester une conversation, puis Safari → Partager → Sur l'écran d'accueil → Ajouter.
+4. Le document `installer-iphone.html` explique ces étapes dans l'application.
+
+Les messages utilisent Puter et ses sous-traitants IA ; ils **ne restent pas exclusivement sur l'iPhone**. Les autres notes locales du navigateur ne sont pas envoyées tant qu'elles ne sont pas ajoutées au contexte des demandes. **Pas de chat hors ligne sur l'iPhone** avec ce moteur. Les fonctionnalités autonomes de vidéo, de chant audio et de création de jeux restent incomplètes et ne doivent pas être présentées comme testées sur appareil réel.
+
+### Développement et tests
+- Code : `puter-engine.js`, `app.js`, `installer-iphone.html`.
+- Tests automatisés : `tests/puter-engine.test.mjs`, qui simule le SDK et vérifie le routage des réponses, le refus hors ligne ou sans connexion et l'absence de bascule implicite vers une API facturable.
+- L'authentification Safari, la disponibilité réelle du modèle Puter et les réglages Netlify requièrent un **test manuel sur iPhone** après la publication.
