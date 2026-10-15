@@ -115,3 +115,6 @@ Sur un ordinateur compatible équipé d'Ollama :
 5. Après contrôle et avec ton accord explicite dans le terminal, `node github-maintainer.mjs propose alicia-proposition.json` crée une branche séparée et une PR **en brouillon**. La CI vérifie son code ; la revue puis la fusion et le déploiement restent manuels.
 
 Les brouillons générés localement sont susceptibles de contenir des erreurs ; les tests doivent porter sur le code **proposé** dans la branche PR, pas simplement le code existant. Une fusion n'est jamais autorisée automatiquement par Alicia.
+
+## Voix française douce (sans API payante)
+La page propose **Voix française**, **Style de voix** (Douce et calme / Naturelle / Dynamique) et **Écouter la voix d'Alicia**. Elle utilise la synthèse vocale déjà disponible dans le navigateur et sur l'appareil : aucune clé API ou abonnement pour cette fonction. Le choix de voix et le style sont mémorisés localement. Le timbre, le fonctionnement sans Internet et la qualité dépendent des voix installées et du navigateur. Aucun enregistrement ni imitation de la voix d'une personne réelle n'est utilisé.
