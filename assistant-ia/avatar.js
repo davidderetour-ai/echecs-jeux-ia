@@ -1,4 +1,5 @@
 import { chooseExpression, normalizeExpression, EXPRESSIONS } from "./expression-core.mjs";
+import { createEmotionSoundPlayer } from "./emotion-sounds.mjs";
 /* Alicia : avatar WebGL 3D stylise et interaction vocale.
    Fonctionnement hors ligne pour les formes et la lecture vocale si le systeme le permet. */
 (()=>{
@@ -15,7 +16,14 @@ function setExpression(value){
  expression=configured==="auto"?intent:normalizeExpression(configured);
  const label=$("expression-status");if(label)label.textContent="Expression : "+EXPRESSIONS[expression];
 }
-$("expression-mode")?.addEventListener("change",()=>setExpression(intent));
+$("expression-mode")?.addEventListener("change",()=>{
+ if(emotionKind){
+  const chosen=$("expression-mode").value;
+  stopEmotion();
+  $("expression-mode").value=chosen;
+  setExpression(chosen==="auto"?intent:chosen);
+ }else setExpression(intent);
+});
 const synth=window.speechSynthesis;
 const voices=()=>synth?.getVoices?.().filter(v=>v.lang?.toLowerCase().startsWith("fr"))||[];
 function updateVoices(){
@@ -51,6 +59,43 @@ function speak(text){
  u.onerror=()=>{speaking=false;sayStatus("Lecture vocale indisponible")};
  synth.speak(u);
 }
+// Effets joyeux ou tristes uniquement sur action explicite (pas de pleurs automatiques
+// lorsqu'une personne évoque un sujet difficile).
+const emotionPlayer=createEmotionSoundPlayer();
+let emotionKind=null,emotionTimer=null,previousMode=null,previousIntent=null;
+function stopEmotion(){
+ if(emotionTimer!==null){clearTimeout(emotionTimer);emotionTimer=null;}
+ emotionPlayer.stop();
+ speaking=false;
+ emotionKind=null;
+ if(previousMode!==null){
+  const selection=$("expression-mode");if(selection)selection.value=previousMode;
+  previousMode=null;
+ }
+ if(previousIntent!==null){const restore=previousIntent;previousIntent=null;setExpression(restore)}
+ sayStatus("Alicia est prête");
+}
+function playEmotion(kind){
+ if(emotionKind===kind){stopEmotion();return;}
+ if(emotionKind)stopEmotion();
+ const selection=$("expression-mode");
+ let duration;
+ try{
+  duration=emotionPlayer.play(kind);
+ }catch(error){sayStatus(error.message||"Son indisponible");return;}
+ synth?.cancel();
+ previousMode=selection?.value||"auto";
+ previousIntent=intent;
+ if(selection)selection.value=kind==="laugh"?"joyful":"sad";
+ emotionKind=kind;
+ setExpression(kind==="laugh"?"joyful":"sad");
+ speaking=true;
+ sayStatus(kind==="laugh"?"Alicia rit 😂":"Alicia sanglote 😢");
+ emotionTimer=setTimeout(stopEmotion,duration+120);
+}
+$("laugh-sound")?.addEventListener("click",()=>playEmotion("laugh"));
+$("cry-sound")?.addEventListener("click",()=>playEmotion("cry"));
+
 function listen(){
  const API=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!API){sayStatus("Dictée vocale indisponible sur ce navigateur");return;}
@@ -129,7 +174,7 @@ const palette={
  blonde:[.93,.71,.28],gold:[.98,.84,.48],hairShadow:[.66,.42,.17],
  white:[.95,.96,.96],blue:[.26,.65,.97],navy:[.09,.31,.57],black:[.07,.10,.17],
  lips:[.69,.31,.36],lipLight:[.89,.49,.48],brow:[.38,.24,.14],
- jacket:[.23,.22,.49],collar:[.92,.74,.56],sparkle:[1,1,1]
+ jacket:[.23,.22,.49],collar:[.92,.74,.56],sparkle:[1,1,1],tear:[.47,.73,.94]
 };
 function ball(c,s,color){
  gl.uniform3fv(U.center,c);gl.uniform3fv(U.scale,s);gl.uniform3fv(U.color,palette[color]);gl.drawElements(gl.TRIANGLES,I.length,gl.UNSIGNED_SHORT,0);
@@ -159,9 +204,9 @@ function draw(t){
  ball([0,-.10+bob,.78],[.20,.075,.12],"skin");
  const phase=(t%4800)/4800,blink=phase>.87&&phase<.91?Math.max(.07,Math.abs(phase-.89)*48):1;
  gazeX+=(gazeTargetX-gazeX)*.065;gazeY+=(gazeTargetY-gazeY)*.065;
- const joyful=expression==="joyful",supportive=expression==="supportive";
+ const joyful=expression==="joyful",supportive=expression==="supportive",sad=expression==="sad";
  const thoughtful=expression==="thoughtful",curious=expression==="curious",creative=expression==="creative";
- const eyeHeight=blink*(joyful?.82:thoughtful?.92:1);
+ const eyeHeight=blink*(sad?.78:joyful?.82:thoughtful?.92:1);
  const lookX=gazeX*.058,lookY=gazeY*.046;
  for(const side of [-1,1]){
   ball([side*.30,.50+bob,.588],[.226,.132*eyeHeight,.082],"white");
@@ -169,12 +214,13 @@ function draw(t){
   ball([side*.30+lookX,.50+bob+lookY,.697],[.089,.089*eyeHeight,.036],"blue");
   ball([side*.30+lookX,.50+bob+lookY,.732],[.048,.06*eyeHeight,.016],"black");
   ball([side*.265+lookX,.543+bob+lookY,.75],[.025,.027*eyeHeight,.012],"sparkle");
-  ball([side*.30,.735+bob+(curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
+  ball([side*.30,.735+bob+(sad?-.055:curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
+  if(sad)ball([side*.42,.235+bob,.608],[.050,.16,.055],"tear");
   ball([side*.42,-.05+bob,.54],[.26,joyful?.18:.135,.04],"cheeks");
  }
  mouth+=((speaking ? .65 : 0)-mouth)*.13;
  const mh=.034+mouth*(.06+.026*Math.sin(t/115))+(joyful?.025:supportive?.012:0);
- ball([0,-.35+bob,.643],[joyful?.255:.225,mh+.015,.065],"lips");
+ ball([0,-.35+bob,.643],[joyful?.255:sad?.16:.225,mh+.015,.065],"lips");
  if(joyful||creative){
   for(const side of [-1,1])ball([side*.21,-.30+bob,.64],[.052,.042,.038],"lipLight");
  }
