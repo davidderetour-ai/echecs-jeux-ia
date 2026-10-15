@@ -70,3 +70,9 @@
 .github-health-row span{color:#c8d5ef}
 .github-health-row a{color:#a3ccff}
 #github-health-status{color:#d2e0fd;font-weight:650}
+
+/* Quatre bruitages d'émotions, utilisables au toucher sur téléphone */
+.emotion-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.emotion-controls button{min-width:0;white-space:normal;line-height:1.4}
+.emotion-controls button:focus-visible{outline:2px solid #a6caff;outline-offset:2px}
+@media(max-width:360px){.emotion-controls{grid-template-columns:1fr}}
