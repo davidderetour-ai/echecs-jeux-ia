@@ -40,7 +40,7 @@ function messageEl(role,text,sources=[]){
  }
  log.append(article);log.scrollTop=log.scrollHeight;return article;
 }
-function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
+function setBusy(state){busy=state;$("send").disabled=state;$("new").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
 const CONNECTION_KEY="alicia-connection-v1";
 const connection=$("connection-mode");
 const savedMode=localStorage.getItem(CONNECTION_KEY);
