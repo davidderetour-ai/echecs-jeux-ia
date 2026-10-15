@@ -14,7 +14,7 @@ $("save-note").addEventListener("click",()=>{const note=$("note").value.trim().s
 $("clear-notes").addEventListener("click",()=>{if(confirm("Effacer les préférences enregistrées sur cet appareil ?"))setNotes([])});
 function messageEl(role,text,sources=[]){
  const article=document.createElement("article");article.className="message "+role;
- const who=document.createElement("div");who.className="who";who.textContent=role==="user"?"Vous":"Atelier IA";
+ const who=document.createElement("div");who.className="who";who.textContent=role==="user"?"Vous":"Alicia";
  const content=document.createElement("div");content.className="message-text";content.textContent=text;article.append(who,content);
  if(role==="assistant"){
    const urls=Array.isArray(sources)?sources:[];if(urls.length){const wrap=document.createElement("div");wrap.className="sources";urls.slice(0,6).forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Source : "+(s.title||u.hostname);wrap.append(a)}catch{}});article.append(wrap)}
