@@ -55,8 +55,8 @@ function showConnection(){
   :mode==="local"
    ?"Mode local : nécessite un serveur Alicia et un modèle téléchargé sur un ordinateur compatible. Ce mode n'est pas encore installé sur ton iPhone."
    :"Mode API distincte facultative ; des frais peuvent être facturés par le fournisseur.";
- $("search").disabled=mode!=="online";
- if(mode!=="online")$("search").checked=false;
+ $("search").disabled=mode!=="online"&&mode!=="puter";
+ if(mode==="local")$("search").checked=false;
  const controls=$("access").closest(".controls");
  if(controls)controls.hidden=puter;
  if(puter)window.AliciaPuter?.refresh();
@@ -80,7 +80,7 @@ async function callIA(review=false){
   if(!window.AliciaPuter)throw new Error("Module IA iPhone indisponible. Actualise Alicia dans Safari.");
   return window.AliciaPuter.answer({
    messages,mode:$("mode").value,verify:$("verify").checked,review,
-   notes:[...getNotes(),...getSharedAdvice()].slice(-8),attachment:review?null:attach()
+   notes:[...getNotes(),...getSharedAdvice()].slice(-8),attachment:review?null:attach(),web:!review&&$("search").checked
   });
  }
  const code=$("access").value.trim();
