@@ -12,10 +12,26 @@ $("access").addEventListener("change",()=>sessionStorage.setItem("atelier-code",
 $("clear-access").addEventListener("click",()=>{sessionStorage.removeItem("atelier-code");$("access").value="";$("status").textContent="Code effacé"});
 $("save-note").addEventListener("click",()=>{const note=$("note").value.trim().slice(0,240);if(!note)return;setNotes([...getNotes(),note].slice(-8));$("note").value=""});
 $("clear-notes").addEventListener("click",()=>{if(confirm("Effacer les préférences enregistrées sur cet appareil ?"))setNotes([])});
+// Markdown limité (gras et italique) avec nœuds texte : aucun HTML injecté par l'IA.
+function formatMessageText(container, text){
+ container.replaceChildren();
+ const value=String(text??"");
+ const pattern=/\*\*([^*\n]+)\*\*|\*([^*\n]+)\*/g;
+ let pos=0;
+ for(const match of value.matchAll(pattern)){
+  const start=match.index??0;
+  if(start>pos)container.append(document.createTextNode(value.slice(pos,start)));
+  const element=document.createElement(match[1]!==undefined?"strong":"em");
+  element.textContent=match[1]??match[2];
+  container.append(element);
+  pos=start+match[0].length;
+ }
+ if(pos<value.length||!value.length)container.append(document.createTextNode(value.slice(pos)));
+}
 function messageEl(role,text,sources=[]){
  const article=document.createElement("article");article.className="message "+role;
  const who=document.createElement("div");who.className="who";who.textContent=role==="user"?"Vous":"Alicia";
- const content=document.createElement("div");content.className="message-text";content.textContent=text;article.append(who,content);
+ const content=document.createElement("div");content.className="message-text";if(role==="assistant")formatMessageText(content,text);else content.textContent=text;article.append(who,content);
  if(role==="assistant"){
    const urls=Array.isArray(sources)?sources:[];if(urls.length){const wrap=document.createElement("div");wrap.className="sources";urls.slice(0,6).forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Source : "+(s.title||u.hostname);wrap.append(a)}catch{}});article.append(wrap)}
    const copy=document.createElement("button");copy.className="copy";copy.type="button";copy.textContent="Copier";copy.addEventListener("click",()=>navigator.clipboard.writeText(content.textContent).then(()=>copy.textContent="Copié").catch(()=>copy.textContent="Copie indisponible"));article.append(copy);
@@ -84,7 +100,7 @@ $("chat-form").addEventListener("submit",async event=>{
 $("review").addEventListener("click",async()=>{
  if(busy||!messages.length||messages[messages.length-1].role!=="assistant")return;
  setBusy(true);
- try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){last.querySelector(".message-text").textContent=data.answer;last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
+ try{const data=await callIA(true);messages[messages.length-1].content=data.answer;const last=[...log.querySelectorAll(".message.assistant")].at(-1);if(last){formatMessageText(last.querySelector(".message-text"),data.answer);last.querySelector(".sources")?.remove();if(data.sources?.length){const wrap=document.createElement("div");wrap.className="sources";data.sources.forEach(s=>{try{const u=new URL(s.url);if(u.protocol!=="https:")return;const a=document.createElement("a");a.href=u.href;a.textContent="Source : "+(s.title||u.hostname);a.target="_blank";a.rel="noopener noreferrer";wrap.append(a)}catch{}});last.insertBefore(wrap,last.querySelector(".copy"))}}window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);$("status").textContent="Réponse corrigée"}catch(err){$("status").textContent=err.message}finally{setBusy(false)}
 });
 $("new").addEventListener("click",()=>{if(messages.length&&!confirm("Démarrer une nouvelle conversation ?"))return;messages=[];log.replaceChildren();messageEl("assistant","Bonjour ! Je peux t'aider en programmation, réparation informatique, création et formation.");$("review").disabled=true;window.AliciaAvatar?.reset()});
 document.querySelectorAll("[data-prompt]").forEach(btn=>btn.addEventListener("click",()=>{if(btn.dataset.mode)$("mode").value=btn.dataset.mode;$("question").value=btn.dataset.prompt;$("question").focus()}));
