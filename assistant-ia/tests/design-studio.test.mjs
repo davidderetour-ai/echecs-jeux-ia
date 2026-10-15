@@ -61,7 +61,7 @@ test("Le menu atelier est disponible, avec exports et autres domaines non préte
  assert.match(html,/option value="architecture"/);
  assert.match(html,/option value="mechanical"/);
  assert.match(html,/option value="mapping"/);
- assert.match(html,/logiciels.*professionnels/);
+ assert.match(html,/logiciels de fabrication/);
  assert.match(ui,/furnitureDXF\(current\)/);
  assert.match(ui,/furnitureCSV\(current\)/);
  assert.match(ui,/furnitureSVG\(current\)/);
