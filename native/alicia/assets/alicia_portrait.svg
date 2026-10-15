@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 550">
+<defs>
+ <radialGradient id="bg"><stop stop-color="#7278D8"/><stop offset=".7" stop-color="#212E66"/><stop offset="1" stop-color="#13264C"/></radialGradient>
+ <radialGradient id="skin" cx=".38" cy=".36" r=".8"><stop stop-color="#F8C6A1"/><stop offset=".6" stop-color="#D99574"/><stop offset="1" stop-color="#A8675B"/></radialGradient>
+ <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF1B4"/><stop offset=".34" stop-color="#E4B46C"/><stop offset=".73" stop-color="#AA6A39"/><stop offset="1" stop-color="#F5C879"/></linearGradient>
+ <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#152C59"/><stop offset="1" stop-color="#090F31"/></linearGradient>
+</defs>
+<rect width="520" height="550" fill="url(#bg)"/>
+<circle cx="242" cy="310" r="174" fill="none" stroke="#7FC6FF" stroke-width="8" opacity=".25"/>
+<circle cx="242" cy="310" r="206" fill="none" stroke="#916BFF" stroke-width="3" opacity=".34"/>
+<path d="M65 530Q85 411 161 404L193 391 202 326 301 324 310 387 353 401Q451 420 480 550Z" fill="url(#shirt)"/>
+<path d="M204 332L300 331 309 392 257 426 202 393Z" fill="#D49274"/>
+<path d="M115 438Q72 254 133 129Q161 45 234 68Q290 30 347 77Q431 147 381 296L396 432Q358 427 341 402L318 210 165 217 157 401Z" fill="url(#hair)"/>
+<path d="M202 94Q136 127 144 219Q147 326 216 381Q265 413 321 352Q367 301 357 202Q350 113 282 92Z" fill="url(#skin)"/>
+<path d="M151 221Q137 201 126 220Q129 252 154 255M356 212Q369 200 376 221Q373 255 351 255" fill="#E1A584"/>
+<path d="M164 208Q180 199 205 207M280 203Q302 193 328 201" fill="none" stroke="#674632" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="192" cy="231" rx="25" ry="16" fill="#F8E7DD"/><ellipse cx="305" cy="227" rx="25" ry="16" fill="#F8E7DD"/>
+<circle cx="193" cy="232" r="13" fill="#3F94D4"/><circle cx="306" cy="228" r="13" fill="#3F94D4"/>
+<circle cx="195" cy="232" r="6" fill="#1A3D76"/><circle cx="307" cy="228" r="6" fill="#1A3D76"/>
+<circle cx="198" cy="228" r="3" fill="#FFF"/><circle cx="310" cy="225" r="3" fill="#FFF"/>
+<path d="M171 218Q191 209 216 216M282 214Q304 207 329 210" stroke="#533C33" fill="none" stroke-width="5" stroke-linecap="round"/>
+<path d="M250 241Q242 278 238 296Q252 307 266 296" stroke="#AA725B" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M216 327Q251 345 288 320Q259 360 225 340Z" fill="#9E4B57"/>
+<path d="M218 329Q257 337 286 323" fill="none" stroke="#F8B4AA" stroke-width="4" stroke-linecap="round"/>
+<path d="M138 251Q129 129 220 91Q251 82 271 104Q311 72 344 131Q310 121 285 151Q228 146 196 189Q159 194 138 251Z" fill="url(#hair)"/>
+<path d="M153 167Q125 275 150 387L115 440Q110 313 122 195Z" fill="#E9B66E"/>
+<path d="M341 163Q371 282 345 398L375 430Q404 291 370 171Z" fill="#DDA663"/>
+<path d="M135 161Q146 114 204 99" stroke="#FFF2C4" stroke-opacity=".7" stroke-width="17" fill="none" stroke-linecap="round"/>
+<path d="M318 114Q352 134 365 202" stroke="#F8DEA2" stroke-opacity=".6" stroke-width="11" fill="none" stroke-linecap="round"/>
+<path d="M87 530Q137 451 198 446M329 445Q388 450 435 550" stroke="#344881" stroke-width="12" fill="none" opacity=".75"/>
+<text x="351" y="514" font-size="38" fill="#95E4FF" font-family="serif" font-style="italic">Alicia</text>
+</svg>
