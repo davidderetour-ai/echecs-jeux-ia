@@ -252,6 +252,18 @@ async function shareAliciaApp(){
   "Voici l'adresse publique d'Alicia. Tu peux la sélectionner et la copier pour la partager.";
 }
 $("share-link-attach")?.addEventListener("click",addLinkToQuestion);
+$("share-link-read")?.addEventListener("click",()=>{
+ const link=validatedLink();if(!link)return;
+ if(!link.secure){linkStatus.textContent="La lecture Web directe nécessite un lien HTTPS.";return;}
+ if($("connection-mode")?.value!=="puter"){
+  linkStatus.textContent="Choisis la connexion iPhone — IA en ligne (Puter) pour lire une page.";
+  return;
+ }
+ const check=$("search");if(check)check.checked=true;
+ addLinkToQuestion();
+ linkStatus.textContent="✓ Page prête à être consultée : la navigation en direct est activée. Touche « Envoyer » pour demander la lecture réelle du site. Aucune page n'a encore été consultée.";
+});
+
 $("share-link-copy")?.addEventListener("click",copyLink);
 $("share-link-open")?.addEventListener("click",openSharedLink);
 $("share-link-share")?.addEventListener("click",shareSelectedLink);
