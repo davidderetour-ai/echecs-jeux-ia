@@ -189,3 +189,112 @@
 .design-downloads button{flex:1 1 165px;min-height:43px}
 .design-professional a{color:#c1dbff;text-decoration:underline}
 @media(max-width:640px){.design-studio{margin:10px 11px;padding:12px}.design-fields-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.design-studio button{font-size:12px}}
+
+
+/* Alicia v0.6 : design bleu nuit inspiré de la maquette — conserve toutes les fonctions v0.5 */
+:root{--al-bg:#091127;--al-panel:#17264c;--al-accent:#9a77ff}
+.shell{
+ background:radial-gradient(ellipse at 15% 0,rgba(99,78,199,.19),transparent 45%),
+ linear-gradient(160deg,#0a1329,#0c142b 65%,#10172f);
+}
+header{
+ background:linear-gradient(120deg,rgba(17,29,68,.95),rgba(13,22,53,.92));
+ border-bottom:1px solid rgba(99,142,237,.29);
+}
+.brand .logo{background:linear-gradient(130deg,#3681e2,#7857e8 65%,#b46bef);box-shadow:0 3px 20px #7b64fd5a}
+.brand strong{letter-spacing:.12em;color:#d8e5ff}
+.avatar-shell{
+ border:1px solid rgba(119,146,255,.61);border-radius:22px;
+ margin:15px 18px 8px;
+ box-shadow:0 12px 35px #01071878,0 0 24px #6459ec25;
+ background:radial-gradient(ellipse at 20% 55%,rgba(77,81,194,.35),transparent 65%),linear-gradient(120deg,#1c2353,#101a38);
+ overflow:hidden;
+}
+.avatar-stage{
+ background:radial-gradient(ellipse at 50% 51%,rgba(92,92,188,.43),transparent 65%),#172247;
+}
+.avatar-side h2{color:#ecf5ff}
+.avatar-status{color:#8bf0c8!important}
+.avatar-side button#preview-voice{
+ border:1px solid #abe6ff;border-radius:14px;font-weight:720;color:#fff;
+ background:linear-gradient(125deg,#389fee,#7474f2 63%,#a459d8);
+ box-shadow:0 0 19px #7168e65b;min-height:44px;
+}
+.emotion-controls{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+ width:100%;
+}
+.emotion-controls button{
+ min-height:49px;padding:9px 8px;font-size:12px;font-weight:680;
+ border:1px solid #4c639d;border-radius:13px;color:#f2f5ff;
+ background:linear-gradient(135deg,#283762,#192448);
+}
+.emotion-controls button:nth-child(3){background:linear-gradient(135deg,#2a305b,#262044)}
+.emotion-controls button:nth-child(4){background:linear-gradient(135deg,#4b2c42,#261b37);border-color:#a7586c}
+.emotion-controls button[aria-pressed="true"]{box-shadow:0 0 0 2px #8bc9ff,0 0 16px #8e82ff}
+.avatar-side .voice-picker select{
+ background:#223358;border:1px solid #526ca0;color:#f5f7ff;min-height:42px;
+}
+.tools{background:linear-gradient(130deg,#131e3b,#182341);border-color:#384b73}
+.tool-finder,.design-studio{box-shadow:inset 0 1px #d6e7ff10,0 7px 24px #070c236e}
+.message.user{background:linear-gradient(135deg,#4257b0,#263a89);border-radius:17px 17px 5px 17px}
+.message.assistant{background:linear-gradient(130deg,#202e50,#182647);border-radius:17px 17px 17px 5px}
+button{touch-action:manipulation}
+@media(max-width:640px){
+ .avatar-shell{margin:10px 11px 7px;gap:6px}
+ .avatar-side{gap:8px}
+ .emotion-controls{gap:7px}
+ .emotion-controls button{font-size:11px;min-height:44px;padding:8px 6px}
+}
+@media(prefers-reduced-motion:reduce){button{transition:none!important}}
+
+/* Alicia : mesure explicite, pas un chiffre de QI */
+.alicia-level-pill{
+ display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:3px;
+ text-align:right;padding:7px 10px;border-radius:14px;
+ text-decoration:none;color:#d6eaff;border:1px solid #546da6;
+ background:linear-gradient(115deg,#1f315e,#17264e);
+ box-shadow:inset 0 1px 0 #d9eaff17;
+ min-width:128px;
+}
+.alicia-level-pill span{font-size:10px;line-height:1.2;color:#b3d8ff;font-weight:680}
+.alicia-level-pill strong{font-size:13px;line-height:1.2;color:#eaffff;max-width:200px}
+.intelligence-panel{overflow:hidden;padding:15px 18px;border-color:#5777b4}
+.intelligence-panel>summary{list-style:none;cursor:pointer;font-size:15px;font-weight:750;line-height:1.5}
+.intelligence-panel>summary::after{content:" ▾";color:#b2d8ff}
+.intelligence-panel[open]>summary::after{content:" ▴"}
+.intelligence-panel .small-muted{color:#a6badc;font-size:11px;font-weight:450}
+.intelligence-body{display:grid;gap:10px;padding:13px 1px 2px}
+.intelligence-body p{font-size:12px;line-height:1.6;color:#bfcdeb;margin:0}
+.intelligence-body #alicia-level-caption{color:#b3e8ff;font-weight:700;font-size:13px}
+.intelligence-actions{display:flex;flex-wrap:wrap;gap:9px}
+.intelligence-actions button{font-size:12px;min-height:42px}
+.intelligence-body label{font-size:12px;color:#d9e5fb;line-height:1.4}
+.intelligence-body .check{display:flex;align-items:center;gap:8px}
+.capability-evaluator{border:1px solid #475d90;border-radius:14px;padding:12px;background:#1724467d}
+.capability-evaluator summary{cursor:pointer;color:#d4e6ff;font-size:13px;font-weight:700;line-height:1.45}
+.capability-evaluator[open]{display:grid;gap:12px}
+.capability-evaluator[open] summary{margin-bottom:10px}
+.capability-evaluator label{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.capability-evaluator label.check{flex-direction:row}
+.capability-evaluator select,.capability-evaluator textarea{
+ max-width:100%;background:#101f40;color:#eef7ff;border:1px solid #536da3;
+ border-radius:10px;padding:10px;font-size:12px
+}
+.capability-evaluator textarea{resize:vertical;width:100%}
+.capability-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.capability-grid label{min-width:0}
+#capability-evaluate{margin-top:10px}
+@media(max-width:620px){
+ .alicia-level-pill{padding:6px 7px;min-width:95px;border-radius:10px}
+ .alicia-level-pill span{font-size:9px}
+ .alicia-level-pill strong{font-size:11px;max-width:145px}
+ .header-live{display:none}
+ .intelligence-panel{padding:13px 12px}
+ .intelligence-panel>summary{font-size:13px}
+ .capability-grid{grid-template-columns:1fr}
+}
+@media(max-width:380px){
+ .brand small{display:none}
+ .alicia-level-pill strong{font-size:10px}
+}
