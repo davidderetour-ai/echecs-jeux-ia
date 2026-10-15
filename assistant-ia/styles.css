@@ -48,3 +48,11 @@
 /* Contrôle manuel / contextuel des mimiques */
 .expression-status{font-weight:700!important;color:#b5cdf7!important;font-size:12px!important}
 .avatar-side select:focus-visible{outline:2px solid #96a6ff;outline-offset:2px}
+
+/* Diagnostic Mac local, données jamais envoyées */
+#mac-lab textarea{box-sizing:border-box;width:100%;margin:9px 0;resize:vertical;background:#101b31;color:#eef4ff;border:1px solid #4f5f80;border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,monospace}
+#mac-lab code{padding:2px 5px;border-radius:5px;background:#2c3856;overflow-wrap:anywhere}
+#mac-lab a{color:#a3ccff}
+.mac-note{padding:11px 13px;margin:7px 0;border:1px solid #334460;border-radius:10px}
+.mac-note p{margin:4px 0;color:#c5d3ea}
+.mac-note.warning{border-left:3px solid #e7ba69}
