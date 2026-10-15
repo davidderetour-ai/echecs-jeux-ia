@@ -1,5 +1,5 @@
 /**
- * Petits bruitages originaux de synthèse vocale (rire et sanglots).
+ * Petits bruitages originaux de synthèse vocale (rire, sanglots, peur et colère).
  * Aucun enregistrement de voix humaine, aucun serveur, aucune API payante.
  * AudioContext se déverrouille uniquement après un clic/toucher de l'utilisateur.
  */
@@ -15,6 +15,17 @@ const PATTERNS=Object.freeze({
   {start:.15,duration:.57,pitch:310,endPitch:225,volume:.14,air:.12},
   {start:.91,duration:.69,pitch:290,endPitch:205,volume:.13,air:.15},
   {start:1.85,duration:.75,pitch:255,endPitch:185,volume:.12,air:.17}
+ ]),
+ fear:Object.freeze([
+  {start:.05,duration:.23,pitch:480,endPitch:660,volume:.12,air:.21},
+  {start:.42,duration:.42,pitch:510,endPitch:610,volume:.12,air:.17},
+  {start:1.09,duration:.28,pitch:550,endPitch:720,volume:.11,air:.23},
+  {start:1.61,duration:.48,pitch:490,endPitch:550,volume:.12,air:.18}
+ ]),
+ anger:Object.freeze([
+  {start:.05,duration:.48,pitch:155,endPitch:112,volume:.19,air:.07},
+  {start:.66,duration:.54,pitch:163,endPitch:101,volume:.18,air:.08},
+  {start:1.40,duration:.60,pitch:145,endPitch:94,volume:.19,air:.08}
  ])
 });
 export function emotionPulses(kind){
@@ -52,17 +63,18 @@ export function createEmotionSoundPlayer(){
   for(const p of seq){
    const start=t0+p.start,end=start+p.duration;
    const oscillator=context.createOscillator();
-   oscillator.type="sawtooth";
+   oscillator.type=kind==="fear"?"sine":"sawtooth";
    oscillator.frequency.setValueAtTime(p.pitch,start);
    oscillator.frequency.exponentialRampToValueAtTime(p.endPitch,end);
-   if(kind==="cry"){
+   if(kind!=="laugh"){
     const vibrato=context.createOscillator(),depth=context.createGain();
-    vibrato.type="sine";vibrato.frequency.value=5.3;depth.gain.value=11;
+    vibrato.type="sine";vibrato.frequency.value=kind==="fear"?10.5:kind==="anger"?8:5.3;
+    depth.gain.value=kind==="fear"?27:kind==="anger"?13:11;
     vibrato.connect(depth);depth.connect(oscillator.frequency);
     vibrato.start(start);vibrato.stop(end);active.push(vibrato);
    }
    const filter=context.createBiquadFilter();filter.type="lowpass";
-   filter.frequency.value=kind==="laugh"?1450:1000;
+   filter.frequency.value=kind==="fear"?1900:kind==="anger"?780:kind==="laugh"?1450:1000;
    const gain=context.createGain();
    gain.gain.setValueAtTime(.0001,start);
    gain.gain.exponentialRampToValueAtTime(p.volume,start+.045);
