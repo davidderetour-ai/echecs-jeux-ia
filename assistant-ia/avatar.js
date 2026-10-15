@@ -22,7 +22,7 @@ function speak(text){
  synth.cancel();
  const u=new SpeechSynthesisUtterance(String(text).replace(/[*#_]/g,"").slice(0,2800));
  u.lang="fr-FR";u.rate=.9;u.pitch=1.12;u.volume=.88;
- const match=voices().find(v=>v.voiceURI===$("voice-choice")?.value);if(match)u.voice=match;
+ const available=voices();const selected=available.find(v=>v.voiceURI===$("voice-choice")?.value);const preferred=available.find(v=>/amelie|aurelie|audrey|celine|julie|marie|sylvie|sophie|alice|lea/i.test(v.name));if(selected||preferred)u.voice=selected||preferred;
  u.onstart=()=>{speaking=true;sayStatus("Alicia parle…")};
  u.onend=()=>{speaking=false;sayStatus("Alicia est prête")};
  u.onerror=()=>{speaking=false;sayStatus("Lecture vocale indisponible")};
@@ -138,7 +138,7 @@ function draw(t){
   ball([side*.30,.735+bob,.591],[.25,.039,.04],"brow");
   ball([side*.42,-.05+bob,.54],[.26,.135,.04],"cheeks");
  }
- mouth+=(speaking?.65:0-mouth)*.13;
+ mouth+=((speaking ? .65 : 0)-mouth)*.13;
  const mh=.034+mouth*(.06+.026*Math.sin(t/115));
  ball([0,-.35+bob,.643],[.225,mh+.015,.065],"lips");
  ball([0,-.377+bob,.682],[.17,Math.max(.014,mh*.48),.028],"lipLight");
