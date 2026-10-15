@@ -27,6 +27,8 @@ const guidelines={
 };
 function setStatus(message){if(status)status.textContent=message;}
 function ready(){return window.puter?.ai?.chat&&window.puter?.auth?.signIn;}
+function networkPermit(){window.AliciaWiFi?.requireConfirmed();}
+
 function normalizeReply(x){
  const content=x?.message?.content;
  if(typeof content==="string"&&content.trim())return content.trim();
@@ -47,6 +49,7 @@ async function refresh(){
  }catch(e){setStatus("Connexion Puter non vérifiée : "+String(e?.msg||e?.message||"erreur"));return false;}
 }
 connect?.addEventListener("click",async()=>{
+ try{networkPermit()}catch(e){setStatus(e.message);return;}
  if(!navigator.onLine){setStatus("Active Internet pour utiliser Puter.");return;}
  if(!ready()){setStatus("Puter n'a pas fini de charger. Attends quelques secondes puis réessaie.");return;}
  connect.disabled=true;
@@ -59,6 +62,7 @@ connect?.addEventListener("click",async()=>{
  }finally{connect.disabled=false;}
 });
 async function answer({messages=[],mode="general",notes=[],verify=false,review=false}={}){
+ networkPermit();
  if(!navigator.onLine)throw Error("Internet nécessaire pour Puter sur iPhone.");
  if(!ready())throw Error("Puter n'est pas chargé. Vérifie Internet, puis touche « Connecter mon compte ».");
  const signed=await window.puter.auth.isSignedIn();
