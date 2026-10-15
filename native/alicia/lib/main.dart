@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import 'services/chat_gateway.dart';
@@ -310,10 +309,10 @@ class _AliciaHomeState extends State<AliciaHome> {
       child: SizedBox(
         height: 234,
         child: Row(children: [
-          Expanded(flex: 52, child: SvgPicture.asset(
-            'assets/alicia_portrait.svg',
+          Expanded(flex: 52, child: Image.asset(
+            'assets/alicia_portrait.webp',
             fit: BoxFit.cover,
-            semanticsLabel: 'Portrait original illustré d’Alicia, cheveux blonds et yeux bleus',
+            semanticLabel: 'Portrait d’Alicia extrait de la maquette fournie par le propriétaire',
           )),
           Expanded(flex: 48, child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 13),
