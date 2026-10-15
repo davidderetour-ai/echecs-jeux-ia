@@ -29,7 +29,7 @@
 </div>
 </section>
 <section class="avatar-shell" aria-label="Alicia, avatar interactif en trois dimensions">
-  <div class="avatar-stage"><canvas id="alicia-avatar" width="560" height="350" role="img" aria-label="Avatar 3D stylisé d'Alicia, femme blonde au teint hâlé et aux yeux bleus. Glisser pour l'orienter."></canvas></div>
+  <div class="avatar-stage"><canvas id="alicia-avatar" width="560" height="350" role="img" aria-label="Avatar 3D stylisé et expressif d'Alicia, femme blonde aux yeux bleus. Touchez pour orienter son regard, glissez pour tourner sa tête."></canvas></div>
   <div class="avatar-side"><h2>Bonjour, je suis Alicia <span aria-hidden="true">✦</span></h2>
     <p>Écris-moi ou utilise le microphone. Je peux lire mes réponses avec une voix française de ton appareil.</p>
     <p id="avatar-status" aria-live="polite" class="avatar-status">Alicia est prête</p>
@@ -44,6 +44,10 @@
 <option value="creative">Inspirée</option>
 </select></label>
 <p id="expression-status" role="status" class="expression-status">Expression : Neutre</p>
+<div class="avatar-test">
+ <button type="button" id="avatar-demo" class="secondary">▶ Tester les yeux et la voix</button>
+ <small>Les yeux suivent ton doigt sur l'écran. La bouche bouge quand la voix parle. Ce n'est pas un suivi par caméra ni une synchronisation phonétique exacte.</small>
+</div>
 <label class="auto-voice"><input id="auto-voice" type="checkbox"> Répondre aussi à l'oral</label>
     <label class="voice-picker">Voix française<select id="voice-choice"><option value="">Voix française automatique</option></select></label>
     <small>Voix et reconnaissance selon le navigateur et les voix disponibles. La dictée peut nécessiter Internet.</small>
