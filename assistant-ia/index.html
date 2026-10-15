@@ -65,7 +65,19 @@
  <textarea id="mac-report" rows="5" placeholder="ALICIA_MAC_AUDIT_V1&#10;OS_VERSION=11.7.11&#10;MAC_MODEL=..."></textarea>
  <div class="tool-query-row"><button id="mac-analyze" type="button">Analyser et proposer des améliorations</button></div>
  <div id="mac-results" aria-live="polite"></div>
- <small>Le rapport reste sur ton appareil : aucun envoi automatique. Alicia n’installe, ne supprime et ne modifie aucun élément de macOS avec cette fonction. Une sauvegarde est nécessaire avant toute modification future.</small>
+<div id="mac-action-plan" class="mac-action-plan">
+ <h3>Première amélioration réversible : réduire l’animation du Dock</h3>
+ <p>Cette modification facultative supprime l’animation lors de l’ouverture d’applications depuis le Dock. Elle peut rendre l’interface plus sobre, <strong>mais n’accélère pas le processeur</strong> et ne change pas la compatibilité de macOS.</p>
+ <p><a href="./mac-improve.sh" download="mac-improve.sh">Télécharger l’outil Mac de modification contrôlée</a>, puis examiner son contenu avant usage.</p>
+ <ol>
+  <li>Prévisualiser : <code>bash ~/Downloads/mac-improve.sh preview</code></li>
+  <li>Appliquer uniquement si tu acceptes : <code>bash ~/Downloads/mac-improve.sh apply</code></li>
+  <li>Vérifier : <code>bash ~/Downloads/mac-improve.sh verify</code></li>
+  <li>Revenir en arrière : <code>bash ~/Downloads/mac-improve.sh undo</code></li>
+ </ol>
+ <p>Le script présente exactement ce qu’il fera et demande de saisir <strong>OUI ALICIA</strong> dans le Terminal pour chaque changement. Il sauvegarde la valeur précédente et ne demande jamais <code>sudo</code>.</p>
+</div>
+ <small>Le rapport reste sur ton appareil : aucun envoi automatique. Le diagnostic n’applique aucun changement. Le script d’amélioration distinct ne modifie que le réglage du Dock et uniquement après confirmation explicite dans le Terminal. Une sauvegarde est nécessaire avant toute modification future.</small>
 </details>
 <main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
 <div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
