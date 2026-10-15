@@ -1,0 +1,28 @@
+name: Tests Atelier IA
+on:
+  push:
+    paths:
+      - "assistant-ia/**"
+      - ".github/workflows/atelier-ia-tests.yml"
+  pull_request:
+    paths:
+      - "assistant-ia/**"
+      - ".github/workflows/atelier-ia-tests.yml"
+permissions:
+  contents: read
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vérifier la syntaxe
+        working-directory: assistant-ia
+        run: |
+          node --check app.js
+          node --check netlify/functions/chat.mjs
+      - name: Tests unitaires
+        working-directory: assistant-ia
+        run: npm test
