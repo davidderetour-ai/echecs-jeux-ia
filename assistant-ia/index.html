@@ -79,6 +79,17 @@
 </div>
  <small>Le rapport reste sur ton appareil : aucun envoi automatique. Le diagnostic n’applique aucun changement. Le script d’amélioration distinct ne modifie que le réglage du Dock et uniquement après confirmation explicite dans le Terminal. Une sauvegarde est nécessaire avant toute modification future.</small>
 </details>
+<details class="tool-finder" id="github-health">
+ <summary>🔧 Alicia améliore son code — suivi GitHub</summary>
+ <p>Surveille les erreurs, compare les tests et prépare des corrections dans une branche distincte. Aucun code n'est fusionné ni déployé sans ta décision.</p>
+ <div class="tool-query-row">
+  <button id="github-health-check" class="secondary" type="button">Vérifier les tests GitHub</button>
+  <a href="https://github.com/davidderetour-ai/echecs-jeux-ia/pull/2" target="_blank" rel="noopener noreferrer">Voir les améliorations proposées ↗</a>
+ </div>
+ <p id="github-health-status" role="status">Taux inconnu : consulte GitHub pour connaître les tests réellement exécutés.</p>
+ <div id="github-health-history" aria-live="polite"></div>
+ <small>Ce calcul mesure les exécutions de tests réussies, non la probabilité que l'IA ait toujours raison. En cas d'échec, la surveillance crée un ticket une fois activée sur la branche principale. Pour créer une nouvelle proposition de code, un accès GitHub privé et des tests sont nécessaires ; jamais de mot de passe dans cette page.</small>
+</details>
 <main id="conversation" class="conversation" aria-live="polite" aria-label="Conversation">
 <div class="welcome"><div class="sparkle">✦</div><h1>Que veux-tu créer ou réparer ?</h1>
 <p>Pose une question en français, demande un cours, une correction, un problème de mathématiques, une explication scientifique, historique ou artistique. Je peux aussi aider à programmer et à créer.</p>
@@ -91,5 +102,5 @@
 <p class="disclaimer">Une IA peut se tromper. Ne lance aucune commande risquée sans vérification ni sauvegarde. L'analyse nécessite Internet et une configuration API.</p>
 </div>
 </div>
-<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script>
+<script src="./app.js" defer></script><script src="./avatar.js" defer></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script>
 </body></html>
