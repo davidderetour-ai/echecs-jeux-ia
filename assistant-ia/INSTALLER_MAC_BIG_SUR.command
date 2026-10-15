@@ -29,7 +29,12 @@ FILES=(
  "iphone-link.js"
  "mac-iphone-bridge.rb"
  "Lancer liaison iPhone.command"
-)echo "=== Installation Alicia pour macOS Big Sur 11 ==="
+ "github-mac.rb"
+ "Voir mes projets GitHub.command"
+ "original-policy.json"
+ "Désinstaller cette copie.command"
+)
+echo "=== Installation Alicia pour macOS Big Sur 11 ==="
 echo "Installation dans : $DEST"
 echo "Aucun accès administrateur, aucun fichier système modifié."
 if [ "$(uname -s)" != "Darwin" ];then
@@ -52,7 +57,7 @@ mkdir -p "$DEST"
 for f in "${FILES[@]}";do
  cp "$BASE/$f" "$DEST/$f"
 done
-chmod u+x "$DEST/Ouvrir Alicia.command" "$DEST/Lancer liaison iPhone.command"
+chmod u+x "$DEST/Ouvrir Alicia.command" "$DEST/Lancer liaison iPhone.command" "$DEST/Voir mes projets GitHub.command" "$DEST/Désinstaller cette copie.command"
 # Ne jamais remplacer silencieusement un fichier existant du Bureau.
 if [ -d "$HOME/Desktop" ] && [ ! -e "$SHORTCUT" ];then
  cat >"$SHORTCUT" <<'LAUNCH'
