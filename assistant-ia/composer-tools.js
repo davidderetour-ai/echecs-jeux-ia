@@ -1,4 +1,4 @@
-import {fileKind,createAdvicePrompt,cleanSharedAdvice} from "./composer-core.mjs";
+import {fileKind,createAdvicePrompt,cleanSharedAdvice,parseSharedLink} from "./composer-core.mjs";
 /* Alicia — menu + inspiré des raccourcis iPhone. Aucune pièce jointe envoyée
  * tant que l'utilisateur ne touche pas « Envoyer » ; conseils ChatGPT collés
  * volontairement, jamais connexion cachée au compte ChatGPT.
@@ -31,7 +31,7 @@ function clearAttachment(){
  attachment=null;revokeMediaURL();
  preview.hidden=true;preview.replaceChildren();
 }
-function clear(){clearAttachment();toggle(false);}
+function clear(){clearAttachment();toggle(false);if($("share-link-panel"))$("share-link-panel").hidden=true;}
 function current(){return attachment;}
 function setAttachment(next){
  revokeMediaURL();
@@ -177,6 +177,85 @@ async function askChatGPT(){
   preview.append(p);
  }
 }
+// Liens : validation locale et partage volontaire, sans accès automatique au Web.
+const linkPanel=$("share-link-panel"),linkInput=$("share-link-input"),linkStatus=$("share-link-status");
+function showLinkPanel(value){
+ linkPanel.hidden=false;
+ if(value)linkInput.value=value;
+ linkStatus.textContent="Vérifie l'adresse avant de partager. Aucun site n'est ouvert automatiquement.";
+ linkPanel.scrollIntoView({behavior:"smooth",block:"nearest"});
+ linkInput.focus({preventScroll:true});
+}
+function validatedLink(){
+ try{
+  const link=parseSharedLink(linkInput.value);
+  if(!link.secure)linkStatus.textContent="Attention : ce site utilise HTTP non chiffré. Préfère HTTPS lorsque c'est possible.";
+  return link;
+ }catch(e){
+  linkStatus.textContent=e.message||"Lien invalide.";
+  return null;
+ }
+}
+function addLinkToQuestion(){
+ const link=validatedLink();
+ if(!link)return;
+ const question=$("question");
+ const old=question.value.trim();
+ question.value=old?old+"\n"+link.url:"Voici un lien : "+link.url+"\nExplique ce que je peux faire avec ce lien sans prétendre avoir consulté le site.";
+ linkStatus.textContent="✓ Lien ajouté à la question. Il sera envoyé à Alicia seulement si tu touches « Envoyer ». Alicia ne lit pas automatiquement la page.";
+ question.focus({preventScroll:true});
+}
+async function copyLink(){
+ const link=validatedLink();if(!link)return;
+ try{
+  await navigator.clipboard.writeText(link.url);
+  linkStatus.textContent="✓ Lien copié. Tu peux le coller dans un message ou une autre application.";
+ }catch{
+  linkInput.focus();
+  linkInput.select();
+  linkStatus.textContent="Sélectionne « Copier » dans le menu de l'iPhone : la copie automatique est indisponible.";
+ }
+}
+function openSharedLink(){
+ const link=validatedLink();if(!link)return;
+ const result=window.open(link.url,"_blank","noopener,noreferrer");
+ linkStatus.textContent=result?
+  "Lien ouvert dans le navigateur. Vérifie toujours la fiabilité du site.":
+  "Si Safari n'a pas ouvert le lien, copie-le puis colle-le dans sa barre d'adresse.";
+}
+async function shareWebLink(url,title="Lien partagé depuis Alicia"){
+ // L'appel à navigator.share reste immédiatement lié au clic de l'utilisateur.
+ if(navigator.share){
+  try{await navigator.share({title,url});return "shared";}
+  catch(e){if(e?.name==="AbortError")return "cancelled";}
+ }
+ try{await navigator.clipboard.writeText(url);return "copied";}
+ catch{return "unavailable";}
+}
+async function shareSelectedLink(){
+ const link=validatedLink();if(!link)return;
+ const result=await shareWebLink(link.url,"Lien partagé depuis Alicia");
+ linkStatus.textContent=result==="shared"?"✓ Menu de partage de l'iPhone terminé.":
+  result==="copied"?"Menu de partage indisponible ; lien copié. Tu peux le coller dans Messages, Mail ou une autre application.":
+  result==="cancelled"?"Partage annulé. Aucun lien n'a été envoyé.":
+  "Partage automatique indisponible. Sélectionne le lien et copie-le manuellement.";
+}
+async function shareAliciaApp(){
+ // L'application est publique à cette URL ; ceci ne partage aucun chat personnel.
+ const url=new URL("./",window.location.href).href;
+ const result=await shareWebLink(url,"Alicia — assistant IA personnel");
+ if(result==="shared"){announce("Le partage de l'adresse publique d'Alicia est terminé. Aucune conversation privée n'a été partagée.");return;}
+ if(result==="cancelled"){announce("Partage annulé. Aucune information n'a été envoyée.");return;}
+ showLinkPanel(url);
+ linkStatus.textContent=result==="copied"?
+  "Lien public d'Alicia copié : tu peux l'envoyer par Messages, Mail ou une autre application.":
+  "Voici l'adresse publique d'Alicia. Tu peux la sélectionner et la copier pour la partager.";
+}
+$("share-link-attach")?.addEventListener("click",addLinkToQuestion);
+$("share-link-copy")?.addEventListener("click",copyLink);
+$("share-link-open")?.addEventListener("click",openSharedLink);
+$("share-link-share")?.addEventListener("click",shareSelectedLink);
+$("share-link-close")?.addEventListener("click",()=>{linkPanel.hidden=true;});
 function updateDeepLabel(){
  const enabled=$("verify")?.checked;
  const node=$("plus-deep-check");
@@ -195,6 +274,8 @@ menu?.addEventListener("click",async event=>{
  const name=btn.dataset.plusAction;
  toggle(false);
  if(name in inputMap){$(inputMap[name])?.click();return;}
+ if(name==="link"){showLinkPanel("");return;}
+ if(name==="share-alicia"){await shareAliciaApp();return;}
  if(name==="plugins"){
   const panel=$("tool-finder");if(panel){panel.open=true;panel.scrollIntoView({behavior:"smooth",block:"start"});}
   announce("Outils disponibles : Alicia recommande des projets GitHub, mais ne les installe pas automatiquement.");
