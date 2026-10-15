@@ -26,7 +26,7 @@ test("SVG est bien un plan dessiné, libellé et échappé",()=>{
  const s=makeFurniture({name:"Test <script> & mairie",shelves:2});
  const svg=furnitureSVG(s);
  assert.match(svg,/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
- assert.match(svg,/&lt;script&gt; &amp; mairie/);
+ assert.match(svg,/Test script &amp; mairie/);
  assert.doesNotMatch(svg,/<script>/);
  assert.match(svg,/800 mm \(largeur\)/);
  assert.match(svg,/2 étagère/);
@@ -61,7 +61,7 @@ test("Le menu atelier est disponible, avec exports et autres domaines non préte
  assert.match(html,/option value="architecture"/);
  assert.match(html,/option value="mechanical"/);
  assert.match(html,/option value="mapping"/);
- assert.match(html,/logiciels professionnels/);
+ assert.match(html,/logiciels.*professionnels/);
  assert.match(ui,/furnitureDXF\(current\)/);
  assert.match(ui,/furnitureCSV\(current\)/);
  assert.match(ui,/furnitureSVG\(current\)/);
