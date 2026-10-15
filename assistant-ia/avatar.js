@@ -21,17 +21,26 @@ const synth=window.speechSynthesis;
 const voices=()=>synth?.getVoices?.().filter(v=>v.lang?.toLowerCase().startsWith("fr"))||[];
 function updateVoices(){
  const sel=$("voice-choice");if(!sel)return;
- const previous=sel.value;sel.replaceChildren();
+ const previous=sel.value||localStorage.getItem("alicia-voix-choisie")||"";sel.replaceChildren();
  const option=document.createElement("option");option.value="";option.textContent="Voix française automatique";sel.append(option);
  for(const v of voices()){const opt=document.createElement("option");opt.value=v.voiceURI;opt.textContent=v.name+" ("+v.lang+")";sel.append(opt)}
  if([...sel.options].some(o=>o.value===previous))sel.value=previous;
 }
 updateVoices();synth?.addEventListener?.("voiceschanged",updateVoices);
+$("voice-choice")?.addEventListener("change",e=>localStorage.setItem("alicia-voix-choisie",e.target.value));
+const voiceStyles={douce:{rate:.88,pitch:1.08,volume:.86},naturelle:{rate:1,pitch:1,volume:1},dynamique:{rate:1.07,pitch:1.1,volume:.93}};
+const voiceStyle=$("voice-style");
+if(voiceStyle){
+ const saved=localStorage.getItem("alicia-style-vocal");
+ if(Object.hasOwn(voiceStyles,saved))voiceStyle.value=saved;
+ voiceStyle.addEventListener("change",()=>localStorage.setItem("alicia-style-vocal",voiceStyle.value));
+}
 function speak(text){
  if(!synth||typeof SpeechSynthesisUtterance==="undefined"){sayStatus("Lecture vocale indisponible");return;}
  synth.cancel();
  const u=new SpeechSynthesisUtterance(String(text).replace(/[*#_]/g,"").slice(0,2800));
- u.lang="fr-FR";u.rate=.9;u.pitch=1.12;u.volume=.88;
+ const p=voiceStyles[voiceStyle?.value]||voiceStyles.douce;
+ u.lang="fr-FR";u.rate=p.rate;u.pitch=p.pitch;u.volume=p.volume;
  const available=voices();const selected=available.find(v=>v.voiceURI===$("voice-choice")?.value);const preferred=available.find(v=>/amelie|aurelie|audrey|celine|julie|marie|sylvie|sophie|alice|lea/i.test(v.name));if(selected||preferred)u.voice=selected||preferred;
  u.onstart=()=>{speaking=true;lastBoundary=performance.now();sayStatus("Alicia parle…")};
  u.onboundary=()=>{lastBoundary=performance.now()};
@@ -121,7 +130,7 @@ const palette={
  blonde:[.94,.72,.34],gold:[1,.85,.52],hairShadow:[.59,.37,.15],hairLight:[1,.91,.63],
  white:[.95,.96,.96],blue:[.26,.65,.97],navy:[.09,.31,.57],black:[.07,.10,.17],
  lips:[.70,.29,.35],lipLight:[.92,.51,.48],lipShadow:[.29,.09,.13],brow:[.43,.26,.14],lashes:[.23,.16,.16],
- jacket:[.23,.22,.49],collar:[.92,.74,.56],sparkle:[1,1,1]
+ jacket:[.23,.22,.49],collar:[.92,.74,.56],sparkle:[1,1,1],tear:[.47,.75,.98]
 };
 function ball(c,s,color){
  gl.uniform3fv(U.center,c);gl.uniform3fv(U.scale,s);gl.uniform3fv(U.color,palette[color]);gl.drawElements(gl.TRIANGLES,I.length,gl.UNSIGNED_SHORT,0);
@@ -159,7 +168,7 @@ function draw(t){
  const blink=blinkAmount(t,{reducedMotion:reduced});
  const mood=moodLook(expression);
  gazeX+=(gazeTargetX-gazeX)*.065;gazeY+=(gazeTargetY-gazeY)*.065;
- const joyful=expression==="joyful",supportive=expression==="supportive";
+ const joyful=expression==="joyful",supportive=expression==="supportive",sad=expression==="sad";
  const thoughtful=expression==="thoughtful",curious=expression==="curious",creative=expression==="creative";
  const eyeHeight=blink*mood.eye;
  const lookX=gazeX*.058,lookY=gazeY*.046;
@@ -168,6 +177,7 @@ function draw(t){
   ball([side*.30+lookX,.50+bob+lookY,.666],[.114,.113*eyeHeight,.04],"navy");
   ball([side*.30+lookX,.50+bob+lookY,.697],[.089,.089*eyeHeight,.036],"blue");
   ball([side*.30+lookX,.50+bob+lookY,.732],[.048,.06*eyeHeight,.016],"black");
+  if(sad)ball([side*.43,.15+bob,.623],[.042,.13,.052],"tear");
   ball([side*.265+lookX,.543+bob+lookY,.75],[.025,.027*eyeHeight,.012],"sparkle");
   // Paupières et cils : silhouette visible même pendant un clignement.
   ball([side*.30,.633+bob+(1-blink)*-.033,.623],[.233,.031+(1-blink)*.094,.036],"skin");
