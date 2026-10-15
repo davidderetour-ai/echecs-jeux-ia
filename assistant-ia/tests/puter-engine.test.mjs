@@ -12,7 +12,7 @@ function env({online=true,signed=true,ai=true}={}){
   ai:{chat:async(msg,opts)=>{calls.push({msg,opts});return {message:{content:"Bonjour, je suis Alicia."}}}},
   auth:{signIn:async()=>({}),isSignedIn:async()=>signed}
  };
- const window={puter:ai?puter:undefined,addEventListener:()=>{}};
+ const window={puter:ai?puter:undefined,addEventListener:()=>{},AliciaWiFi:{requireConfirmed:()=>{}}};
  const context={window,navigator:{onLine:online},document,console};
  runInNewContext(code,context);
  return {engine:window.AliciaPuter,nodes,calls,puter};
@@ -46,4 +46,16 @@ test("Si le fournisseur refuse, pas de repli sur une API payante",async()=>{
  e.puter.ai.chat=async()=>{throw Error("quota épuisé")};
  await assert.rejects(e.engine.answer({messages:[{role:"user",content:"Bonjour"}]}),/quota/);
  assert.equal(e.calls.length,0);
+});
+
+test("Refuse les questions si le Wi-Fi n'est pas confirmé",async()=>{
+ const e=env();
+ e.engine && (e.puter.ai.chat=e.puter.ai.chat);
+ const original=e.engine.answer;
+ // Le module lit window.AliciaWiFi : nouveau contexte simulé.
+ const fakeWindow={puter:e.puter,AliciaWiFi:{requireConfirmed:()=>{throw Error("Wi-Fi non confirmé")}},addEventListener:()=>{}};
+ const document={getElementById:()=>({addEventListener(){},textContent:""})};
+ const isolated={window:fakeWindow,navigator:{onLine:true,userAgent:"iPhone"},document};
+ runInNewContext(code,isolated);
+ await assert.rejects(isolated.window.AliciaPuter.answer({messages:[{role:"user",content:"bonjour"}]}),/Wi-Fi non confirmé/);
 });
