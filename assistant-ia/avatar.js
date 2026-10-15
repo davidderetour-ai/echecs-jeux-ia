@@ -59,8 +59,8 @@ function speak(text){
  u.onerror=()=>{speaking=false;sayStatus("Lecture vocale indisponible")};
  synth.speak(u);
 }
-// Effets joyeux ou tristes uniquement sur action explicite (pas de pleurs automatiques
-// lorsqu'une personne évoque un sujet difficile).
+// Bruitages d'émotions fictives uniquement sur action explicite.
+// Aucun rire, cri, sanglot ou grognement automatique sur le contenu d'un message.
 const emotionPlayer=createEmotionSoundPlayer();
 let emotionKind=null,emotionTimer=null,previousMode=null,previousIntent=null;
 function stopEmotion(){
@@ -86,15 +86,19 @@ function playEmotion(kind){
  synth?.cancel();
  previousMode=selection?.value||"auto";
  previousIntent=intent;
- if(selection)selection.value=kind==="laugh"?"joyful":"sad";
+ const visual={laugh:"joyful",cry:"sad",fear:"afraid",anger:"angry"};
+ const labels={laugh:"Alicia rit 😂",cry:"Alicia sanglote 😢",fear:"Alicia simule la peur 😨",anger:"Alicia gronde 😠"};
+ if(selection)selection.value=visual[kind];
  emotionKind=kind;
- setExpression(kind==="laugh"?"joyful":"sad");
+ setExpression(visual[kind]);
  speaking=true;
- sayStatus(kind==="laugh"?"Alicia rit 😂":"Alicia sanglote 😢");
+ sayStatus(labels[kind]);
  emotionTimer=setTimeout(stopEmotion,duration+120);
 }
 $("laugh-sound")?.addEventListener("click",()=>playEmotion("laugh"));
 $("cry-sound")?.addEventListener("click",()=>playEmotion("cry"));
+$("fear-sound")?.addEventListener("click",()=>playEmotion("fear"));
+$("anger-sound")?.addEventListener("click",()=>playEmotion("anger"));
 
 function listen(){
  const API=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -205,22 +209,23 @@ function draw(t){
  const phase=(t%4800)/4800,blink=phase>.87&&phase<.91?Math.max(.07,Math.abs(phase-.89)*48):1;
  gazeX+=(gazeTargetX-gazeX)*.065;gazeY+=(gazeTargetY-gazeY)*.065;
  const joyful=expression==="joyful",supportive=expression==="supportive",sad=expression==="sad";
+ const afraid=expression==="afraid",angry=expression==="angry";
  const thoughtful=expression==="thoughtful",curious=expression==="curious",creative=expression==="creative";
- const eyeHeight=blink*(sad?.78:joyful?.82:thoughtful?.92:1);
+ const eyeHeight=blink*(afraid?1.27:angry?.58:sad?.78:joyful?.82:thoughtful?.92:1);
  const lookX=gazeX*.058,lookY=gazeY*.046;
  for(const side of [-1,1]){
   ball([side*.30,.50+bob,.588],[.226,.132*eyeHeight,.082],"white");
   ball([side*.30+lookX,.50+bob+lookY,.666],[.114,.113*eyeHeight,.04],"navy");
-  ball([side*.30+lookX,.50+bob+lookY,.697],[.089,.089*eyeHeight,.036],"blue");
+  ball([side*.30+lookX,.50+bob+lookY,.697],[afraid?.108:.089,(afraid?.106:.089)*eyeHeight,.036],"blue");
   ball([side*.30+lookX,.50+bob+lookY,.732],[.048,.06*eyeHeight,.016],"black");
   ball([side*.265+lookX,.543+bob+lookY,.75],[.025,.027*eyeHeight,.012],"sparkle");
-  ball([side*.30,.735+bob+(sad?-.055:curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
+  ball([side*.30,.735+bob+(afraid?.11:angry?-.11:sad?-.055:curious?.06:joyful?.035:thoughtful?-.045:supportive?.04:0),.591],[.25,.039,.04],"brow");
   if(sad)ball([side*.42,.235+bob,.608],[.050,.16,.055],"tear");
   ball([side*.42,-.05+bob,.54],[.26,joyful?.18:.135,.04],"cheeks");
  }
  mouth+=((speaking ? .65 : 0)-mouth)*.13;
- const mh=.034+mouth*(.06+.026*Math.sin(t/115))+(joyful?.025:supportive?.012:0);
- ball([0,-.35+bob,.643],[joyful?.255:sad?.16:.225,mh+.015,.065],"lips");
+ const mh=.034+mouth*(.06+.026*Math.sin(t/115))+(joyful?.025:supportive?.012:0)+(afraid?.10:angry?.018:0);
+ ball([0,-.35+bob,.643],[afraid?.135:angry?.25:joyful?.255:sad?.16:.225,mh+.015,.065],"lips");
  if(joyful||creative){
   for(const side of [-1,1])ball([side*.21,-.30+bob,.64],[.052,.042,.038],"lipLight");
  }
