@@ -28,7 +28,7 @@ const security={
  "Cache-Control":"no-store",
  "Content-Security-Policy":"default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 };
-const MIME={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json",".json":"application/json; charset=utf-8",".png":"image/png",".ico":"image/x-icon"};
+const MIME={".sh":"text/plain; charset=utf-8",".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json",".json":"application/json; charset=utf-8",".png":"image/png",".ico":"image/x-icon"};
 const json=(res,status,obj)=>{res.writeHead(status,{...security,"Content-Type":"application/json; charset=utf-8"});res.end(JSON.stringify(obj));};
 function authorized(input){
  if(!IS_LAN)return true;
@@ -63,6 +63,7 @@ const MODE_HINTS={
  general:"Réponds avec précision et honnêteté ; reconnais les limites de tes connaissances.",
  code:"Aide en programmation et tests ; n'affirme pas avoir exécuté du code.",
  repair:"Propose un diagnostic progressif et des sauvegardes ; ne modifie jamais des appareils sans permission.",
+ mac:"Analyse le rapport de diagnostic du Mac et propose des optimisations sûres. Aucune modification système, installation ni contournement de compatibilité sans permission explicite, sauvegarde et validation.",
  create:"Conçois des applications et des plans vérifiables, sans prétendre avoir déployé.",
  teach:"Explique en français simple avec exemples et exercices.",
  analysis:"Sépare données, calculs, hypothèses et conclusions ; n'invente pas de sources.",
