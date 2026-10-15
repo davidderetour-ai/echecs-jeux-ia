@@ -23,13 +23,40 @@ function messageEl(role,text,sources=[]){
  log.append(article);log.scrollTop=log.scrollHeight;return article;
 }
 function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
+const CONNECTION_KEY="alicia-connection-v1";
+const connection=$("connection-mode");
+connection.value=localStorage.getItem(CONNECTION_KEY)==="online"?"online":"local";
+function showConnection(){
+ const mode=connection.value;
+ $("connection-status").textContent=mode==="local"
+  ?"Mode local gratuit : lance le serveur Alicia sur ton ordinateur et télécharge un modèle. La recherche Web n'est pas disponible dans ce mode."
+  :"Mode en ligne : API distincte facultative, susceptible d'être facturée. Active ce mode seulement si tu le souhaites.";
+ $("search").disabled=mode==="local";
+ if(mode==="local")$("search").checked=false;
+}
+connection.addEventListener("change",()=>{
+ if(connection.value==="online"&&!confirm("Le service IA en ligne peut entraîner des frais API. Souhaites-tu sélectionner ce mode (aucun abonnement n'est souscrit ici) ?"))connection.value="local";
+ localStorage.setItem(CONNECTION_KEY,connection.value);
+ showConnection();
+});
+showConnection();
 async function callIA(review=false){
- const code=$("access").value.trim();if(!code)throw new Error("Saisis d'abord ton code d'accès personnel (défini sur Netlify).");
+ const code=$("access").value.trim();
+ const isLocal=connection.value==="local";
+ if(!isLocal&&!code)throw new Error("Mode en ligne : saisis ton code d'accès personnel configuré sur Netlify.");
  sessionStorage.setItem("atelier-code",code);
- const response=await fetch("./.netlify/functions/chat",{method:"POST",headers:{"Content-Type":"application/json","X-App-Code":code},body:JSON.stringify({messages,mode:$("mode").value,verify:$("verify").checked,web:$("search").checked,review,notes:getNotes()})});
- let result;try{result=await response.json()}catch{throw new Error("Réponse inattendue du serveur. Vérifie le déploiement Netlify.")}
+ const endpoint=isLocal?"./api/local/chat":"./.netlify/functions/chat";
+ const headers={"Content-Type":"application/json"};
+ if(code)headers["X-App-Code"]=code;
+ const response=await fetch(endpoint,{
+  method:"POST",headers,
+  body:JSON.stringify({messages,mode:$("mode").value,verify:$("verify").checked,web:!isLocal&&$("search").checked,review,notes:getNotes()})
+ });
+ let result;try{result=await response.json()}catch{
+  throw new Error(isLocal?"Moteur local absent : démarre « node local-server.mjs » dans le dossier Alicia.":"Réponse inattendue du service API en ligne.");
+ }
  if(!response.ok)throw new Error(result.error||"Erreur du serveur ("+response.status+").");
- if(!result.answer)throw new Error("Aucune réponse reçue.");
+ if(!result.answer)throw new Error("Le moteur n'a renvoyé aucune réponse.");
  return result;
 }
 $("chat-form").addEventListener("submit",async event=>{
