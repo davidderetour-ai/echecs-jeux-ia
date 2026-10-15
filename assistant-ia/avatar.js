@@ -20,17 +20,31 @@ const synth=window.speechSynthesis;
 const voices=()=>synth?.getVoices?.().filter(v=>v.lang?.toLowerCase().startsWith("fr"))||[];
 function updateVoices(){
  const sel=$("voice-choice");if(!sel)return;
- const previous=sel.value;sel.replaceChildren();
+ const previous=sel.value||localStorage.getItem("alicia-voix-choisie")||"";sel.replaceChildren();
  const option=document.createElement("option");option.value="";option.textContent="Voix française automatique";sel.append(option);
  for(const v of voices()){const opt=document.createElement("option");opt.value=v.voiceURI;opt.textContent=v.name+" ("+v.lang+")";sel.append(opt)}
  if([...sel.options].some(o=>o.value===previous))sel.value=previous;
 }
 updateVoices();synth?.addEventListener?.("voiceschanged",updateVoices);
+$("voice-choice")?.addEventListener("change",event=>localStorage.setItem("alicia-voix-choisie",event.target.value));
+const voiceStyle=$("voice-style");
+const voiceProfiles={
+ douce:{rate:0.88,pitch:1.08,volume:0.85},
+ naturelle:{rate:1,pitch:1,volume:1},
+ dynamique:{rate:1.05,pitch:1.10,volume:0.95}
+};
+if(voiceStyle){
+ const saved=localStorage.getItem("alicia-style-vocal");
+ if(Object.hasOwn(voiceProfiles,saved))voiceStyle.value=saved;
+ voiceStyle.addEventListener("change",()=>localStorage.setItem("alicia-style-vocal",voiceStyle.value));
+}
+$("preview-voice")?.addEventListener("click",()=>speak("Bonjour, je suis Alicia. Je suis là pour t'accompagner et répondre à tes questions en français."));
 function speak(text){
  if(!synth||typeof SpeechSynthesisUtterance==="undefined"){sayStatus("Lecture vocale indisponible");return;}
  synth.cancel();
  const u=new SpeechSynthesisUtterance(String(text).replace(/[*#_]/g,"").slice(0,2800));
- u.lang="fr-FR";u.rate=.9;u.pitch=1.12;u.volume=.88;
+ const profile=voiceProfiles[voiceStyle?.value]||voiceProfiles.douce;
+ u.lang="fr-FR";u.rate=profile.rate;u.pitch=profile.pitch;u.volume=profile.volume;
  const available=voices();const selected=available.find(v=>v.voiceURI===$("voice-choice")?.value);const preferred=available.find(v=>/amelie|aurelie|audrey|celine|julie|marie|sylvie|sophie|alice|lea/i.test(v.name));if(selected||preferred)u.voice=selected||preferred;
  u.onstart=()=>{speaking=true;sayStatus("Alicia parle…")};
  u.onend=()=>{speaking=false;sayStatus("Alicia est prête")};
