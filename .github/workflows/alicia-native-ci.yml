@@ -1,0 +1,33 @@
+name: Alicia native — tests Flutter
+
+on:
+  pull_request:
+    paths:
+      - "native/alicia_flutter/**"
+      - "native/alicia_mac_companion/**"
+      - ".github/workflows/alicia-native-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Résoudre les dépendances
+        working-directory: native/alicia_flutter
+        run: flutter pub get
+      - name: Analyser le code Dart
+        working-directory: native/alicia_flutter
+        run: flutter analyze --no-fatal-infos
+      - name: Tester la logique des dates
+        working-directory: native/alicia_flutter
+        run: flutter test
+      - name: Vérifier la syntaxe du script Mac
+        run: bash -n native/alicia_mac_companion/build-mac.sh
