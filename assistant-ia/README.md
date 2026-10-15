@@ -118,3 +118,8 @@ Les brouillons générés localement sont susceptibles de contenir des erreurs ;
 
 ## Voix française douce (sans API payante)
 La page propose **Voix française**, **Style de voix** (Douce et calme / Naturelle / Dynamique) et **Écouter la voix d'Alicia**. Elle utilise la synthèse vocale déjà disponible dans le navigateur et sur l'appareil : aucune clé API ou abonnement pour cette fonction. Le choix de voix et le style sont mémorisés localement. Le timbre, le fonctionnement sans Internet et la qualité dépendent des voix installées et du navigateur. Aucun enregistrement ni imitation de la voix d'une personne réelle n'est utilisé.
+
+## Expressions sonores locales d'Alicia
+Quatre boutons d'essai sur la page : **😂 rire**, **😢 sanglots**, **😨 peur** (souffle tremblant) et **😠 colère** (grondement grave). Un nouveau clic sur le même bouton arrête le bruitage. Le visage WebGL prend une expression assortie, puis revient à l'état précédent. Ces effets sont des **bruitages artificiels**, non des sons humains enregistrés et non des émotions ressenties par le programme. Ils ne se déclenchent jamais automatiquement à partir des paroles de l'utilisateur, pour éviter des réactions inappropriées en cas de sujet sensible.
+
+La génération audio s'effectue sur l'appareil avec la Web Audio API et n'utilise aucune clé API ni connexion payante. Le navigateur peut demander un clic utilisateur pour autoriser le son, et le résultat doit encore être testé sur chaque appareil (notamment iPhone/Safari). Le moteur et l'interface sont dans le cache PWA hors connexion après un premier chargement réussi.
