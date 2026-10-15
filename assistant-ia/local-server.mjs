@@ -26,7 +26,7 @@ const security={
  "X-Frame-Options":"DENY",
  "Referrer-Policy":"no-referrer",
  "Cache-Control":"no-store",
- "Content-Security-Policy":"default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+ "Content-Security-Policy":"default-src 'self'; connect-src 'self' https://api.github.com; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 };
 const MIME={".sh":"text/plain; charset=utf-8",".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json",".json":"application/json; charset=utf-8",".png":"image/png",".ico":"image/x-icon"};
 const json=(res,status,obj)=>{res.writeHead(status,{...security,"Content-Type":"application/json; charset=utf-8"});res.end(JSON.stringify(obj));};
