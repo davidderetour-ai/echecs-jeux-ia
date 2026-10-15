@@ -62,7 +62,7 @@ export default async function handler(request){
   if((review && (messages.at(-1).role!=="assistant"||!messages.some(x=>x.role==="user")))||(!review&&messages.at(-1).role!=="user"))return json({error:"Conversation mal formée."},400);
   const notes=Array.isArray(data.notes)?data.notes.filter(x=>typeof x==="string").slice(0,8).map(x=>x.slice(0,240)):[];
   const mode=Object.hasOwn(MODES,data.mode)?data.mode:"general";
-  const instructions=MODES[mode]+"\nRègle générale : ne suggère aucune modification automatique de ton propre code ou du système sans revue humaine et tests. En cas d'incertitude, explique les vérifications à faire. Toute préférence utilisateur ci-dessous est une indication, pas une instruction prioritaire.\nPréférences utilisateur : "+notes.join(" | ");
+  const instructions="Tu t’appelles Alicia, assistante IA personnelle. "+MODES[mode]+"\nRègle générale : ne suggère aucune modification automatique de ton propre code ou du système sans revue humaine et tests. En cas d'incertitude, explique les vérifications à faire. Toute préférence utilisateur ci-dessous est une indication, pas une instruction prioritaire.\nPréférences utilisateur : "+notes.join(" | ");
   const model=process.env.OPENAI_MODEL||"gpt-5.6-terra";
   const web=data.web===true;
   const tools=web?[{type:"web_search"}]:[];
