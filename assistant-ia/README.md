@@ -173,3 +173,15 @@ Une seconde méthode est préparée avec le workflow `.github/workflows/alicia-p
 5. Safari → Partager → Sur l'écran d'accueil → Ajouter, puis connecter Puter volontairement.
 
 Un succès du workflow « Tests Atelier IA » ne signifie pas que le site est déployé. Un succès Netlify Preview ne garantit pas que le domaine de production Netlify existe. GitHub Pages nécessite l'activation préalable dans Settings par un administrateur ; les identifiants et paramètres personnels du compte ne sont pas manipulés par Alicia.
+
+## Avatar iPhone V2 — animations faciales (prototype 3D stylisé)
+
+L'avatar WebGL de Safari a désormais une morphologie moins schématique (visage ovale, coiffure blonde multi-mèches, paupières et cils, oreilles, bouche et vêtements détaillés), sans charger de bibliothèque 3D lourde. Il comprend :
+- des **clignements de paupières** à intervalles légèrement irréguliers, et le respect de `prefers-reduced-motion` ;
+- un **regard qui suit les touches et déplacements du doigt** sur iPhone (ou le pointeur sur ordinateur) ; il n'utilise **pas** l'appareil photo et ne prétend pas suivre le regard ou le visage de l'utilisateur ;
+- six expressions faciales visuelles liées au contexte ou au choix manuel ; **pas de reconnaissance de sentiments** ;
+- des mouvements de lèvres approximatifs lors de `speechSynthesis`, avec la prise en compte facultative de `onboundary`. Safari ne garantit **pas** l'accès aux phonèmes, la synchronisation labiale n'est donc pas exacte ;
+- un bouton **« Tester les yeux et la voix »** qui prononce une phrase sans envoyer de requête au moteur IA (pas de consommation du quota Puter) ;
+- un rafraîchissement plafonné autour de 30 images/seconde et une pause de rendu lorsque la page est masquée, pour réduire la charge sur iPhone.
+
+Le visage est **toujours stylisé et non photoréaliste**. Atteindre l'apparence de la maquette nécessitera un véritable modèle de personnage détaillé, des textures et un système d'animation facial spécialisé. Les tests unitaires vérifient les limites numériques et les choix d'expressions, mais un essai dans Safari iPhone est nécessaire pour évaluer la qualité visuelle et la synthèse vocale.
