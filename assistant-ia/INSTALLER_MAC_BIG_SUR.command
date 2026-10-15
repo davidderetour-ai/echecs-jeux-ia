@@ -32,6 +32,13 @@ echo "Aucun accès administrateur, aucun fichier système modifié."
 if [ "$(uname -s)" != "Darwin" ];then
  echo "Cet installateur fonctionne uniquement sur Mac.";exit 1
 fi
+RUBY="/usr/bin/ruby"
+if [ ! -x "$RUBY" ];then RUBY="$(command -v ruby || true)";fi
+if [ -z "$RUBY" ] || ! "$RUBY" -rwebrick -e "exit 0" >/dev/null 2>&1;then
+ echo "Le serveur Ruby/WEBrick requis pour cette version n'est pas disponible."
+ echo "Aucune installation effectuée. Vérifie ruby -v, puis demande une adaptation."
+ exit 4
+fi
 for f in $FILES; do
  if [ ! -f "$BASE/$f" ];then echo "Fichier nécessaire absent : $f";exit 2;fi
 done
@@ -44,7 +51,7 @@ for f in $FILES;do
 done
 chmod u+x "$DEST/Ouvrir Alicia.command"
 # Ne jamais remplacer silencieusement un fichier existant du Bureau.
-if [ ! -e "$SHORTCUT" ];then
+if [ -d "$HOME/Desktop" ] && [ ! -e "$SHORTCUT" ];then
  cat >"$SHORTCUT" <<'LAUNCH'
 #!/bin/bash
 # Raccourci utilisateur pour ouvrir Alicia (pas de sudo).
