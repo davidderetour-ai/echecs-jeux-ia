@@ -80,3 +80,12 @@
 #copy-learning a{color:#a5cfff;text-decoration:underline;display:inline-block;margin:8px 7px 8px 0;overflow-wrap:anywhere}
 #copy-learning pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#101b30;border-radius:8px;padding:12px;font-size:12px;max-height:220px;overflow:auto}
 #copy-learning section button{margin-top:7px}
+
+
+/* Connexion IA sur iPhone : aucune clé API de l'application */
+.puter-panel{display:flex;flex-direction:column;gap:7px;align-items:flex-start;flex-basis:100%;padding:13px;border:1px solid #465d9b;border-radius:14px;background:#222b49}
+.puter-panel[hidden]{display:none!important}
+.puter-panel p{margin:0;color:#bfe6d7;font-size:12px;font-weight:600}
+.puter-panel small{display:block;color:#c8d1e5;line-height:1.5;font-size:11px}
+.controls[hidden]{display:none!important}
+@media(max-width:650px){.puter-panel{padding:12px 10px}.puter-panel button{width:100%}}

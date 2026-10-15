@@ -12,4 +12,4 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), geolocation=()"
     X-Frame-Options = "DENY"
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; manifest-src 'self'; worker-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://js.puter.com; style-src 'self'; img-src 'self' data:; connect-src 'self' https: wss:; manifest-src 'self'; worker-src 'self'; base-uri 'self'; frame-src https://*.puter.com https://puter.com; frame-ancestors 'none'; object-src 'none'"

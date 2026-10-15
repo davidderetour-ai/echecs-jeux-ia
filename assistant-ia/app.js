@@ -25,14 +25,23 @@ function messageEl(role,text,sources=[]){
 function setBusy(state){busy=state;$("send").disabled=state;$("review").disabled=state||!messages.some(m=>m.role==="assistant");$("status").textContent=state?"Réflexion en cours…":"Prêt";if(state)window.AliciaAvatar?.onThinking()}
 const CONNECTION_KEY="alicia-connection-v1";
 const connection=$("connection-mode");
-connection.value=localStorage.getItem(CONNECTION_KEY)==="online"?"online":"local";
+const savedMode=localStorage.getItem(CONNECTION_KEY);
+const isApplePhone=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+connection.value=["local","online","puter"].includes(savedMode)?savedMode:(isApplePhone?"puter":"local");
 function showConnection(){
  const mode=connection.value;
- $("connection-status").textContent=mode==="local"
-  ?"Mode local gratuit : lance le serveur Alicia sur ton ordinateur et télécharge un modèle. La recherche Web n'est pas disponible dans ce mode."
-  :"Mode en ligne : API distincte facultative, susceptible d'être facturée. Active ce mode seulement si tu le souhaites.";
- $("search").disabled=mode==="local";
- if(mode==="local")$("search").checked=false;
+ const puter=mode==="puter";
+ $("puter-panel").hidden=!puter;
+ $("connection-status").textContent=puter
+  ?"Sur iPhone : connecte ton compte Puter (allocation mensuelle gratuite limitée). Alicia ne procède à aucun achat."
+  :mode==="local"
+   ?"Mode local : nécessite un serveur Alicia et un modèle téléchargé sur un ordinateur compatible. Ce mode n'est pas encore installé sur ton iPhone."
+   :"Mode API distincte facultative ; des frais peuvent être facturés par le fournisseur.";
+ $("search").disabled=mode!=="online";
+ if(mode!=="online")$("search").checked=false;
+ const controls=$("access").closest(".controls");
+ if(controls)controls.hidden=puter;
+ if(puter)window.AliciaPuter?.refresh();
 }
 connection.addEventListener("change",()=>{
  if(connection.value==="online"&&!confirm("Le service IA en ligne peut entraîner des frais API. Souhaites-tu sélectionner ce mode (aucun abonnement n'est souscrit ici) ?"))connection.value="local";
@@ -41,20 +50,27 @@ connection.addEventListener("change",()=>{
 });
 showConnection();
 async function callIA(review=false){
+ const choice=connection.value;
+ if(choice==="puter"){
+  if(!window.AliciaPuter)throw new Error("Module IA iPhone indisponible. Actualise Alicia dans Safari.");
+  return window.AliciaPuter.answer({
+   messages,mode:$("mode").value,verify:$("verify").checked,review,notes:getNotes()
+  });
+ }
  const code=$("access").value.trim();
- const isLocal=connection.value==="local";
- if(!isLocal&&!code)throw new Error("Mode en ligne : saisis ton code d'accès personnel configuré sur Netlify.");
+ const isLocal=choice==="local";
+ if(!isLocal&&!code)throw new Error("Mode API en ligne : code personnel Netlify requis.");
  sessionStorage.setItem("atelier-code",code);
- const endpoint=isLocal?"./api/local/chat":"./.netlify/functions/chat";
  const headers={"Content-Type":"application/json"};
  if(code)headers["X-App-Code"]=code;
- const response=await fetch(endpoint,{
+ const url=isLocal?"./api/local/chat":"./.netlify/functions/chat";
+ const response=await fetch(url,{
   method:"POST",headers,
   body:JSON.stringify({messages,mode:$("mode").value,verify:$("verify").checked,web:!isLocal&&$("search").checked,review,notes:getNotes()})
  });
- let result;try{result=await response.json()}catch{
-  throw new Error(isLocal?"Moteur local absent : démarre « node local-server.mjs » dans le dossier Alicia.":"Réponse inattendue du service API en ligne.");
- }
+ let result;
+ try{result=await response.json();}
+ catch{throw new Error(isLocal?"Moteur IA local absent sur cet appareil.":"Réponse API inattendue du serveur.");}
  if(!response.ok)throw new Error(result.error||"Erreur du serveur ("+response.status+").");
  if(!result.answer)throw new Error("Le moteur n'a renvoyé aucune réponse.");
  return result;
