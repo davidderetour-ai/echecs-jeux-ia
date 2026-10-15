@@ -35,8 +35,12 @@ function show(){
  }else{
   if(connect)connect.disabled=state.loading;
   status.textContent=state.confirmed?
-    "Wi-Fi déclaré par toi pour cette session. iOS décide du réseau réel ; pour bloquer la 4G/5G, utilise Réglages > Données cellulaires.":
-    "Wi-Fi uniquement : vérifie l'icône Wi-Fi de l'iPhone, puis touche « Je suis en Wi-Fi » avant toute connexion IA. Safari ne peut pas vérifier ce réseau de façon fiable.";
+    (type==="wifi"?
+     "Wi-Fi reconnu par le navigateur : le service IA se reconnecte automatiquement.":
+     "Wi-Fi déclaré par toi pour cette session. iOS décide du réseau réel ; pour bloquer la 4G/5G, utilise Réglages > Données cellulaires."):
+    (type==="wifi"?
+     "Wi-Fi identifié : Alicia prépare automatiquement sa connexion IA.":
+     "Wi-Fi uniquement : vérifie l'icône Wi-Fi de l'iPhone, puis touche « Je suis en Wi-Fi » avant toute connexion IA. Safari ne peut pas vérifier ce réseau de façon fiable.");
  }
 }
 async function loadSDK(){
