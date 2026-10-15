@@ -77,3 +77,24 @@ Un second script distinct, **mac-improve.sh**, démontre le cycle complet :
 La seule préférence modifiée est `com.apple.dock launchanim` (animation d'ouverture depuis le Dock). Cela n'améliore **pas la puissance CPU/RAM** et ne permet **pas de faire tourner des applications incompatibles avec Big Sur**. Un redémarrage bref du Dock peut survenir. Le script crée un petit fichier de sauvegarde privé dans le dossier utilisateur Alicia ; il ne supprime aucun document et ne modifie aucun fichier système macOS. Aucune commande de ce script n'a été exécutée sur ton Mac à distance. Le téléchargement du script ne constitue pas une autorisation de l'exécuter.
 
 D'autres changements comme la désinstallation de logiciels, la gestion des programmes au démarrage et les mises à jour demandent une analyse supplémentaire et un mécanisme d'autorisation séparé.
+
+## GitHub et amélioration continue — état de la première intégration
+
+Alicia peut désormais **consulter l'historique public des tests** du dépôt GitHub dans l'interface, sans abonnement ni clé payante. Le chiffre affiché est le taux d'exécutions de tests GitHub terminées avec succès, sur les dernières exécutions consultées ; une exécution contenant plusieurs tests représente **une** exécution. Ce taux ne garantit ni la qualité des réponses du modèle ni les chances de succès de l'amélioration suivante. Sans historique, le taux est « inconnu ».
+
+Le workflow `.github/workflows/alicia-watchdog.yml` programme **un contrôle quotidien** par GitHub Actions : tests et vérification de syntaxe. Sur la branche principale, un échec peut ouvrir un ticket GitHub (sans le dupliquer), si GitHub Actions et les autorisations de création d'issues sont activées. **Cette surveillance ne s'exécute automatiquement qu'une fois le workflow intégré à `main`.** Elle ne réécrit pas du code à l'aveugle et ne déploie pas automatiquement une correction.
+
+### Création d'une proposition de correction, avec ta permission
+
+Un programme local `github-maintainer.mjs` prépare des changements limités au dossier `assistant-ia/` :
+- `node github-maintainer.mjs status` : consulter l'état des tests GitHub (connexion Internet requise).
+- `node github-maintainer.mjs preview mon-correctif.json` : vérifier les fichiers et les vérifications prévues, **sans modifier GitHub**.
+- `node github-maintainer.mjs propose mon-correctif.json` : après configuration d'un jeton GitHub **secret côté ordinateur** (`ALICIA_GITHUB_TOKEN`, autorisations Contents et Pull requests uniquement sur ce dépôt) et saisie explicite de `CREER PR ALICIA`, créer une **branche séparée et une pull request en brouillon**. La branche de base par défaut est `assistant-ia-autocorrection-v1` tant que la première PR n'est pas fusionnée ; personnaliser avec `ALICIA_GITHUB_BASE_BRANCH` après intégration.
+
+Le programme crée une proposition, **pas une mise à jour installée** : les tests GitHub doivent ensuite réussir et le propriétaire doit relire les modifications puis approuver la fusion et le déploiement. **Ne jamais saisir le jeton GitHub dans le navigateur Alicia, dans ChatGPT, dans un fichier commité ni dans un message.** Une connexion GitHub à ChatGPT ne connecte pas automatiquement Alicia au même compte.
+
+La génération automatique de correctifs et de capacités nouvelles à partir des journaux d'erreurs requiert encore un moteur de programmation réellement connecté, un environnement d'essai isolé et une chaîne de tests approuvée. Les nouvelles capacités ne sont pas considérées comme acquises sur la seule base d'une proposition. L'outil proposé aujourd'hui ne dispose pas encore d'une boucle qui corrige tous ses bugs sans assistance.
+
+### Périmètre d'autorisation
+
+Ton Mac personnel est le seul appareil prévu pour les optimisations locales. L'intervention sur **tout autre appareil** nécessite ton autorisation personnelle distincte. Les changements sensibles doivent être testés et accompagnés d'un plan de restauration ; en cas d'échec, suspendre l'intervention et proposer ou réaliser seulement la restauration déjà autorisée pour cette intervention.
