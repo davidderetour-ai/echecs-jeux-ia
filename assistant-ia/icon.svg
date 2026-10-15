@@ -1,1 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#536df6"/><stop offset="1" stop-color="#a855da"/></linearGradient></defs><rect width="192" height="192" rx="42" fill="url(#g)"/><path d="m96 22 17 52 55 21-55 17-17 56-18-56-54-17 54-21z" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Alicia">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10244d"/><stop offset=".52" stop-color="#473184"/><stop offset="1" stop-color="#101e47"/></linearGradient>
+ <linearGradient id="sh" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#52d5ff"/><stop offset=".5" stop-color="#d9dcff"/><stop offset="1" stop-color="#bb71ff"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+<rect width="192" height="192" rx="45" fill="url(#bg)"/>
+<circle cx="96" cy="95" r="64" fill="#6471ff" opacity=".20" filter="url(#glow)"/>
+<path d="M96 30 112 78 160 96 112 112 96 162 79 112 31 96 79 78Z" fill="none" stroke="#96d2ff" stroke-opacity=".26" stroke-width="8"/>
+<path d="M96 38 111 81 154 96 111 111 96 154 81 111 38 96 81 81Z" fill="url(#sh)"/>
+<path d="M96 72 103 89 122 96 103 103 96 122 89 103 72 96 89 89Z" fill="#132047"/>
+<circle cx="145" cy="48" r="5" fill="#92e3ff"/>
+<circle cx="46" cy="144" r="4" fill="#d4a8ff"/>
+</svg>
