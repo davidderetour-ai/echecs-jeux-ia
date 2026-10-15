@@ -46,7 +46,7 @@ class _AliciaScreenState extends State<AliciaScreen> {
   try{
    await tts.stop();
    await tts.setLanguage('fr-FR');
-   await tts.setSpeechRate(voiceStyle=='Douce'?.43:voiceStyle=='Naturelle'?.51:.61);
+   await tts.setSpeechRate(voiceStyle == 'Douce' ? 0.43 : (voiceStyle == 'Naturelle' ? 0.51 : 0.61));
    await tts.setPitch(voiceStyle=='Douce'?1.09:1.0);
    await tts.speak(message);
   }catch(_){info('Synthèse vocale indisponible sur cet appareil.');}
@@ -128,7 +128,7 @@ class _AliciaScreenState extends State<AliciaScreen> {
     const SizedBox(height:10),
     tag('✦ Intelligente'),const SizedBox(height:5),tag('♡ Bienveillante'),
     const SizedBox(height:5),tag('∞ Polyvalente')
-   ]))))
+   ])))
  ],mainAxisAlignment:MainAxisAlignment.center),padding:EdgeInsets.zero);
  Widget tag(String t)=>Container(
   decoration:BoxDecoration(borderRadius:BorderRadius.circular(22),
