@@ -1,0 +1,1 @@
+Alicia 0.4.4 : sauvegarde locale des connaissances dans le dossier Application Support, indépendante du stockage WebKit. Objectif : conserver les apprentissages après redémarrage.
