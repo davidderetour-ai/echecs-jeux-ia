@@ -46,6 +46,7 @@
   shell.insertBefore(controls,shell.querySelector(".fusion-ideas")||shell.querySelector(".avatar-side")||null);
   function fallback(visible,photo){
     if(photo)img.src=PHOTOS[photo]||PHOTOS["archive-portrait"];
+    overlay.dataset.archive=photo||"archive-portrait";
     overlay.hidden=!visible;
     stage.classList.toggle("alicia-model-fallback-active",visible);
   }
@@ -67,8 +68,8 @@
     return;
    }
    window.Alicia3D.setFraming?.(isFull?"entier":"portrait");
-   if(!first&&isReal&&!window.Alicia3D.hasRealistic?.()) {realReady=false;window.Alicia3D.useRealistic?.();}
-   else if(!first&&!isReal){window.Alicia3D.useStylized?.();}
+   if(!isReal){realReady=false;window.Alicia3D.useStylized?.();}
+   else if(!first&&!window.Alicia3D.hasRealistic?.()) {realReady=false;window.Alicia3D.useRealistic?.();}
    else window.Alicia3D.open?.();
    if((isReal?realReady:rendered)&&window.Alicia3D.isVisible?.())fallback(false);
    setStatus(isReal?(realReady?"Modèle humain 3D chargé · "+(isFull?"vue entière":"vue portrait"):"Chargement du modèle humain 3D…"):("Modèle 3D stylisé · "+(isFull?"vue entière":"vue portrait")));
