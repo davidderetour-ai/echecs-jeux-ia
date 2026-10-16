@@ -39,7 +39,7 @@ function normalize(v){return String(v==null?"":v).toLowerCase().normalize("NFD")
 function words(v){return normalize(v).match(/[\p{L}\p{N}]+/gu)||[];}
 function tokens(v){return words(v).map(w=>lex[w]||w).filter(w=>w.length>1&&!STOP.has(w));}
 function clean(v,n){return String(v||"").replace(/\0/g,"").trim().slice(0,n);}
-function defaults(){return {schema:1,version:VERSION,examples:[],history:[],cortectNotes:[],cortectScores:[],revision:0,weights:{overlap:0.75,sequence:0.25,threshold:0.61},metrics:{trained:0,adaptations:0,lastAccuracy:0},last:null};}
+function defaults(){return {schema:1,version:VERSION,examples:[],history:[],cortectNotes:[],cortectScores:[],teacherProgress:[],revision:0,weights:{overlap:0.75,sequence:0.25,threshold:0.61},metrics:{trained:0,adaptations:0,lastAccuracy:0},last:null};}
 function validate(entry){
  if(!entry||typeof entry!=="object"||typeof entry.q!=="string"||typeof entry.a!=="string")return null;
  var q=clean(entry.q,limits.maxQuestion),a=clean(entry.a,limits.maxAnswer);
@@ -61,6 +61,21 @@ function validateStroopScore(entry){
   word:clean(entry.word,12),expected:clean(entry.expected,12),answer:clean(entry.answer,12),
   created:Number(entry.created)||Date.now()};
 }
+function validateTeacherProgress(raw){
+ if(!raw||typeof raw!=="object"||!/^fiche-\d{2}$/.test(raw.id))return null;
+ var attempts=Number(raw.attempts),correct=Number(raw.correct),last=Number(raw.last),due=Number(raw.due);
+ if(!Number.isInteger(attempts)||attempts<1||attempts>10000||!Number.isInteger(correct)||correct<0||correct>attempts)return null;
+ return {id:raw.id,attempts:attempts,correct:correct,last:Number.isFinite(last)&&last>=0?last:0,
+  due:Number.isFinite(due)&&due>=0?due:0};
+}
+function mergeProgress(first,second){
+ var map=new Map();
+ for(var item of first.concat(second).map(validateTeacherProgress).filter(Boolean)){
+  var earlier=map.get(item.id);
+  if(!earlier||item.attempts>earlier.attempts||(item.attempts===earlier.attempts&&item.last>earlier.last))map.set(item.id,item);
+ }
+ return Array.from(map.values()).slice(-100);
+}
 function read(){
  try{
    var obj=JSON.parse(root.localStorage.getItem(STORE)||"null");
@@ -69,6 +84,7 @@ function read(){
     d.examples=obj.examples.map(validate).filter(Boolean).slice(-limits.maxExamples);
     d.cortectNotes=Array.isArray(obj.cortectNotes)?obj.cortectNotes.map(validateCortect).filter(Boolean).slice(-limits.maxNotes):[];
     d.cortectScores=Array.isArray(obj.cortectScores)?obj.cortectScores.map(validateStroopScore).filter(Boolean).slice(-60):[];
+     d.teacherProgress=Array.isArray(obj.teacherProgress)?mergeProgress([],obj.teacherProgress):[];
     d.history=Array.isArray(obj.history)?obj.history.filter(x=>x&&typeof x.q==="string"&&typeof x.target==="string").slice(-limits.maxHistory):[];
     d.revision=Math.max(0,Math.min(999999,Number(obj.revision)||0));
     d.metrics=obj.metrics&&typeof obj.metrics==="object"?Object.assign(d.metrics,obj.metrics):d.metrics;
@@ -240,7 +256,7 @@ function answer(payload){
  var r=reply(last?last.content:"");
  return Object.assign({verified:false,sources:[],engineVersion:VERSION},r);
 }
-function exportMemory(){return JSON.stringify({schema:1,version:VERSION,examples:data.examples,history:data.history,cortectNotes:data.cortectNotes,cortectScores:data.cortectScores,revision:data.revision,weights:data.weights,metrics:data.metrics},null,2);}
+function exportMemory(){return JSON.stringify({schema:1,version:VERSION,examples:data.examples,history:data.history,cortectNotes:data.cortectNotes,cortectScores:data.cortectScores,teacherProgress:data.teacherProgress,revision:data.revision,weights:data.weights,metrics:data.metrics},null,2);}
 // Restauration indépendante des ports du navigateur: fichier natif persistant.
 function restoreSnapshot(json){
  var obj;try{obj=JSON.parse(json);}catch(e){return {ok:false};}
@@ -261,6 +277,7 @@ function restoreSnapshot(json){
  merged.cortectNotes=Array.from(noteMap.values()).sort((a,b)=>a.created-b.created).slice(-limits.maxNotes);
  var scoreEntries=(Array.isArray(obj.cortectScores)?obj.cortectScores:[]).concat(existing.cortectScores||[]);
  merged.cortectScores=scoreEntries.map(validateStroopScore).filter(Boolean).sort((a,b)=>a.created-b.created).slice(-60);
+ merged.teacherProgress=mergeProgress(Array.isArray(obj.teacherProgress)?obj.teacherProgress:[],existing.teacherProgress||[]);
  var remoteHistory=Array.isArray(obj.history)?obj.history.filter(x=>x&&typeof x.q==="string"&&typeof x.target==="string"):[];
  merged.history=remoteHistory.concat(existing.history).slice(-limits.maxHistory);
  merged.revision=Math.max(Number(obj.revision)||0,Number(existing.revision)||0);
@@ -303,6 +320,7 @@ function importMemory(json){
   if(!scoreKeys.has(key)){data.cortectScores.push(score);scoreKeys.add(key);}
  }
  data.cortectScores=data.cortectScores.slice(-60);
+ data.teacherProgress=mergeProgress(data.teacherProgress||[],Array.isArray(parsed.teacherProgress)?parsed.teacherProgress:[]);
  data.revision++;
  persist();
  return {ok:true,importedNotes:importedNotes,imported:Math.max(0,data.examples.length-before),total:data.examples.length};
@@ -329,8 +347,20 @@ function addStroopScore(raw){
  data.revision++;return {ok:persist(),score:item};
 }
 function listStroopScores(){return (data.cortectScores||[]).map(x=>({...x}));}
+function recordLessonResult(id,isCorrect){
+ if(!/^fiche-\d{2}$/.test(String(id||""))||typeof isCorrect!=="boolean")return {ok:false,reason:"Résultat de cours invalide"};
+ var now=Date.now(),list=data.teacherProgress||[];
+ var old=list.find(x=>x.id===id)||{id:id,attempts:0,correct:0,last:0,due:0};
+ var next={id:id,attempts:old.attempts+1,correct:old.correct+(isCorrect?1:0),last:now,
+   due:now+(isCorrect?3:1)*86400000};
+ data.teacherProgress=mergeProgress(list.filter(x=>x.id!==id),[next]);
+ data.revision++;
+ var stored=persist();
+ return {ok:stored,progress:next,reason:stored?"":"Sauvegarde du cours non confirmée"};
+}
+function listLessonProgress(){return (data.teacherProgress||[]).map(x=>Object.assign({},x));}
 function clearMemory(){data=defaults();persist();}
-function inspect(){return {name:"Alicia Original",version:VERSION,examples:data.examples.length,revision:data.revision,autonomousAdaptations:Number(data.metrics.adaptations)||0,cortectNotes:data.cortectNotes.length,stroopSessions:data.cortectScores.length,offline:true,noPaidServices:true};}
-root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,restoreSnapshot:restoreSnapshot,nativeSnapshot:nativeSnapshot,clearMemory:clearMemory,addCortectNote:addCortectNote,listCortectNotes:listCortectNotes,deleteCortectNote:deleteCortectNote,addStroopScore:addStroopScore,listStroopScores:listStroopScores,
+function inspect(){return {name:"Alicia Original",version:VERSION,examples:data.examples.length,revision:data.revision,autonomousAdaptations:Number(data.metrics.adaptations)||0,cortectNotes:data.cortectNotes.length,stroopSessions:data.cortectScores.length,teacherLessonsPracticed:data.teacherProgress.length,offline:true,noPaidServices:true};}
+root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,restoreSnapshot:restoreSnapshot,nativeSnapshot:nativeSnapshot,clearMemory:clearMemory,addCortectNote:addCortectNote,listCortectNotes:listCortectNotes,deleteCortectNote:deleteCortectNote,addStroopScore:addStroopScore,listStroopScores:listStroopScores,recordLessonResult:recordLessonResult,listLessonProgress:listLessonProgress,
   _test:{normalize:normalize,tokens:tokens,similarity:similarity,mathParse:mathParse,testWeights:testWeights}};
 })(typeof window==="undefined"?globalThis:window);
