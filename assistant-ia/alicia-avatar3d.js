@@ -185,6 +185,7 @@ function init(){
        useStylized(){restoreOriginal();showAvatar3D();fitCharacterCamera();},
        useRealistic(){showAvatar3D();loadRealisticModel();},
        hide(){panel.hidden=true;},
+       hasRealistic(){return Boolean(imported);},
        isVisible(){return firstDrawn&&!panel.hidden;},
       setExpression(x){expression=String(x||"happy");},
       setSpeaking(on){speaking=!!on;},
