@@ -70,7 +70,7 @@ test("Lecture externe : deux véritables réponses HTTP via transport contrôlé
 });
 test("Atelier HTML/CSS encapsulé : ni scripts ni requêtes dans iframe de prévisualisation",()=>{
  const ui=read("web-learning-ui.js"),html=read("index.html"),sw=read("sw.js"),css=read("web-learning.css");
- for(const marker of ['sandbox=""','script-src \\'none\\'','connect-src \\'none\\'','form-action \\'none\\'','referrerpolicy="no-referrer"'])
+ for(const marker of ['sandbox=""',"script-src 'none'","connect-src 'none'","form-action 'none'",'referrerpolicy="no-referrer"'])
    assert.ok(ui.includes(marker),marker);
  assert.ok(ui.includes("navigator.onLine"));
  assert.ok(ui.includes("window.fetch(url,{...options,mode:\"cors\"})"));
