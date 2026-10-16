@@ -1,0 +1,18 @@
+.alicia-professeur{background:linear-gradient(130deg,#111b3f,#161e46);border:1px solid #647ac2;border-radius:16px;padding:12px 15px;margin:12px 0;color:#ecf3ff;box-sizing:border-box;max-width:100%}
+.alicia-professeur>summary{font-weight:720;color:#c9e5ff;cursor:pointer;line-height:1.5}
+.alicia-professeur-body{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.alicia-professeur-body>p{font-size:13px;line-height:1.6}
+.alicia-professeur label{display:flex;flex-direction:column;gap:5px;font-size:13px}
+.alicia-professeur input,.alicia-professeur select{border-radius:9px;padding:10px;font-size:15px;min-height:44px;border:1px solid #577abf;background:#172852;color:#f1f6ff;box-sizing:border-box}
+.alicia-professeur-actions,.alicia-professeur-choices{display:flex;gap:8px;flex-wrap:wrap}
+.alicia-professeur button{background:linear-gradient(100deg,#244b9a,#6b56c9);border:1px solid #789bce;color:#fff;padding:9px 12px;border-radius:10px;min-height:44px;cursor:pointer}
+.alicia-professeur button:disabled{opacity:.55;cursor:default}
+#alicia-professeur-lesson-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:10px}
+.alicia-professeur-fiche,.alicia-professeur-test{border:1px solid #5368a9;background:#0c1736;padding:12px;border-radius:10px}
+.alicia-professeur-fiche summary{cursor:pointer;color:#cfe7ff;font-weight:630;line-height:1.35}
+.alicia-professeur-fiche p{font-size:13px;line-height:1.55;white-space:pre-wrap}
+.alicia-professeur-fiche small{color:#b2c7ea;display:block;margin:6px 0}
+.alicia-professeur-test h3{color:#bfe4fa;margin:2px 0 8px;font-size:16px}
+.alicia-professeur-choices{flex-direction:column}
+.alicia-professeur-choices button{text-align:left}
+#alicia-professeur-status{font-size:13px;color:#d7e8ff}

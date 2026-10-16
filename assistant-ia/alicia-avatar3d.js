@@ -125,23 +125,50 @@ function init(){
    const front=new THREE.DirectionalLight(0xffffff,1.15);front.position.set(3,5,6);scene.add(front);
    const back=new THREE.DirectionalLight(0x87b6ff,.7);back.position.set(-4,3,-5);scene.add(back);
    const floor=new THREE.Mesh(new THREE.CylinderGeometry(1.2,1.3,.07,36),mat(0x23386c,.35,.5));
-   floor.position.set(0,-.06,0);scene.add(floor);
+   // Le socle projeté occupait l'écran inférieur sur certains iPhone.
+   floor.visible=false;floor.position.set(0,-.06,0);scene.add(floor);
    makeBody();
    orbit=new THREE.OrbitControls(camera,renderer.domElement);orbit.enableDamping=true;orbit.enablePan=false;
    orbit.target.set(0,1.47,0);orbit.minDistance=2.7;orbit.maxDistance=9;
    orbit.maxPolarAngle=Math.PI*.76;orbit.minPolarAngle=Math.PI*.17;
    orbit.update();
    const resize=()=>{
-    const w=Math.max(270,Math.min(650,Math.round(view.clientWidth||450)));
-    const h=Math.round(Math.min(630,w*1.0));renderer.setSize(w,h,false);
+    const w=Math.max(250,Math.min(580,Math.round(view.clientWidth||350)));
+    const h=Math.max(280,Math.min(490,Math.round(w*1.12)));
+    renderer.setSize(w,h,false);
     camera.aspect=w/h;camera.updateProjectionMatrix();
    };
    window.addEventListener("resize",resize);resize();
+   function fitCharacterCamera(){
+     // Cadrage plein pied d'un modèle de hauteur variable, même sur petit iPhone.
+     const box=imported?new THREE.Box3().setFromObject(imported):new THREE.Box3().setFromObject(rig);
+     if(box.isEmpty())return;
+     const dimensions=box.getSize(new THREE.Vector3());
+     const center=box.getCenter(new THREE.Vector3());
+     const maxBody=Math.max(dimensions.x,dimensions.y,dimensions.z);
+     if(!Number.isFinite(maxBody)||maxBody<=0)return;
+     const target=new THREE.Vector3(0,Math.max(.7,Math.min(2,center.y)),0);
+     const fov=camera.fov*Math.PI/180;
+     const aspect=Math.max(.48,camera.aspect||1);
+     const distance=Math.max(4.9,
+       dimensions.y/(2*Math.tan(fov/2)*.72),
+       dimensions.x/(2*Math.tan(fov/2)*aspect*.72),
+       dimensions.z*2.5);
+     const safeDistance=Math.min(45,Math.max(4.9,distance));
+     camera.position.set(0,target.y+.35,safeDistance);
+     camera.near=.02;camera.far=Math.max(100,safeDistance*5);
+     camera.updateProjectionMatrix();
+     orbit.target.copy(target);
+     orbit.minDistance=Math.max(2,safeDistance*.65);
+     orbit.maxDistance=Math.max(16,safeDistance*2.8);
+     orbit.update();
+   }
    function showAvatar3D(){
      panel.hidden=false;
      if(canvas)canvas.style.display="none";
      stage.classList.add("alicia3d-enabled");
      resize();
+     fitCharacterCamera();
      document.querySelector(".avatar-shell")?.scrollIntoView({behavior:"smooth",block:"center"});
      status("Avatar 3D stylisé : glisse pour faire le tour, ou utilise les boutons Face/Dos.");
    }
@@ -192,6 +219,7 @@ function init(){
    model.position.z-=center.z;
    model.updateMatrixWorld(true);
    root.add(model);imported=model;rig.visible=false;
+   fitCharacterCamera();
    faceJaw=model.getObjectByName("Bip01 MJaw")||model.getObjectByName("Jaw")||null;
    jawBase=faceJaw?faceJaw.rotation.x:0;
    const clips=Array.isArray(gltf.animations)?gltf.animations:[];
@@ -255,7 +283,7 @@ function init(){
  $("alicia-avatar3d-pause").addEventListener("click",e=>{auto=!auto;turnTo=null;e.currentTarget.textContent=auto?"⏸ Rotation":"▶ Rotation";});
  $("alicia-avatar3d-front").addEventListener("click",()=>{turnTo=0;auto=false;});
  $("alicia-avatar3d-turn").addEventListener("click",()=>{turnTo=Math.PI;auto=false;});
- $("alicia-avatar3d-view").addEventListener("click",()=>{camera.position.set(0,1.48,4.85);orbit.target.set(0,1.47,0);orbit.update();});
+ $("alicia-avatar3d-view").addEventListener("click",fitCharacterCamera);
  loadRealisticModel();
  let last=0;
  function frame(t){
