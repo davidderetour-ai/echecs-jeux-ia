@@ -11,6 +11,15 @@ function docs(){
 export function answerWithTools(query){
  const q=String(query||"").trim();
  if(!q)return null;
+ // Commande d'avatar : éviter de répondre « je ne sais pas » à une demande réelle d'interface.
+ if(/\b(?:avatar|personnage)\b/i.test(q)&&/(?:3d|trois dimensions|refaire|refais|modifi|am[eé]lior|affiche|montre|tourne|rotation)/i.test(q)){
+   const isAvailable=Boolean(window.Alicia3D?.ready);
+   if(isAvailable)window.Alicia3D.open();
+   return {answer:isAvailable?
+     "J'ai ouvert mon avatar 3D stylisé. Tu peux le faire tourner, voir son dos, utiliser les boutons Face et Dos et écouter ma voix française. Mon apparence s'inspire de la référence, mais le modèle n'est pas encore une reproduction photoréaliste ni un personnage 3D entièrement personnalisable.":
+     "Le mode avatar 3D nécessite WebGL. Le portrait, la conversation et la voix restent disponibles sur cet appareil. La maquette photoréaliste est conservée comme référence visuelle.",
+     provider:"Avatar Alicia",local:true,verified:false,sources:[]};
+ }
  if(/\b(?:python|vs\s*code|visual studio code|pip|debugger|débog|print\s*\(|input\s*\(|variables?|venv)\b/i.test(q)){
   const found=courseSearch(q,1)[0];
   if(found)return {answer:"École Alicia — "+found.title+"\n\n"+found.lesson+
