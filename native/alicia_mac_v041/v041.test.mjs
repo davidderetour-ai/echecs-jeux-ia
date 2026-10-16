@@ -24,12 +24,12 @@ test("native localhost POST verifies Origin and caps JSON payload",()=>{
 test("token stays on Mac: no localStorage, no API token printed to JS",()=>{
  const s=get("native-puter-bridge.js");
  assert.match(s,/type="password"/);
- assert.match(s,/api\+"token"/);
+ assert.match(s,/call\("token"/);
  assert.match(s,/mode:"same-origin"/);
  assert.match(s,/window\.AliciaPuter=\{answer/);
  assert.doesNotMatch(s,/localStorage\.setItem/);
  assert.doesNotMatch(s,/console\.log/);
- assert.match(s,/Aucun achat effectué|n.achète pas de crédits/);
+ assert.match(s,/n.effectue aucun paiement/);
 });
 test("clear separation: canned greeting != AI response",()=>{
  const s=get("native-puter-bridge.js");
