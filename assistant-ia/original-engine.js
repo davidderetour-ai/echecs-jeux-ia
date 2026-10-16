@@ -63,10 +63,11 @@ function read(){
 }
 var data=read();
 function persist(){
- try{
-   root.localStorage.setItem(STORE,JSON.stringify(data));
-   return true;
- }catch(e){return false;}
+ const snapshot=JSON.stringify(data);
+ let localOk=false;
+ try{root.localStorage.setItem(STORE,snapshot);localOk=true;}catch(e){}
+ if(root.AliciaNativeMemory)root.AliciaNativeMemory.save(snapshot);
+ return localOk||Boolean(root.AliciaNativeMemory);
 }
 function stem(t){return t.length>5?t.replace(/(ements|ement|ations|ation|euses|eurs|euse|ment|ites|ite|es|s|er|ez|ee)$/,""):t;}
 function shared(a,b){
@@ -222,6 +223,33 @@ function answer(payload){
  return Object.assign({verified:false,sources:[],engineVersion:VERSION},r);
 }
 function exportMemory(){return JSON.stringify({schema:1,version:VERSION,examples:data.examples,history:data.history,revision:data.revision,weights:data.weights,metrics:data.metrics},null,2);}
+// Restauration indépendante des ports du navigateur: fichier natif persistant.
+function restoreSnapshot(json){
+ var obj;try{obj=JSON.parse(json);}catch(e){return {ok:false};}
+ if(!obj||obj.schema!==1||!Array.isArray(obj.examples))return {ok:false};
+ var existing=data, imported=obj.examples.slice(-limits.maxExamples).map(validate).filter(Boolean);
+ var byQuestion=new Map();
+ for(var entry of imported.concat(existing.examples)){
+   var key=normalize(entry.q);
+   var before=byQuestion.get(key);
+   if(!before||(entry.created||0)>=(before.created||0))byQuestion.set(key,entry);
+ }
+ var merged=defaults();
+ merged.examples=Array.from(byQuestion.values()).slice(-limits.maxExamples);
+ var remoteHistory=Array.isArray(obj.history)?obj.history.filter(x=>x&&typeof x.q==="string"&&typeof x.target==="string"):[];
+ merged.history=remoteHistory.concat(existing.history).slice(-limits.maxHistory);
+ merged.revision=Math.max(Number(obj.revision)||0,Number(existing.revision)||0);
+ var weight=obj.weights&&typeof obj.weights==="object"?obj.weights:{};
+ var overlap=Number(weight.overlap),sequence=Number(weight.sequence),threshold=Number(weight.threshold);
+ if(Number.isFinite(overlap)&&overlap>=0&&overlap<=1&&Number.isFinite(sequence)&&sequence>=0&&sequence<=1&&Number.isFinite(threshold)&&threshold>=.4&&threshold<=.9){
+   merged.weights={overlap:overlap,sequence:sequence,threshold:threshold};
+ }
+ merged.metrics=Object.assign({},merged.metrics,obj.metrics||{},existing.metrics||{});
+ merged.last=existing.last||obj.last||null;
+ data=merged;persist();
+ return {ok:true,examples:data.examples.length,revision:data.revision};
+}
+function nativeSnapshot(){return JSON.stringify(data);}
 function importMemory(json){
  // Export JSON uniquement, jamais de JavaScript ni de commande; vérifications de taille et schéma.
  if(typeof json!=="string"||json.length>220000)return {ok:false,reason:"Fichier de mémoire trop volumineux."};
@@ -243,6 +271,6 @@ function importMemory(json){
 }
 function clearMemory(){data=defaults();persist();}
 function inspect(){return {name:"Alicia Original",version:VERSION,examples:data.examples.length,revision:data.revision,autonomousAdaptations:Number(data.metrics.adaptations)||0,offline:true,noPaidServices:true};}
-root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,clearMemory:clearMemory,
+root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,restoreSnapshot:restoreSnapshot,nativeSnapshot:nativeSnapshot,clearMemory:clearMemory,
   _test:{normalize:normalize,tokens:tokens,similarity:similarity,mathParse:mathParse,testWeights:testWeights}};
 })(typeof window==="undefined"?globalThis:window);
