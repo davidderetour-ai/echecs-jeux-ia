@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'services/emotion_audio.dart';
 import 'services/network_status.dart';
 import 'widgets/signature_card.dart';
@@ -16,7 +17,7 @@ class AliciaApp extends StatelessWidget {
   title:'Alicia', debugShowCheckedModeBanner:false,
   theme:ThemeData(useMaterial3:true,brightness:Brightness.dark,scaffoldBackgroundColor:navy,
    colorScheme:ColorScheme.fromSeed(seedColor:const Color(0xff8f6dff),brightness:Brightness.dark)),
-  home:const AliciaScreen());
+  home:const AliciaFusionScreen());
 }
 class AliciaScreen extends StatefulWidget {
  const AliciaScreen({super.key});
@@ -243,3 +244,104 @@ class _AliciaScreenState extends State<AliciaScreen> {
    boxShadow:const [BoxShadow(color:Color(0x44020314),blurRadius:16,offset:Offset(0,6))]),
   child:child);
 }
+
+
+/// Alicia Fusion : l'interface complète fonctionne dans la fenêtre native iOS.
+/// Elle ne lance pas Safari. Le mode natif historique reste disponible séparément.
+/// La première ouverture exige une connexion réseau ; le cache WebKit dépend d'iOS.
+class AliciaFusionScreen extends StatefulWidget {
+  const AliciaFusionScreen({super.key});
+  @override
+  State<AliciaFusionScreen> createState() => _AliciaFusionScreenState();
+}
+
+class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
+  late final WebViewController web;
+  bool loading = true;
+  bool failed = false;
+  static final Uri site = Uri.parse(
+    'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=090');
+
+  @override
+  void initState() {
+    super.initState();
+    web = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xff080d24))
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (_) {
+          if (mounted) setState(() { loading = true; failed = false; });
+        },
+        onPageFinished: (_) {
+          if (mounted) setState(() => loading = false);
+        },
+        onWebResourceError: (error) {
+          if (error.isForMainFrame == true && mounted) {
+            setState(() { loading = false; failed = true; });
+          }
+        },
+      ))
+      ..loadRequest(site);
+  }
+
+  void openNative() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const AliciaScreen()),
+    );
+  }
+
+  void retry() {
+    setState(() { loading = true; failed = false; });
+    web.loadRequest(site);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color(0xff080d24),
+      title: const Text('ALICIA Fusion · 0.9', style: TextStyle(
+        color: Color(0xffd8eaff), fontWeight: FontWeight.bold, fontSize: 17)),
+      actions: [
+        IconButton(
+          tooltip: 'Actualiser Alicia',
+          onPressed: retry,
+          icon: const Icon(Icons.refresh)),
+        PopupMenuButton<String>(
+          tooltip: 'Options Alicia',
+          onSelected: (value) {
+            if (value == 'native') openNative();
+            if (value == 'reload') retry();
+          },
+          itemBuilder: (_) => const [
+            PopupMenuItem(value: 'native', child: Text('Mode natif (secours hors ligne)')),
+            PopupMenuItem(value: 'reload', child: Text('Actualiser la version complète')),
+          ],
+        ),
+      ],
+    ),
+    body: SafeArea(
+      child: failed
+        ? Center(child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Icon(Icons.wifi_off, size: 54, color: Color(0xff84cfff)),
+              const SizedBox(height: 16),
+              const Text('Alicia Fusion nécessite le Wi-Fi pour son premier chargement.',
+                textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 12),
+              const Text('Ton ancienne interface native reste accessible. Aucun fichier ni préférence n’est supprimé.',
+                textAlign: TextAlign.center),
+              const SizedBox(height: 18),
+              FilledButton(onPressed: retry, child: const Text('Réessayer')),
+              TextButton(onPressed: openNative, child: const Text('Ouvrir le mode natif')),
+            ])))
+        : Stack(children: [
+            Positioned.fill(child: WebViewWidget(controller: web)),
+            if (loading)
+              const Align(
+                alignment: Alignment.topCenter,
+                child: LinearProgressIndicator(minHeight: 3),
+              ),
+          ]),
+    ),
+  );
