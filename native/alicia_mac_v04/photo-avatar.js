@@ -20,7 +20,7 @@
  }
  populateVoices();speech?.addEventListener?.("voiceschanged",populateVoices);
  $("voice-choice")?.addEventListener("change",e=>localStorage.setItem("alicia-v04-voice",e.target.value));
- const stop=()=>{talking=false;stage.classList.remove("is-speaking");if(dialog)dialog=null;};
+ const stop=()=>{talking=false;window.Alicia3D?.setSpeaking?.(false);stage.classList.remove("is-speaking");if(dialog)dialog=null;};
  window.addEventListener("pagehide",()=>{speech?.cancel();stop()});
  function speak(text){
    if(!speech||typeof SpeechSynthesisUtterance==="undefined"){status("La synthèse vocale n'est pas disponible sur ce Mac.");return;}
@@ -32,7 +32,7 @@
    const preferred=availableVoices().find(v=>v.voiceURI===$("voice-choice")?.value);
    const woman=availableVoices().find(v=>/amelie|aurelie|audrey|celine|julie|marie|sophie|alice|lea/i.test(v.name));
    if(preferred||woman)msg.voice=preferred||woman;
-   msg.onstart=()=>{talking=true;stage.classList.add("is-speaking");status("Alicia parle…")};
+   msg.onstart=()=>{talking=true;window.Alicia3D?.setSpeaking?.(true);stage.classList.add("is-speaking");status("Alicia parle…")};
    msg.onend=()=>{stop();status("Alicia prête")};
    msg.onerror=()=>{stop();status("La voix n'a pas pu être lue sur ce Mac")};
    speech.speak(msg);
