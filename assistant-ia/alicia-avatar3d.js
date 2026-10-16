@@ -14,7 +14,8 @@ function init(){
  '<div class="alicia-avatar3d-import">'+
  '<label for="alicia-avatar3d-file">Modèle animé .glb / .gltf</label>'+
  '<input id="alicia-avatar3d-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" aria-label="Importer un modèle humain 3D stocké sur cet appareil">'+
- '<button id="alicia-avatar3d-restore" type="button">↶ Personnage original</button>'+
+ '<button id="alicia-avatar3d-realistic" type="button">✦ Alicia réaliste</button>'+
+ '<button id="alicia-avatar3d-restore" type="button">↶ Personnage stylisé</button>'+
  '</div>'+
  '<p class="alicia-avatar3d-caption" id="alicia-avatar3d-status" role="status">Avatar Alicia 3D : modèle original stylisé, en préparation…</p>';
  stage.prepend(panel);
@@ -23,7 +24,7 @@ function init(){
  const status=x=>{$("alicia-avatar3d-status").textContent=x;};
  if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;return;}
  let scene,camera,renderer,orbit,root,rig,face,mouth,eyes=[],hair,armR,armL,legR,legL,head,blinking=false,active=false;
- let imported=null,mixer=null,importGeneration=0;
+ let imported=null,mixer=null,importGeneration=0,faceJaw=null,jawBase=0;
  const clock=new THREE.Clock();
  const canvas=$("alicia-avatar");
  let auto=true,speaking=false,expression="happy",turnTo=null,lastT=0;
@@ -172,9 +173,47 @@ function init(){
      });
      imported=null;
    }
-   rig.visible=true;
-   status("Personnage Alicia original restauré, 3D stylisée et animée.");
+   faceJaw=null;rig.visible=true;
+   status("Personnage Alicia stylisé restauré. Clique sur Alicia réaliste pour la version humaine texturée.");
  }
+ function activateHumanModel(gltf,label){
+   const model=gltf.scene;
+   const bounds=new THREE.Box3().setFromObject(model);
+   const size=bounds.getSize(new THREE.Vector3());
+   if(!Number.isFinite(size.y)||size.y<.01||size.y>1e8){status("Dimensions du personnage invalides");return false;}
+   restoreOriginal();
+   const scale=2.52/size.y;
+   model.scale.multiplyScalar(scale);
+   model.updateMatrixWorld(true);
+   const fitted=new THREE.Box3().setFromObject(model);
+   const center=fitted.getCenter(new THREE.Vector3());
+   model.position.x-=center.x;
+   model.position.y-=fitted.min.y;
+   model.position.z-=center.z;
+   model.updateMatrixWorld(true);
+   root.add(model);imported=model;rig.visible=false;
+   faceJaw=model.getObjectByName("Bip01 MJaw")||model.getObjectByName("Jaw")||null;
+   jawBase=faceJaw?faceJaw.rotation.x:0;
+   const clips=Array.isArray(gltf.animations)?gltf.animations:[];
+   if(clips.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(clips[0]).play();}
+   turnTo=0;auto=true;
+   status(label+" : véritable modèle humain texturé et articulé, "+clips.length+
+     " animation(s). Tourne-le à 360°. Son apparence n'est pas encore identique au portrait de référence.");
+   return true;
+ }
+ function loadRealisticModel(){
+   if(!THREE.GLTFLoader){status("Chargeur GLB non disponible hors ligne.");return;}
+   const generation=++importGeneration;
+   status("Chargement d'Alicia réaliste depuis le fichier 3D local intégré…");
+   new THREE.GLTFLoader().load("./models/alicia_realiste_rocketbox.glb",gltf=>{
+     if(generation!==importGeneration)return;
+     activateHumanModel(gltf,"Alicia réaliste");
+   },undefined,error=>{
+     if(generation!==importGeneration)return;
+     status("Le modèle réaliste n'est pas accessible. L'avatar stylisé reste disponible. "+String(error?.message||error));
+   });
+ }
+ $("alicia-avatar3d-realistic").addEventListener("click",loadRealisticModel);
  $("alicia-avatar3d-restore").addEventListener("click",restoreOriginal);
  const input=$("alicia-avatar3d-file");
  input.addEventListener("change",()=>{
@@ -205,32 +244,7 @@ function init(){
          gltf.scene.traverse(node=>{node.geometry?.dispose?.();});
          return;
        }
-       const model=gltf.scene;
-       const bounds=new THREE.Box3().setFromObject(model);
-       const size=bounds.getSize(new THREE.Vector3());
-       if(!Number.isFinite(size.y)||size.y<.01||size.y>1e8){
-         status("Modèle sans dimensions 3D valides.");return;
-       }
-       restoreOriginal();
-       // Keep the requested import generation and normalize height for Alicia stage.
-       const factor=2.52/size.y;
-       model.scale.multiplyScalar(factor);model.updateMatrixWorld(true);
-       const fitted=new THREE.Box3().setFromObject(model);
-       const midpoint=fitted.getCenter(new THREE.Vector3());
-       model.position.x-=midpoint.x;
-       model.position.y-=fitted.min.y;
-       model.position.z-=midpoint.z;
-       model.updateMatrixWorld(true);
-       root.add(model);imported=model;rig.visible=false;
-       const clips=Array.isArray(gltf.animations)?gltf.animations:[];
-       if(clips.length){
-         mixer=new THREE.AnimationMixer(model);
-         mixer.clipAction(clips[0]).play();
-       }
-       turnTo=0;auto=true;
-       status("Personnage 3D chargé localement : "+file.name+". "+
-           (clips.length?clips.length+" animation(s) du squelette disponibles ; lecture automatique.":"Aucune animation de squelette : rotation 360° uniquement.")+
-           " Le fichier reste sur cet appareil.");
+       activateHumanModel(gltf,file.name);
      },err=>{
        status("Chargement GLTF impossible : "+String(err?.message||err));
      });
@@ -242,6 +256,7 @@ function init(){
  $("alicia-avatar3d-front").addEventListener("click",()=>{turnTo=0;auto=false;});
  $("alicia-avatar3d-turn").addEventListener("click",()=>{turnTo=Math.PI;auto=false;});
  $("alicia-avatar3d-view").addEventListener("click",()=>{camera.position.set(0,1.48,4.85);orbit.target.set(0,1.47,0);orbit.update();});
+ loadRealisticModel();
  let last=0;
  function frame(t){
    requestAnimationFrame(frame);
@@ -254,6 +269,7 @@ function init(){
    } else if(auto)root.rotation.y+=dt*.18;
    const phase=t*.0015;
    if(mixer&&imported)mixer.update(dt);
+   if(faceJaw)faceJaw.rotation.x=jawBase+(speaking?(.07+Math.abs(Math.sin(t*.015))*.09):0);
    if(rig.visible)rig.position.y=Math.sin(phase*2)*.012;
    if(rig.visible){
    legL.hip.rotation.x=Math.sin(phase)*.12;
