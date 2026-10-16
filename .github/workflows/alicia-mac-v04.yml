@@ -40,14 +40,30 @@ jobs:
           cat native/alicia_mac_v032/avatar-fallback.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v033/avatar-preview.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v04/mac-v04.css >> "$WEB/alicia-mac.css"
+          cat native/alicia_mac_v04/photo-avatar.css >> "$WEB/alicia-mac.css"
           cp native/alicia_mac_v033/avatar-autonomous.js "$WEB/avatar.js"
           cp native/alicia_mac_v032/avatar-motion-autonomous.mjs "$WEB/avatar-motion-autonomous.mjs"
           cp native/alicia_mac_v033/avatar-fallback.js "$WEB/avatar-fallback.js"
           cp native/alicia_mac_v04/mac-ai.js "$WEB/mac-ai.js"
+          cp native/alicia_mac_v04/ia-bridge.js "$WEB/ia-bridge.js"
+          cp native/alicia_mac_v04/photo-avatar.js "$WEB/avatar.js"
           cp native/alicia_mac_v04/avatar-photo.js "$WEB/avatar-photo.js"
           # Portrait déjà présent dans le dépôt Alicia, sans image externe.
           base64 -D -i native/alicia_mac_v02/AliciaPortrait.jpg.b64 -o "$WEB/AliciaPortrait.jpg"
           sips -g pixelWidth -g pixelHeight "$WEB/AliciaPortrait.jpg"
+          # Les deux vraies vues photographiques proviennent de l'image de référence.
+          python3 - <<'PHOTO'
+          from pathlib import Path
+          import base64
+          web=Path(__import__('os').environ['RUNNER_TEMP'])/'Alicia V0.4.app'/'Contents'/'Resources'/'Web'
+          for part in ('front','back'):
+              source=Path('native/alicia_mac_v04')/('portrait-'+part+'.webp.b64')
+              data=base64.b64decode(source.read_text().strip(),validate=True)
+              assert len(data)>1500 and data[:4]==b'RIFF' and data[8:12]==b'WEBP'
+              assert int.from_bytes(data[4:8],'little')+8==len(data), 'Image incomplete'
+              (web/('portrait-'+part+'.webp')).write_bytes(data)
+          print('Portraits Alicia face/dos vérifiés dans le paquet Mac')
+          PHOTO
           # Version figée du SDK depuis Puter officiel : meilleure compatibilité
           # avec WebKit ancien. Le proxy Swift reste une solution de repli.
           if curl --fail --location --silent --show-error --connect-timeout 8 --max-time 24               https://js.puter.com/v2/ --output "$WEB/puter-sdk.bundle.js" &&              test "$(stat -f%z "$WEB/puter-sdk.bundle.js")" -gt 1000; then
@@ -62,10 +78,10 @@ jobs:
           index=root/'index.html'
           s=index.read_text(encoding='utf-8')
           assert '</head>' in s and 'id="question" rows="2"' in s
-          s=s.replace('</head>', '<script>window.AliciaNativeMac=true;</script><script src="./puter-sdk.bundle.js" defer></script><script src="./avatar-fallback.js" defer></script><script src="./mac-ai.js" defer></script><script src="./avatar-photo.js" defer></script><link rel="stylesheet" href="./alicia-mac.css"></head>',1)
-          preview=Path('native/alicia_mac_v033/avatar-preview.html').read_text(encoding='utf-8')
+          s=s.replace('</head>', '<script>window.AliciaNativeMac=true;</script><script src="./puter-sdk.bundle.js" defer></script><script src="./avatar-fallback.js" defer></script><script src="./mac-ai.js" defer></script><script src="./ia-bridge.js" defer></script><link rel="stylesheet" href="./alicia-mac.css"></head>',1)
+          preview=Path('native/alicia_mac_v04/photo-avatar.html').read_text(encoding='utf-8')
           assert '<div class="avatar-stage"><canvas' in s
-          s=s.replace('<div class="avatar-stage"><canvas', '<div class="avatar-stage">'+preview+'<canvas',1)
+          s=s.replace('<div class="avatar-stage"><canvas', '<div class="avatar-stage alicia-v04-stage">'+preview+'<canvas',1)
           assert 'id="puter-connect"' in s and 'id="puter-state"' in s
           s=s.replace('<button id="puter-connect"', '<button id="puter-connect"',1)
           s=s.replace('<p id="puter-state"', '<button type="button" id="puter-retry" class="secondary">↻ Réessayer le chargement de Puter</button><p id="puter-state"',1)
@@ -82,6 +98,15 @@ jobs:
           original=':(isApplePhone?"puter":"local");'
           assert original in js, 'Le choix du moteur a changé: vérifier avant de mettre à jour'
           js=js.replace(original,':((isApplePhone||window.AliciaNativeMac)?"puter":"local");',1)
+          # Migration unique de l'ancien réglage local non fonctionnel vers Puter sur Mac.
+          migration='''if(window.AliciaNativeMac&&!localStorage.getItem("alicia-mac-v04-connection-migrated")){
+            connection.value="puter";
+            localStorage.setItem(CONNECTION_KEY,"puter");
+            localStorage.setItem("alicia-mac-v04-connection-migrated","yes");
+          }
+          '''
+          assert 'function showConnection(){' in js
+          js=js.replace('function showConnection(){',migration+'function showConnection(){',1)
           # Accueil local: une salutation peut recevoir une vraie réponse simple,
           # sans faire croire que le grand modèle IA est connecté.
           anchor='if(choice==="puter"){'
@@ -152,6 +177,8 @@ jobs:
           node --test native/alicia_mac_v032/avatar-autonomy.test.mjs
           node --test native/alicia_mac_v033/repair-smoke.test.mjs
           node --test native/alicia_mac_v04/v04.test.mjs
+          node --check native/alicia_mac_v04/photo-avatar.js
+          node --check native/alicia_mac_v04/ia-bridge.js
           node --input-type=module --check < native/alicia_mac_v033/avatar-autonomous.js
           node --check native/alicia_mac_v033/avatar-fallback.js
           node --input-type=module --check < native/alicia_mac_v032/avatar-motion-autonomous.mjs
@@ -162,11 +189,22 @@ jobs:
         run: |
           set -euo pipefail
           APP="$RUNNER_TEMP/Alicia V0.4.app"
+          python3 - <<'SWIFT'
+          from pathlib import Path
+          import os
+          source=Path('native/alicia_mac_v04/AliciaV04.swift').read_text()
+          assert '"ico", "txt"]' in source, 'Liste de médias modifiée, vérifier MIME'
+          assert '"ico": "image/x-icon",' in source
+          source=source.replace('"ico", "txt"]','"ico", "txt", "webp"]',1)
+          source=source.replace('"ico": "image/x-icon",','"ico": "image/x-icon",\n            "webp": "image/webp",',1)
+          dest=Path(os.environ['RUNNER_TEMP'])/'AliciaV04WebP.swift'
+          dest.write_text(source)
+          SWIFT
           xcrun --sdk macosx swiftc -parse-as-library \
             -target x86_64-apple-macos11.0 \
             -framework AppKit -framework SwiftUI -framework WebKit \
             -framework Network -framework Combine \
-            native/alicia_mac_v04/AliciaV04.swift \
+            "$RUNNER_TEMP/AliciaV04WebP.swift" \
             -o "$APP/Contents/MacOS/AliciaV03"
           chmod 755 "$APP/Contents/MacOS/AliciaV03"
           /usr/bin/file "$APP/Contents/MacOS/AliciaV03"
