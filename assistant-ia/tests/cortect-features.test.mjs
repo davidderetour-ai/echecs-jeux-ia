@@ -72,7 +72,7 @@ test("Relief image 2D -> nuage PLY reproductible et limité",()=>{
  assert.match(ply,/^ply\nformat ascii 1.0\n/);
  assert.match(ply,/element vertex 4/);
  assert.match(ply,/end_header\n/);
- assert.equal(ply.split("\n").filter(Boolean).length,14);
+ assert.equal(ply.split("\n").filter(Boolean).length,16);
  assert.equal(projectPoints(first,Math.PI/2).length,4);
 });
 test("Image trop grande et PLY incorrect rejetés",()=>{
