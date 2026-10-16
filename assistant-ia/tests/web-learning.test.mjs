@@ -79,7 +79,7 @@ test("Atelier HTML/CSS encapsulé : ni scripts ni requêtes dans iframe de prév
  assert.doesNotMatch(ui,/eval\s*\(|new Function|allow-same-origin|allow-scripts|https:\/\/js\.puter\.com/);
  assert.match(html,/src="\.\/web-learning-ui\.js"/);
  assert.match(html,/href="\.\/web-learning\.css"/);
- assert.match(sw,/alicia-shell-v30/);
+ assert.match(sw,/alicia-shell-v33/);
  for(const name of ["web-learning-core.mjs","web-learning-ui.js","web-learning.css"])assert.ok(sw.includes("./"+name));
  assert.match(css,/alicia-web-catalog/);
 });
