@@ -55,14 +55,14 @@ test("Académie reliée à la conversation et disponible hors ligne",()=>{
  assert.match(html,/src="\.\/alicia-professeur-ui\.js"/);
  assert.match(html,/href="\.\/alicia-professeur\.css"/);
  for(const file of ["alicia-academy.mjs","alicia-professeur-ui.js","alicia-professeur.css"])assert.ok(sw.includes("./"+file));
- assert.match(sw,/alicia-shell-v33/);
+ assert.match(sw,/alicia-shell-v34/);
  assert.match(router,/answerFromLesson\(q\)/);
  assert.match(router,/window\.AliciaTeacher/);
  assert.match(ui,/recordLessonResult/);
  assert.match(engine,/teacherProgress/);
  assert.match(engine,/teacherProgress:data\.teacherProgress/);
  assert.match(engine,/listLessonProgress:listLessonProgress/);
- assert.match(html,/0\.9\.0/);
+ assert.match(html,/0\.9\.1/);
 });
 test("Avatar cadré : vrai GLB et contrôles restent présents",()=>{
  const avatar=read("alicia-avatar3d.js"),theme=read("alicia-reference-theme.css");
