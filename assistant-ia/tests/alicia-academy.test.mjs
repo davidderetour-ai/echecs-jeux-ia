@@ -55,7 +55,7 @@ test("Académie reliée à la conversation et disponible hors ligne",()=>{
  assert.match(html,/src="\.\/alicia-professeur-ui\.js"/);
  assert.match(html,/href="\.\/alicia-professeur\.css"/);
  for(const file of ["alicia-academy.mjs","alicia-professeur-ui.js","alicia-professeur.css"])assert.ok(sw.includes("./"+file));
- assert.match(sw,/alicia-shell-v30/);
+ assert.match(sw,/alicia-shell-v33/);
  assert.match(router,/answerFromLesson\(q\)/);
  assert.match(router,/window\.AliciaTeacher/);
  assert.match(ui,/recordLessonResult/);
