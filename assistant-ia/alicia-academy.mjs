@@ -232,7 +232,7 @@ export const LESSONS=[
   "domain": "maths",
   "title": "Fractions",
   "summary": "Une fraction a/b exprime a parts d'un tout divisé en b parts égales, avec b différent de zéro. On peut simplifier en divisant numérateur et dénominateur par un même nombre.",
-  "example": "2/4 est équivalent à 1/2.",
+  "example": "Par exemple, 2/4 correspond à deux quartiers sur quatre et peut se simplifier en 1/2.",
   "question": "Quelle fraction est égale à 1/2 ?",
   "correct": 2,
   "correction": "2/4 se simplifie par 2.",
@@ -792,7 +792,7 @@ export function searchLessons(query,{domain="all",limit=5}={}){
  if(!qt.length)return candidates.slice(0,limit);
  const matches=[];
  for(const lesson of candidates){
-  const titleTerms=docTerms(lesson),fullTerms=new Set(tok(lesson.summary+" "+lesson.example));
+  const titleTerms=docTerms(lesson),fullTerms=new Set(tok(lesson.summary+" "+lesson.example+" "+lesson.question+" "+lesson.correction));
   const found=qt.filter(x=>titleTerms.has(x)||fullTerms.has(x));
   if(!found.length)continue;
   const coverage=found.length/qt.length;
