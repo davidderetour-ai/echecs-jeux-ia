@@ -235,7 +235,8 @@ function init(){
    jawBase=faceJaw?faceJaw.rotation.x:0;
    const clips=Array.isArray(gltf.animations)?gltf.animations:[];
    if(clips.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(clips[0]).play();}
-   turnTo=0;auto=true;
+   turnTo=0;auto=false;
+   window.dispatchEvent(new CustomEvent("alicia:3d-model-ready",{detail:{model:"realistic"}}));
    status(label+" : véritable modèle humain texturé et articulé, "+clips.length+
      " animation(s). Tourne-le à 360°. Son apparence n'est pas encore identique au portrait de référence.");
    return true;
@@ -250,6 +251,7 @@ function init(){
    },undefined,error=>{
      if(generation!==importGeneration)return;
      status("Le modèle réaliste n'est pas accessible. L'avatar stylisé reste disponible. "+String(error?.message||error));
+     window.dispatchEvent(new CustomEvent("alicia:3d-model-failed",{detail:{reason:String(error?.message||error)}}));
    });
  }
  $("alicia-avatar3d-realistic").addEventListener("click",loadRealisticModel);
