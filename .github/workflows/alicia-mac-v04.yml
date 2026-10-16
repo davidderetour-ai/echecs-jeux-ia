@@ -87,10 +87,10 @@ jobs:
           anchor='if(choice==="puter"){'
           assert anchor in js
           js=js.replace(anchor, '''if(choice==="puter"){
-  if(window.AliciaNativeMac && !review && !window.AliciaPuter?.ready()){
-    const greeting=window.AliciaMacAI?.offlineGreeting(messages.slice(-1)[0]?.content);
-    if(greeting)return greeting;
-  }''',1)
+            if(window.AliciaNativeMac && !review && !window.AliciaPuter?.ready()){
+              const greeting=window.AliciaMacAI?.offlineGreeting(messages.slice(-1)[0]?.content);
+              if(greeting)return greeting;
+            }''',1)
           # Vérification Wi-Fi mobile sans demander un consentement réseau fictif sur Mac.
           js=js.replace('window.AliciaWiFi?.requireConfirmed();',
                          'if(!window.AliciaNativeMac)window.AliciaWiFi?.requireConfirmed();',1)
