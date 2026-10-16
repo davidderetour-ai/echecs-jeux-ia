@@ -73,7 +73,7 @@ $("avatar-demo")?.addEventListener("click",()=>{
  speak("Bonjour, je suis Alicia. Je cligne des yeux, je te regarde quand tu touches l'écran, et ma bouche bouge quand je parle.");
 });
 const gl=canvas.getContext("webgl",{antialias:true,alpha:true,powerPreference:"low-power"});
-if(!gl){canvas.hidden=true;sayStatus("WebGL indisponible : l'écrit et la voix restent accessibles");return;}
+if(!gl){window.AliciaFallback?.();return;}
 const vs=[
 "attribute vec3 aPos;attribute vec3 aNorm;",
 "uniform vec3 uCenter,uScale;uniform float uYaw,uPitch,uAspect;",
@@ -104,7 +104,7 @@ let program;
 try{
  program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));
  gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);
-}catch{canvas.hidden=true;sayStatus("Moteur 3D indisponible");return;}
+}catch{window.AliciaFallback?.();return;}
 const attr=(name)=>gl.getAttribLocation(program,name),uni=(name)=>gl.getUniformLocation(program,name);
 const posAttr=attr("aPos"),normAttr=attr("aNorm");
 const U={center:uni("uCenter"),scale:uni("uScale"),color:uni("uColor"),yaw:uni("uYaw"),pitch:uni("uPitch"),aspect:uni("uAspect")};
@@ -221,7 +221,7 @@ function draw(t){
 }
 let lastFrame=0;
 function animate(t){
- if(document.visibilityState!=="hidden"&&t-lastFrame>=30){draw(t);lastFrame=t;}
+ if(document.visibilityState!=="hidden"&&t-lastFrame>=30){try{draw(t)}catch(e){window.AliciaFallback?.();return;}lastFrame=t;}
  requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
