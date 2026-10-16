@@ -1,4 +1,4 @@
-name: Alicia Mac V0.4.6 — Web, recherches, comparaison IA et cours hors ligne
+name: Alicia Mac Fusion-v0.9 — Web, recherches, comparaison IA et cours hors ligne
 
 on:
   push:
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   build:
-    name: Compiler Alicia Mac V0.4.6 pour Big Sur Intel
+    name: Compiler Alicia Mac Fusion-v0.9 pour Big Sur Intel
     runs-on: macos-15-intel
     timeout-minutes: 25
     steps:
@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APP="$RUNNER_TEMP/Alicia V0.4.6.app"
+          APP="$RUNNER_TEMP/Alicia Fusion-v0.9.app"
           WEB="$APP/Contents/Resources/Web"
           mkdir -p "$APP/Contents/MacOS" "$WEB"
           # Copie des outils HTML/CSS/JS/JSON, en lecture seule, sans secrets ni scripts système.
@@ -46,14 +46,12 @@ jobs:
           cat native/alicia_mac_v032/avatar-fallback.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v033/avatar-preview.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v04/mac-v04.css >> "$WEB/alicia-mac.css"
-          cat native/alicia_mac_v04/photo-avatar.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v041/native.css >> "$WEB/alicia-mac.css"
-          cp native/alicia_mac_v033/avatar-autonomous.js "$WEB/avatar.js"
+          cat assistant-ia/fusion-ui.css >> "$WEB/alicia-mac.css"
           cp native/alicia_mac_v032/avatar-motion-autonomous.mjs "$WEB/avatar-motion-autonomous.mjs"
           cp native/alicia_mac_v033/avatar-fallback.js "$WEB/avatar-fallback.js"
           cp native/alicia_mac_v04/mac-ai.js "$WEB/mac-ai.js"
           cp native/alicia_mac_v04/ia-bridge.js "$WEB/ia-bridge.js"
-          cp native/alicia_mac_v04/photo-avatar.js "$WEB/avatar.js"
           cp native/alicia_mac_v04/avatar-photo.js "$WEB/avatar-photo.js"
           # Portrait déjà présent dans le dépôt Alicia, sans image externe.
           base64 -D -i native/alicia_mac_v02/AliciaPortrait.jpg.b64 -o "$WEB/AliciaPortrait.jpg"
@@ -62,7 +60,7 @@ jobs:
           python3 - <<'PHOTO'
           from pathlib import Path
           import base64
-          web=Path(__import__('os').environ['RUNNER_TEMP'])/'Alicia V0.4.6.app'/'Contents'/'Resources'/'Web'
+          web=Path(__import__('os').environ['RUNNER_TEMP'])/'Alicia Fusion-v0.9.app'/'Contents'/'Resources'/'Web'
           for part in ('front','back'):
               source=Path('native/alicia_mac_v04')/('portrait-'+part+'.webp.b64')
               data=base64.b64decode(source.read_text().strip(),validate=True)
@@ -77,21 +75,20 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import os
-          root=Path(os.environ['RUNNER_TEMP'])/'Alicia V0.4.6.app'/'Contents'/'Resources'/'Web'
+          root=Path(os.environ['RUNNER_TEMP'])/'Alicia Fusion-v0.9.app'/'Contents'/'Resources'/'Web'
           html=root/'index.html'
           s=html.read_text(encoding='utf-8')
           assert 'src="./original-engine.js"' in s
           assert '<div class="avatar-stage"><canvas' in s
-          s=s.replace('</head>','<script>window.AliciaNativeMac=true;</script><script src="./avatar-fallback.js" defer></script><link rel="stylesheet" href="./alicia-mac.css"></head>',1)
+          s=s.replace('</head>','<script>window.AliciaNativeMac=true;</script><link rel="stylesheet" href="./alicia-mac.css"></head>',1)
           original='<script src="./original-engine.js" defer></script><script src="./app.js" defer></script>'
           assert original in s, 'Scripts Alicia Original absents'
           s=s.replace(original,'<script src="./original-engine.js" defer></script><script src="./native-memory-bridge.js" defer></script><script src="./app.js" defer></script>',1)
-          preview=Path('native/alicia_mac_v04/photo-avatar.html').read_text(encoding='utf-8')
-          s=s.replace('<div class="avatar-stage"><canvas','<div class="avatar-stage alicia-v04-stage">'+preview+'<canvas',1)
           s=s.replace('id="question" rows="2"', 'id="question" rows="5"',1)
-          s=s.replace('<title>Alicia — Assistant personnel</title>', '<title>Alicia Mac V0.4.6 — Moteur original gratuit</title>',1)
+          s=s.replace('<title>Alicia — Assistant personnel</title>', '<title>Alicia Mac Fusion-v0.9 — Moteur original gratuit</title>',1)
           assert 'src="./puter-engine.js"' not in s
           assert 'src="./original-controls.js"' in s
+          assert 'src="./fusion-ui.js"' in s and 'href="./fusion-ui.css"' in s
           html.write_text(s,encoding='utf-8')
           app=root/'app.js'
           js=app.read_text(encoding='utf-8')
@@ -100,7 +97,7 @@ jobs:
           app.write_text(js,encoding='utf-8')
           for required in ('original-engine.js','original-controls.js','original-controls.css','native-memory-bridge.js','cortect-ui.js','alicia-academy.mjs','alicia-professeur-ui.js','alicia-professeur.css','web-learning-core.mjs','web-learning-ui.js','web-learning.css','image3d-ui.js','three-studio.js','three-studio.css','alicia-avatar3d.js','alicia-reference-theme.css','alicia-reference-ui.js','vendor/three.r147.min.js','vendor/OrbitControls.r147.js','vendor/GLTFLoader.r147.js','models/alicia_realiste_rocketbox.glb','models/alicia_realiste_manifest.json','models/ROCKETBOX-MIT-LICENSE.md','vendor/THREE-LICENSE.txt','python-vscode-ui.js','cortect-rag-core.mjs','cortect-agent-core.mjs','portrait-front.webp','portrait-back.webp'):
               assert (root/required).is_file(),required
-          print('Alicia Mac Original 0.4.6 : moteur inclus, aucune requête IA externe ni service payant.')
+          print('Alicia Mac Original 0.9.0 : moteur inclus, aucune requête IA externe ni service payant.')
           PY
           cat > "$APP/Contents/Info.plist" <<'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
@@ -110,10 +107,10 @@ jobs:
             <key>CFBundleExecutable</key><string>AliciaV03</string>
             <key>CFBundleIdentifier</key><string>fr.alicia.assistant.mac.v045</string>
             <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
-            <key>CFBundleName</key><string>Alicia V0.4.6</string>
-            <key>CFBundleDisplayName</key><string>Alicia V0.4.6</string>
+            <key>CFBundleName</key><string>Alicia Fusion-v0.9</string>
+            <key>CFBundleDisplayName</key><string>Alicia Fusion-v0.9</string>
             <key>CFBundlePackageType</key><string>APPL</string>
-            <key>CFBundleShortVersionString</key><string>0.4.6</string>
+            <key>CFBundleShortVersionString</key><string>0.9.0</string>
             <key>CFBundleVersion</key><string>10</string>
             <key>LSMinimumSystemVersion</key><string>11.0</string>
             <key>NSHighResolutionCapable</key><true/>
@@ -162,7 +159,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APP="$RUNNER_TEMP/Alicia V0.4.6.app"
+          APP="$RUNNER_TEMP/Alicia Fusion-v0.9.app"
           # Compiler l’application Mac Intel avec moteur Alicia Original intégré dans la vue Web.
           xcrun --sdk macosx swiftc -parse-as-library \
             -target x86_64-apple-macos11.0 \
@@ -185,19 +182,19 @@ jobs:
           "$RUNNER_TEMP/alicia-memory-smoke" write
           "$RUNNER_TEMP/alicia-memory-smoke" read
 
-      - name: Archiver Alicia V0.4.6 sans remplacer V0.1 ou V0.2
+      - name: Archiver Alicia Fusion-v0.9 sans remplacer V0.1 ou V0.2
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist
           ditto -c -k --sequesterRsrc --keepParent \
-            "$RUNNER_TEMP/Alicia V0.4.6.app" dist/Alicia-Mac-V0.4.6.zip
-          test -s dist/Alicia-Mac-V0.4.6.zip
+            "$RUNNER_TEMP/Alicia Fusion-v0.9.app" dist/Alicia-Mac-Fusion-v0.9.zip
+          test -s dist/Alicia-Mac-Fusion-v0.9.zip
 
       - name: Publier le téléchargement personnel
         uses: actions/upload-artifact@v4
         with:
-          name: Alicia-Mac-V0.4.6
-          path: dist/Alicia-Mac-V0.4.6.zip
+          name: Alicia-Mac-Fusion-v0.9
+          path: dist/Alicia-Mac-Fusion-v0.9.zip
           if-no-files-found: error
           retention-days: 14
