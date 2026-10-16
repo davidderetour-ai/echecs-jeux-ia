@@ -9,7 +9,7 @@ export function planMission(text){
  const task=String(text||"").slice(0,1400);
  const matches=task.match(/https?:\/\/[^\s<>"']+/gi)||[];
  const urls=matches.slice(0,1).map(publicPageURL);
- const needCompute=/calcul|somme|addition|total|fibonacci|\d+\s*[+*/×÷-]\s*\d+/i.test(task);
+ const needCompute=/calcul|somme|addition|total|fibonacci|\d+\s*[+*\/×÷-]\s*\d+/i.test(task);
  return {urls,steps:urls.length?(needCompute?["read","calculate","report"]:["read","report"]):
    (needCompute?["calculate","report"]:["report"]),userText:task};
 }
@@ -42,7 +42,7 @@ export async function runMission(text,{notes=[],fetcher=fetch,signal}={}){
   }else if(step==="calculate"){
     const task=plan.userText;
     // Only explicit arithmetic or Fibonacci; never interpret arbitrary page numbers as countries/populations.
-    const expression=task.match(/(?:calcule|calculer|combien font|somme de|additionne)\s+(\d[\d\s+\-*/().×÷,]{1,70})/i)?.[1];
+    const expression=task.match(/(?:calcule|calculer|combien font|somme de|additionne)\s+(\d[\d\s+\-*\/().×÷,]{1,70})/i)?.[1];
     const fib=task.match(/\b(?:fibonacci|suite de fibonacci)\b.*?\d{1,3}/i)?.[0];
     if(!expression&&!fib){
       events.push({step:"calculate",status:"needs-data"});
