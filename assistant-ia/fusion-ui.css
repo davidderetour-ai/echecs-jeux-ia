@@ -85,3 +85,8 @@
  .fusion-intro p{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){.fusion-on *{scroll-behavior:auto!important}}
+
+/* Comparaison de version, compacte et accessible */
+.alicia-fusion-sync{display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:9px;margin:13px auto 0;color:#b7d8ff;font-size:13px;line-height:1.4}
+.alicia-fusion-sync button{font-size:13px;min-height:38px;padding:7px 12px}
+.alicia-fusion-sync #alicia-fusion-refresh[hidden]{display:none!important}
