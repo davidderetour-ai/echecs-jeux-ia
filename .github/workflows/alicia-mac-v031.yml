@@ -36,7 +36,7 @@ jobs:
                 cp "$file" "$WEB/$(basename "$file")";;
             esac
           done
-          cp native/alicia_mac_v031/mac-large-composer.css "$WEB/alicia-mac.css"
+          cp native/alicia_mac_v03/mac-large-composer.css "$WEB/alicia-mac.css"
           python3 - <<'PY'
           from pathlib import Path
           root=Path(__import__('os').environ['RUNNER_TEMP'])/'Alicia V0.3.1.app'/'Contents'/'Resources'/'Web'
@@ -102,7 +102,7 @@ jobs:
             -target x86_64-apple-macos11.0 \
             -framework AppKit -framework SwiftUI -framework WebKit \
             -framework Network -framework Combine \
-            native/alicia_mac_v031/AliciaV03.swift \
+            native/alicia_mac_v031/AliciaV031.swift \
             -o "$APP/Contents/MacOS/AliciaV03"
           chmod 755 "$APP/Contents/MacOS/AliciaV03"
           /usr/bin/file "$APP/Contents/MacOS/AliciaV03"
