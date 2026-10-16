@@ -360,7 +360,7 @@ export function compareCatalogTools(firstRank,secondRank){
  b.name+" : catégorie de découverte "+b.category+" ; rang historique "+b.rank2025+"."],
  limitations:"Fonctions, prix, confidentialité et disponibilité actuels NON vérifiés. Consulte leurs sources officielles avant de décider."};
 }
-export function keywordTokens(q){return [...new Set(String(q||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().match(/[a-z0-9]{4,}/g)||[])].filter(x=>!["quel","quelle","quels","pour","dans","avec","comment","sont","that","this","from"].includes(x));}
+export function keywordTokens(q){return [...new Set(String(q||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().match(/[a-z0-9]{3,}/g)||[])].filter(x=>!["quel","quelle","quels","pour","dans","avec","comment","sont","that","this","from"].includes(x));}
 export function relevantExcerpts(question,pages){
  const terms=keywordTokens(question);
  return (Array.isArray(pages)?pages:[]).slice(0,3).map((p)=>{
