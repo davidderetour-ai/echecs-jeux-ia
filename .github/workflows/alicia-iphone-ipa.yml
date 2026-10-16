@@ -27,6 +27,26 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Intégrer tous les anciens modèles dans l'IPA iPhone
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main
+          mkdir -p "$RUNNER_TEMP/alicia-modeles" native/alicia_flutter/assets/alicia_web
+          git archive FETCH_HEAD assistant-ia | tar -xf - -C "$RUNNER_TEMP/alicia-modeles"
+          cp -R "$RUNNER_TEMP/alicia-modeles/assistant-ia/." native/alicia_flutter/assets/alicia_web/
+          test -s native/alicia_flutter/assets/alicia_web/models/alicia_realiste_rocketbox.glb
+          test -s native/alicia_flutter/assets/alicia_web/alicia-model-gallery.js
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("native/alicia_flutter/assets/alicia_web")
+          release=json.loads((root/"fusion-release.json").read_text())
+          assert release["version"]=="0.9.1", release["version"]
+          assert all((root/p).exists() for p in ("index.html","alicia-avatar3d.js","alicia-model-gallery.js","models/alicia_realiste_rocketbox.glb","vendor/three.r147.min.js"))
+          print("Alicia Fusion 0.9.1 : personnages réaliste/stylisé, entier/portrait et anciens portraits embarqués")
+          PY
+
       - name: Générer uniquement les fichiers iOS manquants
         working-directory: native/alicia_flutter
         run: |
@@ -67,7 +87,7 @@ jobs:
       - name: Publier le fichier IPA dans les artefacts du workflow
         uses: actions/upload-artifact@v4
         with:
-          name: Alicia-iPhone-IPA
+          name: Alicia-iPhone-IPA-Fusion-0.9.1
           path: native/alicia_flutter/dist/Alicia-native-unsigned.ipa
           if-no-files-found: error
           retention-days: 14

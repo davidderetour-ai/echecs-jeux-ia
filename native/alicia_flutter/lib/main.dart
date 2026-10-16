@@ -248,7 +248,7 @@ class _AliciaScreenState extends State<AliciaScreen> {
 
 /// Alicia Fusion : l'interface complète fonctionne dans la fenêtre native iOS.
 /// Elle ne lance pas Safari. Le mode natif historique reste disponible séparément.
-/// La première ouverture exige une connexion réseau ; le cache WebKit dépend d'iOS.
+/// Les modèles 3D et portraits précédents sont aussi embarqués en secours local.
 class AliciaFusionScreen extends StatefulWidget {
   const AliciaFusionScreen({super.key});
   @override
@@ -260,9 +260,10 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   bool loading = true;
   bool failed = false;
   bool wifiAllowed = false;
+  bool showingBundled = false;
   StreamSubscription<List<ConnectivityResult>>? fusionNetwork;
   static final Uri site = Uri.parse(
-    'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=090');
+    'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=091');
 
   @override
   void initState() {
@@ -278,8 +279,9 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
           if (mounted && wifiAllowed) setState(() => loading = false);
         },
         onWebResourceError: (error) {
-          if (error.isForMainFrame == true && mounted && wifiAllowed) {
-            setState(() { loading = false; failed = true; });
+          if (error.isForMainFrame == true && mounted) {
+            if (!showingBundled) { loadBundledFusion(); }
+            else { setState(() { loading = false; failed = true; }); }
           }
         },
       ));
@@ -287,8 +289,7 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
       final connectedByWifi = connections.contains(ConnectivityResult.wifi);
       if (!connectedByWifi && wifiAllowed) {
         wifiAllowed = false;
-        web.loadHtmlString('<html><body>Mode Wi-Fi nécessaire</body></html>');
-        if (mounted) setState(() { loading = false; failed = true; });
+        loadBundledFusion();
       } else if (connectedByWifi && !wifiAllowed) {
         loadFusionWithWifi();
       }
@@ -302,12 +303,27 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
       if (!mounted) return;
       if (!connections.contains(ConnectivityResult.wifi)) {
         wifiAllowed = false;
-        setState(() { loading = false; failed = true; });
+        await loadBundledFusion();
         return;
       }
       wifiAllowed = true;
+      showingBundled = false;
       setState(() { loading = true; failed = false; });
       await web.loadRequest(site);
+    } catch (_) {
+      if (mounted) setState(() { loading = false; failed = true; });
+    }
+  }
+
+  /// WebKit charge les fichiers HTML, JS, photos et le GLB contenus dans l'IPA.
+  /// Selon les limitations de WebKit, certaines ressources locales peuvent ne pas s'exécuter ;
+  /// le mode natif historique reste disponible sans réseau.
+  Future<void> loadBundledFusion() async {
+    showingBundled = true;
+    if (mounted) setState(() { loading = true; failed = false; });
+    try {
+      await web.loadFlutterAsset('assets/alicia_web/index.html');
+      if (mounted) setState(() { loading = false; failed = false; });
     } catch (_) {
       if (mounted) setState(() { loading = false; failed = true; });
     }
@@ -333,7 +349,7 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       backgroundColor: const Color(0xff080d24),
-      title: const Text('ALICIA Fusion · 0.9', style: TextStyle(
+      title: const Text('ALICIA Fusion · 0.9.1', style: TextStyle(
         color: Color(0xffd8eaff), fontWeight: FontWeight.bold, fontSize: 17)),
       actions: [
         IconButton(
@@ -360,10 +376,10 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Icon(Icons.wifi_off, size: 54, color: Color(0xff84cfff)),
               const SizedBox(height: 16),
-              const Text('Alicia Fusion nécessite le Wi-Fi pour son premier chargement.',
+              const Text('Alicia Fusion ne peut pas charger ses ressources locales.',
                 textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
               const SizedBox(height: 12),
-              const Text('Ton ancienne interface native reste accessible. Aucun fichier ni préférence n’est supprimé.',
+              const Text('Le mode natif reste accessible hors connexion. Aucun historique ni préférence n’est supprimé.',
                 textAlign: TextAlign.center),
               const SizedBox(height: 18),
               FilledButton(onPressed: retry, child: const Text('Réessayer')),
