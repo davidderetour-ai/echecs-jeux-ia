@@ -1,0 +1,20 @@
+/* Alicia Mac 0.4.1: connexion native claire sur Big Sur, personnage plus grand. */
+.alicia-native-puter {background:linear-gradient(115deg,#111f56,#1d2e65);padding:18px 20px;
+ border:1px solid #617ce0;border-radius:14px;margin:12px 0;color:#e6eaff;max-width:100%;}
+.alicia-native-puter h3{font-size:19px;color:#d8ebff;margin:0 0 10px;}
+.alicia-native-puter label{display:block;font-size:15px;margin:15px 0 8px;}
+.alicia-native-puter input[type=password]{display:block;box-sizing:border-box;width:100%;max-width:630px;
+ color:#f4f7ff;background:#172552;border:1px solid #6487ef;border-radius:9px;padding:12px 14px;font-size:15px;}
+.alicia-native-puter a{color:#93ceff;text-decoration:underline;}
+.alicia-native-buttons{display:flex;gap:10px;flex-wrap:wrap;margin:13px 0}
+.alicia-native-buttons button{padding:11px 14px;border-radius:10px;}
+#alicia-native-status{border-left:3px solid #7c9cf5;padding:9px 11px;line-height:1.5;background:#0d19407a;}
+#alicia-native-status[data-type="error"]{color:#ffe2cf;border-color:#ff9c74;}
+#alicia-native-status[data-type="connected"]{color:#b8f7da;border-color:#47d7ab;}
+.alicia-native-puter small{display:block;line-height:1.45;opacity:.83;font-size:12px;}
+.avatar-stage.alicia-v04-stage{min-height:515px!important}
+.alicia-photo-stage{min-height:515px!important}
+.alicia-photo-scene{height:min(500px,57vw)!important;min-height:400px!important;}
+.alicia-photo-rotator{width:min(285px,53%)!important;}
+@media(max-width:850px){.alicia-photo-scene{min-height:370px!important;height:410px!important}
+ .alicia-photo-rotator{width:235px!important}}
