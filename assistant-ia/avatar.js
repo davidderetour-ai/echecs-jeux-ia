@@ -14,6 +14,7 @@ function setExpression(value){
  intent=normalizeExpression(value);
  const configured=$("expression-mode")?.value||"auto";
  expression=configured==="auto"?intent:normalizeExpression(configured);
+ window.Alicia3D?.setExpression?.(expression);
  const label=$("expression-status");if(label)label.textContent="Expression : "+EXPRESSIONS[expression];
 }
 $("expression-mode")?.addEventListener("change",()=>setExpression(intent));
@@ -32,7 +33,7 @@ const voiceStyles={douce:{rate:.88,pitch:1.08,volume:.86},naturelle:{rate:1,pitc
 const voiceStyle=$("voice-style");
 if(voiceStyle){
  const saved=localStorage.getItem("alicia-style-vocal");
- if(Object.hasOwn(voiceStyles,saved))voiceStyle.value=saved;
+ if(Object.prototype.hasOwnProperty.call(voiceStyles,saved))voiceStyle.value=saved;
  voiceStyle.addEventListener("change",()=>localStorage.setItem("alicia-style-vocal",voiceStyle.value));
 }
 function speak(text){
@@ -42,10 +43,10 @@ function speak(text){
  const p=voiceStyles[voiceStyle?.value]||voiceStyles.douce;
  u.lang="fr-FR";u.rate=p.rate;u.pitch=p.pitch;u.volume=p.volume;
  const available=voices();const selected=available.find(v=>v.voiceURI===$("voice-choice")?.value);const preferred=available.find(v=>/amelie|aurelie|audrey|celine|julie|marie|sylvie|sophie|alice|lea/i.test(v.name));if(selected||preferred)u.voice=selected||preferred;
- u.onstart=()=>{speaking=true;lastBoundary=performance.now();sayStatus("Alicia parle…")};
+ u.onstart=()=>{speaking=true;window.Alicia3D?.setSpeaking?.(true);lastBoundary=performance.now();sayStatus("Alicia parle…")};
  u.onboundary=()=>{lastBoundary=performance.now()};
- u.onend=()=>{speaking=false;mouth=0;lastBoundary=-1;sayStatus("Alicia est prête")};
- u.onerror=()=>{speaking=false;mouth=0;lastBoundary=-1;sayStatus("Lecture vocale indisponible")};
+ u.onend=()=>{speaking=false;window.Alicia3D?.setSpeaking?.(false);mouth=0;lastBoundary=-1;sayStatus("Alicia est prête")};
+ u.onerror=()=>{speaking=false;window.Alicia3D?.setSpeaking?.(false);mouth=0;lastBoundary=-1;sayStatus("Lecture vocale indisponible")};
  synth.speak(u);
 }
 function listen(){
@@ -71,6 +72,8 @@ $("avatar-demo")?.addEventListener("click",()=>{
  setExpression("joyful");
  speak("Bonjour, je suis Alicia. Je cligne des yeux, je te regarde quand tu touches l'écran, et ma bouche bouge quand je parle.");
 });
+// Ne pas lancer un second rendu WebGL si le personnage articulé fonctionne déjà.
+if(window.Alicia3D?.ready){canvas.hidden=true;return;}
 const gl=canvas.getContext("webgl",{antialias:true,alpha:true,powerPreference:"low-power"});
 if(!gl){canvas.hidden=true;sayStatus("WebGL indisponible : l'écrit et la voix restent accessibles");return;}
 const vs=[
