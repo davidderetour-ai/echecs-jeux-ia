@@ -37,8 +37,13 @@ final class AliciaLoopbackServer: ObservableObject {
     private func start() {
         do {
             let parameters = NWParameters.tcp
-            parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(.loopback), port: .any)
-            let server = try NWListener(using: parameters, on: .any)
+            // Port fixe pour conserver les préférences locales entre les lancements.
+            // Si le port est déjà occupé, échouer au lieu de charger un autre service.
+            guard let port = NWEndpoint.Port(rawValue: 8767) else {
+                throw NSError(domain: "Alicia", code: 8767)
+            }
+            parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(.loopback), port: port)
+            let server = try NWListener(using: parameters, on: port)
             listener = server
             server.newConnectionHandler = { [weak self] connection in
                 self?.handle(connection)
