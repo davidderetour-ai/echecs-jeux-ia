@@ -40,6 +40,7 @@ jobs:
             esac
           done
           cp -R assistant-ia/vendor "$WEB/vendor"
+          cp -R assistant-ia/models "$WEB/models"
           cp native/alicia_mac_v03/mac-large-composer.css "$WEB/alicia-mac.css"
           cat native/alicia_mac_v032/avatar-fallback.css >> "$WEB/alicia-mac.css"
           cat native/alicia_mac_v033/avatar-preview.css >> "$WEB/alicia-mac.css"
