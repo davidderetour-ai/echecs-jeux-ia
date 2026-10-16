@@ -1,0 +1,62 @@
+name: Alicia iPhone — fabriquer IPA gratuit
+
+on:
+  push:
+    branches:
+      - alicia-flutter-native-v1
+    paths:
+      - "native/alicia_flutter/**"
+      - ".github/workflows/alicia-iphone-ipa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-ipa:
+    name: Compiler Alicia pour iPhone
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Récupérer le projet Alicia
+        uses: actions/checkout@v4
+
+      - name: Installer Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Générer uniquement les fichiers iOS manquants
+        working-directory: native/alicia_flutter
+        run: |
+          flutter create --platforms=ios --org fr.alicia --project-name alicia_native .
+          flutter pub get
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Alicia" ios/Runner/Info.plist
+
+      - name: Compiler sans certificat payant
+        working-directory: native/alicia_flutter
+        run: flutter build ios --release --no-codesign
+
+      - name: Préparer le fichier IPA pour AltStore Classic
+        working-directory: native/alicia_flutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d build/ios/iphoneos/Runner.app
+          mkdir -p dist/Payload
+          cp -R build/ios/iphoneos/Runner.app dist/Payload/
+          (
+            cd dist
+            zip -qry Alicia-native-unsigned.ipa Payload
+          )
+          rm -rf dist/Payload
+          test -s dist/Alicia-native-unsigned.ipa
+
+      - name: Publier le fichier IPA dans les artefacts du workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: Alicia-iPhone-IPA
+          path: native/alicia_flutter/dist/Alicia-native-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
