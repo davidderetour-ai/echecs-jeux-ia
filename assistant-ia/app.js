@@ -67,7 +67,10 @@ async function callIA(review=false){
  }
  // Attendre la restauration native avant de répondre : sinon les réponses apprises semblent perdues.
  if(window.AliciaNativeMac && window.AliciaNativeMemory)await window.AliciaNativeMemory.ready;
- const response=engine.answer({messages,mode:$("mode").value,notes:getNotes()});
+ // Knowledge lessons and safe local tool router are optional plug-ins.
+ const query=messages.filter(m=>m.role==="user").slice(-1)[0]?.content||"";
+ const plugin=window.AliciaLocalTools?.answer?.(query);
+ const response=plugin||engine.answer({messages,mode:$("mode").value,notes:getNotes()});
  if(window.AliciaNativeMac && window.AliciaNativeMemory){
    const saved=await window.AliciaNativeMemory.flush();
    if(!saved && response.trained){
