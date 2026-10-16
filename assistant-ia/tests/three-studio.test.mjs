@@ -35,5 +35,5 @@ test("Aucun téléchargement dynamique de Three.js ni paiement",()=>{
  assert.doesNotMatch(code,/https?:\/\/|new Function|eval\s*\(|fetch\s*\(|OpenAI|payment/i);
  assert.match(code,/ne reconstruit pas le dos/);
  assert.ok(text("three-studio.css").includes("touch-action:none"));
- assert.match(text("sw.js"),/alicia-shell-v25/);
+ assert.match(text("sw.js"),/alicia-shell-v26/);
 });
