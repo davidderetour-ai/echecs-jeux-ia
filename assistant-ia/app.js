@@ -65,7 +65,18 @@ async function callIA(review=false){
    return {answer:"Je peux relire ma réponse, mais mon petit moteur original n'a pas encore de vérification avancée. Je conserve donc cette réponse sans la déclarer vérifiée :\n\n"+last,
      provider:"Alicia Original",local:true,verified:false,sources:[]};
  }
- const response=engine.answer({messages,mode:$("mode").value,notes:getNotes()});
+ // Attendre la restauration native avant de répondre : sinon les réponses apprises semblent perdues.
+ if(window.AliciaNativeMac && window.AliciaNativeMemory)await window.AliciaNativeMemory.ready;
+ // Knowledge lessons and safe local tool router are optional plug-ins.
+ const query=messages.filter(m=>m.role==="user").slice(-1)[0]?.content||"";
+ const plugin=window.AliciaLocalTools?.answer?.(query);
+ const response=plugin||engine.answer({messages,mode:$("mode").value,notes:getNotes()});
+ if(window.AliciaNativeMac && window.AliciaNativeMemory){
+   const saved=await window.AliciaNativeMemory.flush();
+   if(!saved && response.trained){
+     response.answer+=" ⚠️ La sauvegarde sur disque n'a pas été confirmée. Exporte la mémoire avant de fermer Alicia.";
+   }
+ }
  document.dispatchEvent(new Event("alicia-original-answered"));
  return response;
 }
