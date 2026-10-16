@@ -4,6 +4,7 @@
 import {orchestrate,chooseTool} from "./cortect-agent-core.mjs";
 import {courseSearch} from "./python-vscode-course.mjs";
 import {answerFromContext,indexDocuments} from "./cortect-rag-core.mjs";
+import {LESSONS,answerFromLesson,subjects} from "./alicia-academy.mjs";
 function docs(){
  const engine=window.AliciaOriginalEngine;
  return engine?.listCortectNotes?.()||[];
@@ -11,6 +12,14 @@ function docs(){
 export function answerWithTools(query){
  const q=String(query||"").trim();
  if(!q)return null;
+ // L'atelier est un programme d'enseignement, pas un transfert des poids de ChatGPT.
+ if(/(?:professeur|enseignant|enseigne.moi|apprendre\s+tout|apprends\s+tout|enseigne\s+à\s+alicia|ce que tu sais)/i.test(q)){
+   window.AliciaTeacher?.open?.();
+   return {answer:"Mon professeur m'a donné une bibliothèque de "+LESSONS.length+
+     " leçons originales dans "+subjects().length+" matières : informatique, IA, mathématiques, sciences, français, géographie, histoire, jeux, cybersécurité, administratif, arts, musique et robotique. "+
+     "Tu peux ouvrir « Professeur d’Alicia » pour voir mes fiches et leurs tests. Je peux retrouver ces connaissances hors ligne, mais je ne suis pas un grand modèle de langage et je ne prétendrai pas savoir ce qui n'est pas dans mes sources.",
+    provider:"Professeur local",local:true,verified:false,sources:[]};
+ }
  // Commande d'avatar : éviter de répondre « je ne sais pas » à une demande réelle d'interface.
  if(/\b(?:avatar|personnage)\b/i.test(q)&&/(?:3d|trois dimensions|refaire|refais|modifi|am[eé]lior|affiche|montre|tourne|rotation)/i.test(q)){
    const isAvailable=Boolean(window.Alicia3D?.ready);
@@ -37,6 +46,8 @@ export function answerWithTools(query){
   const result=answerFromContext(q,indexDocuments(source),2);
   return {answer:result.answer,provider:"CORTECT RAG local",local:true,verified:false,sources:[]};
  }
+ const learned=answerFromLesson(q);
+ if(learned)return learned;
  return null;
 }
 window.AliciaLocalTools={answer:answerWithTools};
