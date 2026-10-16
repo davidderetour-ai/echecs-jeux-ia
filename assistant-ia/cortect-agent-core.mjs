@@ -10,7 +10,7 @@ export function fibonacci(index){
  return a;
 }
 function safeArithmetic(expression){
- const tokens=String(expression).replace(/,/g,".").replace(/×/g,"*").replace(/÷/g,"/").match(/\d+(?:\.\d+)?|[()+\-*/]/g);
+ const tokens=String(expression).replace(/,/g,".").replace(/×/g,"*").replace(/÷/g,"/").match(/\d+(?:\.\d+)?|[()+\-*\/]/g);
  if(!tokens||tokens.length>50||tokens.join("")!==expression.replace(/,/g,".").replace(/×/g,"*").replace(/÷/g,"/").replace(/\s/g,""))throw new Error("Calcul limité aux nombres, parenthèses et +, −, ×, ÷.");
  let p=0;
  function atom(){
@@ -69,7 +69,7 @@ export function draftNotification(message,channel){
 export function chooseTool(query){
  const q=String(query||"").trim();
  if(/(?:slack|canal\s+#?|alerte\s+(?:l.équipe|l equipe)|notification\s+à|notification\s+a)/i.test(q))return "notification-brouillon";
- if(/fibonacci|\d+\s*[+*/×÷-]\s*\d+|^(?:combien font|calcule|calculer)\b/i.test(q))return "calculateur";
+ if(/fibonacci|\d+\s*[+*\/×÷-]\s*\d+|^(?:combien font|calcule|calculer)\b/i.test(q))return "calculateur";
  if(/(?:mes notes|mes documents|dans la base|base de donn[eé]es|recherche dans|projet alpha|statut du projet|proc[eé]dure)/i.test(q))return "recherche-notes";
  return null;
 }
