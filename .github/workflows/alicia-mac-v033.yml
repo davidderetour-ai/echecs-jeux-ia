@@ -126,7 +126,7 @@ jobs:
             -target x86_64-apple-macos11.0 \
             -framework AppKit -framework SwiftUI -framework WebKit \
             -framework Network -framework Combine \
-            native/alicia_mac_v033/AliciaV032.swift \
+            native/alicia_mac_v033/AliciaV033.swift \
             -o "$APP/Contents/MacOS/AliciaV03"
           chmod 755 "$APP/Contents/MacOS/AliciaV03"
           /usr/bin/file "$APP/Contents/MacOS/AliciaV03"
