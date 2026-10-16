@@ -28,6 +28,7 @@ jobs:
           # Empêcher la substitution du modèle source.
           test "$(git hash-object "$RUNNER_TEMP/alicia-rocketbox-source.glb")" = "41e05337ee06a1b12dc9e76ecce07508ea7fdd1a"
           test "$(wc -c < "$RUNNER_TEMP/alicia-rocketbox-source.glb" | tr -d ' ')" = "4480100"
+          mkdir -p assistant-ia/models
           curl --fail --location --retry 3 --max-time 30 \
             "https://raw.githubusercontent.com/microsoft/Microsoft-Rocketbox/master/LICENSE.md" \
             --output "assistant-ia/models/ROCKETBOX-MIT-LICENSE.md"
