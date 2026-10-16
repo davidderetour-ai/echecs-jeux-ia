@@ -345,3 +345,4 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
           ]),
     ),
   );
+}
