@@ -90,3 +90,20 @@
 .alicia-fusion-sync{display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:9px;margin:13px auto 0;color:#b7d8ff;font-size:13px;line-height:1.4}
 .alicia-fusion-sync button{font-size:13px;min-height:38px;padding:7px 12px}
 .alicia-fusion-sync #alicia-fusion-refresh[hidden]{display:none!important}
+
+
+/* Alicia 0.9.1 : ancien portrait en secours, sélection portrait/corps 3D. */
+.avatar-stage{position:relative}
+.alicia-model-photo-fallback{position:absolute;z-index:10;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 55% 35%,#304a8c,#0c1836 88%);pointer-events:none}
+.alicia-model-photo-fallback[hidden]{display:none!important}
+.alicia-model-photo-fallback img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 36%;max-width:100%}
+.alicia-model-photo-fallback[data-archive="archive-face"] img,
+.alicia-model-photo-fallback[data-archive="archive-dos"] img{object-fit:contain;background:#101932}
+.alicia-model-picker{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;min-width:0;border:1px solid #647ac577;border-radius:14px;background:#142247;padding:10px 11px}
+.alicia-model-picker label{font-size:16px;font-weight:750;color:#e6eeff;flex:0 0 auto}
+.alicia-model-picker select{font-size:15px;flex:1 1 250px;min-width:0;width:100%;max-width:100%;min-height:46px;background:#1b315f;color:#fff;border:1px solid #638cdc;border-radius:11px;padding:8px 12px}
+.alicia-model-picker p{flex:1 1 100%;font-size:13px;color:#b7d3ff;margin:0;line-height:1.4;overflow-wrap:anywhere}
+.fusion-on .alicia-model-picker{grid-column:1/-1}
+.fusion-on .avatar-stage.alicia3d-enabled .alicia-model-photo-fallback{display:flex}
+.fusion-on .avatar-stage.alicia3d-enabled .alicia-model-photo-fallback[hidden]{display:none!important}
+@media(max-width:640px){.alicia-model-picker{padding:10px}.alicia-model-picker label{font-size:15px}.alicia-model-picker select{font-size:15px;flex-basis:100%}}
