@@ -22,9 +22,10 @@ function init(){
  const hasReferencePortrait=Boolean($("alicia-photo-stage"));
  if(hasReferencePortrait)panel.hidden=true;
  const status=x=>{$("alicia-avatar3d-status").textContent=x;};
- if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;return;}
+ if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;window.dispatchEvent(new CustomEvent("alicia:3d-failed",{detail:{reason:"WebGL ou OrbitControls indisponible"}}));return;}
  let scene,camera,renderer,orbit,root,rig,face,mouth,eyes=[],hair,armR,armL,legR,legL,head,blinking=false,active=false;
  let imported=null,mixer=null,importGeneration=0,faceJaw=null,jawBase=0;
+  let framing="portrait",firstDrawn=false;
  const clock=new THREE.Clock();
  const canvas=$("alicia-avatar");
  let auto=false,speaking=false,expression="happy",turnTo=null,lastT=0;
@@ -143,44 +144,56 @@ function init(){
    if(window.ResizeObserver)new ResizeObserver(()=>{if(!panel.hidden)resize();}).observe(view);
    resize();
    function fitCharacterCamera(){
-     // Vue souhaitée : uniquement la tête et les épaules, sans le corps entier.
-     const box=imported?new THREE.Box3().setFromObject(imported):new THREE.Box3().setFromObject(rig);
-     if(box.isEmpty())return;
-     const size=box.getSize(new THREE.Vector3());
-     if(!Number.isFinite(size.y)||size.y<.1)return;
-     const portraitHeight=Math.max(.66,size.y*.42);
-     const fov=camera.fov*Math.PI/180;
-     const aspect=Math.max(.5,camera.aspect||1);
-     const distance=Math.max(1.8,portraitHeight/(2*Math.tan(fov/2)*.83),size.x/(2*Math.tan(fov/2)*aspect*.85));
-     const safeDistance=Math.min(14,distance);
-     const target=new THREE.Vector3(0,box.min.y+size.y*.79,0);
-     camera.position.set(0,target.y+.08,safeDistance);
-     camera.near=.02;camera.far=100;
-     camera.updateProjectionMatrix();
-     orbit.target.copy(target);
-     orbit.minDistance=Math.max(1.2,safeDistance*.75);
-     orbit.maxDistance=Math.max(7,safeDistance*2.8);
-     orbit.update();
-   }
-   function showAvatar3D(){
+      // Modes disponibles : portrait proche ou modèle 3D entier.
+      const box=new THREE.Box3().setFromObject(imported||rig);
+      if(box.isEmpty()||!camera||!orbit)return;
+      const size=box.getSize(new THREE.Vector3());
+      if(!Number.isFinite(size.y)||size.y<.1)return;
+      const verticalFov=camera.fov*Math.PI/180;
+      const aspect=Math.max(.4,camera.aspect||1);
+      const full=framing==="entier";
+      const height=full?size.y:Math.max(.55,size.y*.42);
+      const width=full?size.x:Math.min(size.x*.65,Math.max(.37,height*.82));
+      const distance=Math.max(1.2,
+        height/(2*Math.tan(verticalFov/2)*(full?.81:.84)),
+        width/(2*Math.tan(verticalFov/2)*aspect*.82),
+        (full?size.z:Math.min(size.z,.7))*1.9);
+      const target=box.getCenter(new THREE.Vector3());
+      if(!full)target.y=box.min.y+size.y*.83;
+      const safeDistance=Math.min(48,distance);
+      camera.position.set(target.x,target.y+.07,target.z+safeDistance);
+      camera.near=.015;camera.far=Math.max(100,safeDistance*5);
+      camera.updateProjectionMatrix();
+      orbit.target.copy(target);
+      orbit.minDistance=Math.max(.7,safeDistance*.72);
+      orbit.maxDistance=Math.max(12,safeDistance*3);
+      orbit.update();
+    }
+    function showAvatar3D(){
      panel.hidden=false;
      if(canvas)canvas.style.display="none";
      stage.classList.add("alicia3d-enabled");
      resize();
      fitCharacterCamera();
-     document.querySelector(".avatar-shell")?.scrollIntoView({behavior:"smooth",block:"center"});
+     
      status("Portrait 3D animé : glisse pour tourner la tête, ou utilise Face/Dos.");
    }
    if(!hasReferencePortrait)showAvatar3D();
    window.Alicia3D={
       ready:true,open:showAvatar3D,
+       setFraming(value){framing=value==="entier"?"entier":"portrait";fitCharacterCamera();return framing;},
+       useStylized(){restoreOriginal();showAvatar3D();fitCharacterCamera();},
+       useRealistic(){showAvatar3D();loadRealisticModel();},
+       hide(){panel.hidden=true;},
+       hasRealistic(){return Boolean(imported);},
+       isVisible(){return firstDrawn&&!panel.hidden;},
       setExpression(x){expression=String(x||"happy");},
       setSpeaking(on){speaking=!!on;},
       rotateTo(angle){turnTo=angle;auto=false;},
       restart(){auto=true;turnTo=null;}
    };
    status("Portrait Alicia 3D : visage animé, vue 360°, voix et expressions.");
- }catch(e){panel.hidden=true;if(canvas)canvas.style.display="";status("Moteur 3D indisponible : "+e.message);try{renderer?.dispose();}catch{}return;}
+ }catch(e){panel.hidden=true;if(canvas)canvas.style.display="";status("Moteur 3D indisponible : "+e.message);window.dispatchEvent(new CustomEvent("alicia:3d-failed",{detail:{reason:e.message}}));try{renderer?.dispose();}catch{}return;}
  function restoreOriginal(){
    importGeneration++;
    if(mixer){mixer.stopAllAction();mixer.uncacheRoot(imported);mixer=null;}
@@ -223,7 +236,8 @@ function init(){
    jawBase=faceJaw?faceJaw.rotation.x:0;
    const clips=Array.isArray(gltf.animations)?gltf.animations:[];
    if(clips.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(clips[0]).play();}
-   turnTo=0;auto=true;
+   turnTo=0;auto=false;
+   window.dispatchEvent(new CustomEvent("alicia:3d-model-ready",{detail:{model:"realistic"}}));
    status(label+" : véritable modèle humain texturé et articulé, "+clips.length+
      " animation(s). Tourne-le à 360°. Son apparence n'est pas encore identique au portrait de référence.");
    return true;
@@ -238,6 +252,7 @@ function init(){
    },undefined,error=>{
      if(generation!==importGeneration)return;
      status("Le modèle réaliste n'est pas accessible. L'avatar stylisé reste disponible. "+String(error?.message||error));
+     window.dispatchEvent(new CustomEvent("alicia:3d-model-failed",{detail:{reason:String(error?.message||error)}}));
    });
  }
  $("alicia-avatar3d-realistic").addEventListener("click",loadRealisticModel);
@@ -315,6 +330,7 @@ function init(){
    mouth.scale.y=speaking ? (.025+Math.abs(Math.sin(t*.017))*.035) : .009;
    }
    orbit.update();renderer.render(scene,camera);
+    if(!firstDrawn){firstDrawn=true;if(canvas)canvas.style.display="none";window.dispatchEvent(new CustomEvent("alicia:3d-rendered"));}
  }
  requestAnimationFrame(frame);
  window.addEventListener("pagehide",()=>{try{mixer?.stopAllAction();renderer.dispose();}catch{}},{once:true});
