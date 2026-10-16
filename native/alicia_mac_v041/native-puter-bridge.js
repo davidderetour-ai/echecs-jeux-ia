@@ -111,7 +111,7 @@
     '<button type="button" id="alicia-native-forget" class="secondary" hidden>Effacer mon jeton</button>'+
    '</div>'+
    '<p role="status" id="alicia-native-status">Vérification du Trousseau…</p>'+
-   '<small>Les questions sont envoyées à Puter uniquement lorsque tu cliques sur Envoyer. Les quotas et éventuels frais relèvent de Puter : Alicia ne souscrit aucun abonnement, n’achète pas de crédits et n'effectue aucun paiement.</small>';
+   '<small>Les questions sont envoyées à Puter uniquement lorsque tu cliques sur Envoyer. Les quotas et éventuels frais relèvent de Puter : Alicia ne souscrit aucun abonnement, n’achète pas de crédits et n’effectue aucun paiement.</small>';
    panel.prepend(div);
    $("alicia-native-save")?.addEventListener("click",()=>void saveToken());
    $("alicia-native-check")?.addEventListener("click",()=>void refresh());
