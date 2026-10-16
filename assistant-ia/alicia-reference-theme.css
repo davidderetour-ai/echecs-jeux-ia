@@ -60,3 +60,19 @@ header{background:linear-gradient(100deg,#0b1740,#111936 68%,#0e1430);border-bot
  .alicia-avatar3d-toolbar button{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.alicia-reference-overlay,.alicia-reference-tags span,.avatar-shell{transition:none!important}}
+
+/* Vue avatar humain plein pied : corrige le panneau mobile étroit et les boutons coupés. */
+.avatar-stage.alicia3d-enabled{overflow:visible;display:flex;flex-direction:column;align-items:center;height:auto;min-height:430px}
+.avatar-stage.alicia3d-enabled .alicia-avatar3d{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.avatar-stage.alicia3d-enabled .alicia-reference-overlay{display:none}
+.alicia-avatar3d-view{width:100%;min-height:0;max-height:500px;display:flex;justify-content:center;align-items:center;overflow:hidden;box-sizing:border-box}
+.alicia-avatar3d-view canvas{width:auto!important;max-width:100%!important;max-height:490px;height:auto!important;display:block;margin:auto}
+.alicia-avatar3d-import{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:7px;padding:10px;max-width:100%;box-sizing:border-box}
+.alicia-avatar3d-import input[type=file]{font-size:12px;max-width:220px;min-width:0;color:#e2e9ff}
+.alicia-avatar3d-import button{font-size:12px;min-height:39px;background:#223770;border:1px solid #6489d7;border-radius:9px;padding:8px}
+@media(max-width:600px){
+ .avatar-stage.alicia3d-enabled{min-height:350px}
+ .alicia-avatar3d-view canvas{max-height:425px}
+ .alicia-avatar3d-toolbar button{font-size:11px;min-height:38px;padding:7px 10px}
+ .alicia-avatar3d-import label{width:100%;text-align:center}
+}
