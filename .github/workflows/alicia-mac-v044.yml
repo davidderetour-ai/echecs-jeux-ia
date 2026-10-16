@@ -165,6 +165,17 @@ jobs:
           chmod 755 "$APP/Contents/MacOS/AliciaV03"
           /usr/bin/file "$APP/Contents/MacOS/AliciaV03"
 
+      - name: Vérifier une sauvegarde Mac après relancement dans un nouveau processus
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcrun --sdk macosx swiftc -parse-as-library -target x86_64-apple-macos11.0 \
+            native/alicia_mac_v044/AliciaDiskMemory.swift \
+            native/alicia_mac_v044/memory-smoke.swift \
+            -o "$RUNNER_TEMP/alicia-memory-smoke"
+          "$RUNNER_TEMP/alicia-memory-smoke" write
+          "$RUNNER_TEMP/alicia-memory-smoke" read
+
       - name: Archiver Alicia V0.4.4 sans remplacer V0.1 ou V0.2
         shell: bash
         run: |
