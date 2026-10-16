@@ -1,0 +1,12 @@
+
+/* Alicia Original : moteur entièrement gratuit et hors ligne (Mac + iPhone) */
+.alicia-original-controls{flex-basis:100%;max-width:100%;width:100%;color:#dce8ff;border:1px solid #5b75a6;
+ background:#122343;border-radius:14px;padding:11px 15px;box-sizing:border-box;margin-top:6px}
+.alicia-original-controls summary{cursor:pointer;font-weight:700;line-height:1.5;color:#b8dcff}
+.alicia-original-body{padding:10px 0 0;display:flex;flex-direction:column;gap:9px}
+.alicia-original-body p{font-size:13px;line-height:1.55;margin:0}
+.alicia-original-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.alicia-original-buttons button{padding:9px 10px;font-size:12px;min-height:41px}
+#alicia-original-info{color:#a7eac4}
+#connection-status{font-size:13px!important;color:#b8ebd0!important}
+#question{min-height:130px!important}
