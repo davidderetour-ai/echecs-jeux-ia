@@ -76,3 +76,20 @@ header{background:linear-gradient(100deg,#0b1740,#111936 68%,#0e1430);border-bot
  .alicia-avatar3d-toolbar button{font-size:11px;min-height:38px;padding:7px 10px}
  .alicia-avatar3d-import label{width:100%;text-align:center}
 }
+
+/* Alicia v0.8.5 — panneaux adaptatifs et scène 3D sans débordement. */
+html,body{max-width:100%;overflow-x:hidden}
+.shell,.avatar-shell,.avatar-stage,.avatar-side,.alicia-avatar3d{min-width:0;max-width:100%;box-sizing:border-box}
+.avatar-stage.alicia3d-enabled{overflow:hidden;width:100%;height:auto;min-height:0;padding:0}
+.avatar-stage.alicia3d-enabled .alicia-avatar3d{width:100%;max-width:100%;min-width:0;height:auto}
+.avatar-stage.alicia3d-enabled .alicia-avatar3d-view{width:100%;height:clamp(320px,118vw,520px);max-height:520px;min-height:0;overflow:hidden;position:relative;display:block}
+.avatar-stage.alicia3d-enabled .alicia-avatar3d-view canvas{display:block;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain;touch-action:none}
+.alicia-avatar3d-toolbar,.alicia-avatar3d-import{max-width:100%;width:100%;box-sizing:border-box}
+.alicia-avatar3d-import input[type=file]{max-width:100%;min-width:0;flex:1 1 210px}
+.avatar-side,.avatar-side>*{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:700px){
+ .avatar-shell{grid-template-columns:minmax(0,1fr)}
+ .avatar-stage{width:100%;max-width:100%}
+ .alicia-avatar3d-import{padding:10px 8px}
+ .alicia-avatar3d-toolbar button{flex:0 1 auto;white-space:normal}
+}
