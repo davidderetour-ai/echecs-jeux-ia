@@ -295,7 +295,7 @@ struct AliciaFullView: View {
             } else {
                 VStack(spacing: 16) {
                     Image(systemName: "sparkles").font(.largeTitle)
-                    Text("Alicia V0.4.6 prépare son interface…")
+                    Text("Alicia Fusion 0.9 prépare son interface…")
                     if let error = server.errorText {
                         Text(error).foregroundColor(.orange)
                     } else {
@@ -327,7 +327,14 @@ struct AliciaWebView: NSViewRepresentable {
         browser.uiDelegate = context.coordinator
         browser.navigationDelegate = context.coordinator
         browser.allowsBackForwardNavigationGestures = true
-        browser.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+        context.coordinator.offlineURL = url
+        // Sur Mac, utiliser la même interface Web qu'iPhone lorsqu'Internet est disponible.
+        // Hors connexion, revenir aux ressources embarquées pour macOS Big Sur.
+        if let shared = URL(string: "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/") {
+            browser.load(URLRequest(url: shared, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 12))
+        } else {
+            browser.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+        }
         return browser
     }
 
@@ -335,6 +342,8 @@ struct AliciaWebView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKUIDelegate, WKNavigationDelegate {
         private var popupWindows: [NSWindow] = []
+        var offlineURL: URL?
+        private var didFallback = false
 
         func webView(_ webView: WKWebView,
                      runOpenPanelWith parameters: WKOpenPanelParameters,
@@ -394,6 +403,14 @@ struct AliciaWebView: NSViewRepresentable {
                 return
             }
             decisionHandler(.cancel)
+        }
+
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            NSLog("Alicia Fusion : connexion indisponible (%@), accès hors ligne.", error.localizedDescription)
+            if !didFallback, let local = offlineURL {
+                didFallback = true
+                webView.load(URLRequest(url: local, cachePolicy: .reloadIgnoringLocalCacheData))
+            }
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
