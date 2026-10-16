@@ -5,6 +5,7 @@ import {orchestrate,chooseTool} from "./cortect-agent-core.mjs";
 import {courseSearch} from "./python-vscode-course.mjs";
 import {answerFromContext,indexDocuments} from "./cortect-rag-core.mjs";
 import {LESSONS,answerFromLesson,subjects} from "./alicia-academy.mjs";
+import {AI_CATALOG_2025,WEB_COURSES,findWebCourse,compareCatalogTools} from "./web-learning-core.mjs";
 function docs(){
  const engine=window.AliciaOriginalEngine;
  return engine?.listCortectNotes?.()||[];
@@ -12,6 +13,24 @@ function docs(){
 export function answerWithTools(query){
  const q=String(query||"").trim();
  if(!q)return null;
+ // La recherche externe est une action volontaire (plusieurs moteurs, sans IA facturée).
+ if(/(?:recherch|cherche|compar).*(?:internet|google|bing|duckduckgo|brave|qwant|moteurs? de recherche|sites? web|outil(?:s)? ia)|(?:moteurs? de recherche|sites? web).*?(?:compar|recherch)/i.test(q)){
+   window.AliciaWebStudio?.open?.();
+   return {answer:"J’ai ouvert mon atelier Internet. Je peux préparer la même question pour Google, Bing, DuckDuckGo, Brave, Qwant ou Ecosia. Chaque moteur montre ses vrais résultats dans un autre onglet. Pour comparer deux pages précises, colle leurs adresses HTTPS dans l’atelier ; si elles bloquent la lecture intersites, je te l’indiquerai sans inventer de résultats. La recherche en direct exige Internet.",
+    provider:"Atelier Internet Alicia",local:true,verified:false,sources:[]};
+ }
+ if(/(?:classement|top\s*50|cinquante).*(?:ia|intelligence artificielle|outils?)/i.test(q)){
+   window.AliciaWebStudio?.open?.();
+   return {answer:"J’ai référencé "+AI_CATALOG_2025.length+" services d’IA de l’illustration Similarweb, janvier 2025. Ce classement porte sur les visites mensuelles de cette période, pas sur les capacités ni les tarifs actuels. L’atelier permet de filtrer les services, de les comparer et d’ouvrir des recherches récentes, sans prétendre les avoir vérifiées.",
+   provider:"Catalogue historique IA",local:true,verified:false,sources:[]};
+ }
+ if(/(?:d[eé]velopper|cr[eé]er|fabriquer|apprendre).*(?:site(?:s)?\s*web|html|css|page\s*web)|(?:html|css|javascript).*(?:cours|apprendre|exercice)/i.test(q)){
+   window.AliciaWebStudio?.open?.();
+   const found=findWebCourse(q)||WEB_COURSES[0];
+   return {answer:"Développement Web : "+found.title+"\n\n"+found.lesson+"\n\nExemple :\n"+found.example+"\n\nExercice : "+found.exercise+
+     "\n\nTu peux utiliser l’atelier HTML/CSS pour prévisualiser ta page sans exécuter de JavaScript ni consulter Internet.",
+     provider:"Cours de développement Web",local:true,verified:false,sources:[]};
+ }
  // L'atelier est un programme d'enseignement, pas un transfert des poids de ChatGPT.
  if(/(?:professeur|enseignant|enseigne.moi|apprendre\s+tout|apprends\s+tout|enseigne\s+à\s+alicia|ce que tu sais)/i.test(q)){
    window.AliciaTeacher?.open?.();

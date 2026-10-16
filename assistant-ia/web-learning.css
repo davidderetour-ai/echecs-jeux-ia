@@ -1,0 +1,25 @@
+.alicia-web-lab{background:linear-gradient(135deg,#121a3a,#142349);border:1px solid #5a7dbd;color:#e9f3ff;border-radius:16px;margin:12px 0;padding:13px 15px;max-width:100%;box-sizing:border-box}
+.alicia-web-lab>summary{font-weight:710;color:#d0e5ff;cursor:pointer;font-size:15px;line-height:1.5}
+.alicia-web-body{display:flex;flex-direction:column;gap:12px;margin-top:13px}
+.alicia-web-body h3{color:#b9dcff;margin:12px 0 0;font-size:16px}
+.alicia-web-body p{font-size:13px;line-height:1.55;margin:2px 0}
+.alicia-web-body label{display:flex;flex-direction:column;gap:5px;font-size:13px}
+.alicia-web-body input,.alicia-web-body select,.alicia-web-body textarea{background:#11234a;border:1px solid #637dc5;border-radius:8px;padding:10px;box-sizing:border-box;font-size:14px;color:#f3f7ff;width:100%}
+.alicia-web-body textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
+.alicia-web-body button{min-height:42px;background:linear-gradient(110deg,#2255af,#6657bf);border:1px solid #8399d8;border-radius:9px;padding:8px 12px;color:#fff;cursor:pointer}
+.alicia-web-body button:disabled{opacity:.55;cursor:default}
+.alicia-web-actions{display:flex;gap:8px;flex-wrap:wrap}
+.alicia-web-catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:9px;max-height:500px;overflow:auto}
+.alicia-web-tool{background:#10224a;border:1px solid #5069a2;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:5px}
+.alicia-web-tool strong{font-size:13px}
+.alicia-web-tool small{color:#b4cbea}
+.alicia-web-tool button{font-size:12px;min-height:36px}
+.alicia-web-course{border:1px solid #4e73a7;border-radius:9px;background:#0d1c3c;padding:10px;margin:6px 0}
+.alicia-web-course summary{cursor:pointer;font-weight:630}
+.alicia-web-course pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#060f26;border-radius:7px;padding:10px;font-size:12px}
+.alicia-web-results{display:flex;flex-direction:column;gap:9px;overflow-wrap:anywhere;font-size:13px}
+.alicia-web-result-source{background:#0b1939;border:1px solid #5677ac;border-radius:9px;padding:10px}
+.alicia-web-result-source strong,.alicia-web-result-source small{display:block;margin-bottom:7px}
+.alicia-web-result-source small{color:#a7c7eb}
+#alicia-web-preview{border:1px solid #7e92bd;border-radius:10px;min-height:260px;background:#fff;width:100%;box-sizing:border-box}
+@media(max-width:550px){.alicia-web-lab{margin:9px 0;padding:10px}.alicia-web-tool{padding:9px}.alicia-web-body input{font-size:16px}}
