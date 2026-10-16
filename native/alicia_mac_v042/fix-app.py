@@ -68,6 +68,12 @@ if(window.AliciaNativeMac){
 '''
 src=src.replace(needle,needle+'\n'+mac_only,1)
 wifi.write_text(src,encoding="utf-8")
+# Accepter la faute de frappe « bonjours » comme salutation locale simple.
+native=root/"native-puter-bridge.js"
+bridge=native.read_text(encoding="utf-8")
+assert '"bonjour","bonjour alicia"' in bridge
+bridge=bridge.replace('"bonjour","bonjour alicia"','"bonjour","bonjours","bonjour alicia","bonjours alicia"',1)
+native.write_text(bridge,encoding="utf-8")
 # S'assurer que le moteur natif est présent et que les anciens scripts ne seront pas chargés.
 assert (root/"native-puter-bridge.js").is_file()
 assert 'script src="./native-puter-bridge.js"' in html
