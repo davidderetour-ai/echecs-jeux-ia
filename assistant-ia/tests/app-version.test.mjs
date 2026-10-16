@@ -15,7 +15,7 @@ test("La rubrique À propos explique version et mise à jour",()=>{
  assert.match(html,/numéro interne du cache/);
 });
 test("Le cache ne supprime pas les sauvegardes/caches des jeux",()=>{
- assert.match(sw,/const CACHE="alicia-shell-v30"/);
+ assert.match(sw,/const CACHE="alicia-shell-v33"/);
  assert.match(sw,/const ALICIA_CACHE_PREFIX="alicia-shell-"/);
  assert.match(sw,/names\.filter\(n=>n\.startsWith\(ALICIA_CACHE_PREFIX\)&&n!==CACHE\)/);
  assert.doesNotMatch(sw,/names\.filter\(n=>n!==CACHE\)/);
