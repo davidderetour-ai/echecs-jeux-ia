@@ -1,0 +1,62 @@
+/* Référence Alicia iPhone 2026: noir/bleu nuit, néon cyan-violet, surfaces tactiles.
+ * Les mêmes règles restent adaptées à macOS Big Sur et à Safari iOS.
+ */
+:root{--alicia-ink:#080d24;--alicia-surface:#0e1937;--alicia-outline:#506ab4;--alicia-cyan:#76d4ff;--alicia-violet:#906afa;}
+body{background:#080d24}
+.shell{background:radial-gradient(ellipse at 30% 5%,#1b2d6b 0,transparent 36%),linear-gradient(160deg,#0a1534,#0b1128 60%,#080d20)}
+header{background:linear-gradient(100deg,#0b1740,#111936 68%,#0e1430);border-bottom:1px solid #4563ad61}
+.logo{background:linear-gradient(140deg,#227bdc,#8c4ef1);box-shadow:0 0 21px #4578ff80;border:1px solid #a7cbff5b}
+.brand strong{color:#c1d9ff;text-shadow:0 0 16px #4884e9a0}
+.primary,#send{background:linear-gradient(105deg,#2da5f4,#6c68f6 57%,#a755ed);border:1px solid #8ca9ff77;box-shadow:0 5px 21px #5069f63b}
+.avatar-shell{border:1px solid #6579ed8a;background:linear-gradient(130deg,#121b49,#111833 60%,#0c1638);box-shadow:0 0 23px #6559fe3b,0 14px 35px #040724b8;border-radius:23px}
+.avatar-stage{position:relative;background:radial-gradient(ellipse at 30% 45%,#3144b2a6,transparent 55%),linear-gradient(125deg,#111b4a,#08112d);border:1px solid #7b6beeaa;box-shadow:inset 0 0 30px #7183f530,0 0 18px #344ac952;min-height:345px}
+.avatar-stage:before{content:"";position:absolute;top:10%;left:6%;width:50%;height:80%;border-radius:50%;border:4px solid #519cff33;box-shadow:0 0 40px #505aff41,inset 0 0 34px #875afc3e;pointer-events:none}
+.alicia-reference-overlay{position:absolute;top:9%;right:3%;width:42%;z-index:7;display:flex;flex-direction:column;gap:8px;align-items:flex-start;color:#eff7ff;padding:11px 8px 13px;background:linear-gradient(125deg,#09142bc4,#151839b0);border:1px solid #8191ff51;border-radius:16px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);pointer-events:auto;box-shadow:0 6px 22px #01051c66}
+.alicia-reference-status{display:flex;align-items:center;gap:7px;font-size:clamp(11px,1.8vw,15px);font-weight:760;line-height:1.35;margin:0}
+.alicia-reference-dot{display:block;flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:#35efab;box-shadow:0 0 12px #38e5a5}
+.alicia-reference-subtitle{font-size:clamp(10px,1.5vw,13px);color:#ceddfd;line-height:1.45;margin:0}
+.alicia-reference-tags{display:flex;flex-wrap:wrap;gap:6px}
+.alicia-reference-tags span{font-size:11px;border:1px solid #5668c78c;padding:6px 8px;background:#182951a1;color:#d2e6ff;border-radius:100px}
+.alicia-reference-overlay button{font-size:11px;padding:8px 10px;border:1px solid #a39cffc4;border-radius:999px;background:linear-gradient(105deg,#1a86d0,#7d57e5);color:white;min-height:37px;font-weight:700}
+.avatar-side{min-width:0}
+.avatar-side h2{color:#e1ecff;letter-spacing:.02em}
+.avatar-side #preview-voice{background:linear-gradient(105deg,#2689e6,#8275ff,#ac59e7);border:1px solid #9ac3ff;box-shadow:0 0 16px #675bf277}
+.voice-picker select,.avatar-side .voice-picker select{min-height:44px;background:linear-gradient(130deg,#17274f,#21284b);border:1px solid #586fc4}
+.emotion-controls button{background:linear-gradient(125deg,#172b59,#222147);border:1px solid #596bb3;box-shadow:inset 0 1px #cee3ff12}
+.alicia-reference-modes{display:flex;align-items:center;gap:7px;padding:12px 16px;margin:6px 18px 12px;border:1px solid #4969c080;border-radius:17px;background:linear-gradient(110deg,#101d42,#121936 85%);overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.alicia-reference-modes-label{flex:0 0 auto;margin:0 5px 0 0;font-size:12px;color:#bdd4ff;font-weight:650}
+.alicia-reference-modes button{flex:0 0 auto;white-space:nowrap;min-height:43px;background:#1a2855;border:1px solid #5873c39e;border-radius:999px;color:#dce8ff;font-size:12px;font-weight:680;padding:8px 11px}
+.alicia-reference-modes button[aria-pressed="true"]{background:linear-gradient(105deg,#368dff,#8272f7 75%,#a663ff);color:#fff;border-color:#8bcbff;box-shadow:0 0 13px #7288ff77}
+.bottom{background:linear-gradient(135deg,#101a37,#0e1430);border-top:1px solid #5874cc59}
+.message.user{background:linear-gradient(125deg,#4c64bd,#3948a0);box-shadow:0 3px 12px #11113936}
+.message.assistant{background:linear-gradient(125deg,#1b2b53,#192548);border:1px solid #566bada8}
+.bottom textarea,#question{border-color:#5d77c0;background:linear-gradient(120deg,#0f1a3b,#172248)}
+.alicia-avatar3d{position:relative;z-index:2;width:57%;max-width:57%;min-width:0;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.alicia-avatar3d-view{min-height:275px;width:100%;overflow:hidden}
+.alicia-avatar3d-view canvas{width:100%!important;max-width:100%!important;height:auto!important;touch-action:none;display:block}
+.alicia-avatar3d-toolbar{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%;padding:7px 4px 3px}
+.alicia-avatar3d-toolbar button{padding:5px 6px;min-height:28px;border-radius:8px;font-size:10px;background:#152651c9;border:1px solid #7186ca}
+.alicia-avatar3d-caption{color:#bddaff;text-align:center;font-size:10px;line-height:1.35;margin:3px 8px 6px}
+.alicia3d-enabled #alicia-avatar{display:none!important}
+.alicia3d-enabled .alicia-photo-stage{display:none}
+/* Conserver un portrait de référence sur Mac jusqu'à la demande d'avatar 3D */
+.alicia-avatar3d[hidden]{display:none!important}
+.avatar-stage #alicia-avatar:not([style*="display: none"]){max-width:64%;width:64%}
+@media(max-width:700px){
+ .avatar-shell{grid-template-columns:1fr;gap:10px;padding:10px 10px 14px}
+ .avatar-stage{min-height:310px}
+ .alicia-reference-overlay{right:3%;width:45%;top:7%;padding:9px 7px}
+ .alicia-reference-tags span{font-size:10px;padding:5px 7px}
+ .alicia-avatar3d{width:57%;max-width:57%}
+ .alicia-avatar3d-view{min-height:235px}
+ .alicia-reference-modes{margin:4px 10px 10px;padding:10px 9px}
+ .alicia-reference-modes-label{display:none}
+ .alicia-reference-modes button{font-size:11px;padding:7px 9px}
+}
+@media(max-width:370px){
+ .alicia-reference-overlay{width:49%;right:2%}
+ .alicia-reference-subtitle{display:none}
+ .alicia-reference-modes{gap:5px}
+ .alicia-avatar3d-toolbar button{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.alicia-reference-overlay,.alicia-reference-tags span,.avatar-shell{transition:none!important}}
