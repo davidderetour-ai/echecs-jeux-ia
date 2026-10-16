@@ -259,6 +259,8 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   late final WebViewController web;
   bool loading = true;
   bool failed = false;
+  bool wifiAllowed = false;
+  StreamSubscription<List<ConnectivityResult>>? fusionNetwork;
   static final Uri site = Uri.parse(
     'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=090');
 
@@ -270,18 +272,51 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
       ..setBackgroundColor(const Color(0xff080d24))
       ..setNavigationDelegate(NavigationDelegate(
         onPageStarted: (_) {
-          if (mounted) setState(() { loading = true; failed = false; });
+          if (mounted && wifiAllowed) setState(() { loading = true; failed = false; });
         },
         onPageFinished: (_) {
-          if (mounted) setState(() => loading = false);
+          if (mounted && wifiAllowed) setState(() => loading = false);
         },
         onWebResourceError: (error) {
-          if (error.isForMainFrame == true && mounted) {
+          if (error.isForMainFrame == true && mounted && wifiAllowed) {
             setState(() { loading = false; failed = true; });
           }
         },
-      ))
-      ..loadRequest(site);
+      ));
+    fusionNetwork = Connectivity().onConnectivityChanged.listen((connections) {
+      final connectedByWifi = connections.contains(ConnectivityResult.wifi);
+      if (!connectedByWifi && wifiAllowed) {
+        wifiAllowed = false;
+        web.loadHtmlString('<html><body>Mode Wi-Fi nécessaire</body></html>');
+        if (mounted) setState(() { loading = false; failed = true; });
+      } else if (connectedByWifi && !wifiAllowed) {
+        loadFusionWithWifi();
+      }
+    });
+    loadFusionWithWifi();
+  }
+
+  Future<void> loadFusionWithWifi() async {
+    try {
+      final connections = await Connectivity().checkConnectivity();
+      if (!mounted) return;
+      if (!connections.contains(ConnectivityResult.wifi)) {
+        wifiAllowed = false;
+        setState(() { loading = false; failed = true; });
+        return;
+      }
+      wifiAllowed = true;
+      setState(() { loading = true; failed = false; });
+      await web.loadRequest(site);
+    } catch (_) {
+      if (mounted) setState(() { loading = false; failed = true; });
+    }
+  }
+
+  @override
+  void dispose() {
+    fusionNetwork?.cancel();
+    super.dispose();
   }
 
   void openNative() {
@@ -291,8 +326,7 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   }
 
   void retry() {
-    setState(() { loading = true; failed = false; });
-    web.loadRequest(site);
+    loadFusionWithWifi();
   }
 
   @override
