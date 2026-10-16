@@ -101,6 +101,15 @@ jobs:
 
           js=js.replace('if("serviceWorker" in navigator)window.addEventListener(', 'if(false&&"serviceWorker" in navigator)window.addEventListener(')
           app.write_text(js,encoding='utf-8')
+          # Sur Mac, conserver le mode Wi-Fi sans réclamer la confirmation manuelle
+          # destinée à éviter les données mobiles de l'iPhone.
+          puter_file=root/'puter-engine.js'
+          pe=puter_file.read_text(encoding='utf-8')
+          assert 'window.AliciaWiFi?.requireConfirmed();' in pe
+          pe=pe.replace('window.AliciaWiFi?.requireConfirmed();',
+                        'if(!window.AliciaNativeMac)window.AliciaWiFi?.requireConfirmed();',1)
+          pe=pe.replace('Puter sur iPhone.', 'Puter sur ce Mac.',1)
+          puter_file.write_text(pe,encoding='utf-8')
           assert (root/'composer-tools.js').is_file()
           assert (root/'puter-engine.js').is_file()
           assert (root/'avatar.js').is_file()
