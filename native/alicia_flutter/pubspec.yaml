@@ -1,7 +1,7 @@
 name: alicia_native
 description: Alicia — interface native iOS Android macOS Windows, maquette fonctionnelle.
 publish_to: none
-version: 0.1.0+1
+version: 0.9.0+9
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   connectivity_plus: 6.1.0
   flutter_tts: ^4.2.5
+  webview_flutter: ^4.10.0
   shared_preferences: ^2.5.3
   audioplayers: ^6.8.1
 
