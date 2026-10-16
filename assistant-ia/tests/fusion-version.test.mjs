@@ -24,7 +24,7 @@ test("Alicia Fusion : portrait 3D, sans enlever les fonctions de l'ancienne app"
  assert.match(ui,/mode\.dispatchEvent/);
  assert.match(avatar,/setFraming\(value\)/);
  assert.match(avatar,/full\?size.y/);
- assert.match(html,/alicia-model-gallery\\.js/);
+ assert.match(html,/alicia-model-gallery\.js/);
  assert.match(html,/id="voice"/);
  assert.match(html,/id="expression-mode"/);
 });
