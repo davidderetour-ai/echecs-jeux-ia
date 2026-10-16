@@ -144,7 +144,7 @@ function init(){
  css.value='body { font: 16px system-ui; color: #182447; padding: 20px; background: #f3f7ff; } h1 { color: #674ce6; }';
  $("alicia-web-render").addEventListener("click",()=>{
    const preview=$("alicia-web-preview");
-   // HTML sandbox lacks allow-scripts and allow-same-origin. CSP forbids all
+   // HTML preview stays in a restricted, opaque iframe. CSP forbids all
    // network loads, scripts, forms and embeds, even if user HTML requests them.
    const csp="default-src 'none'; script-src 'none'; connect-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'";
    preview.srcdoc='<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+csp+'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css.value+'</style></head><body>'+html.value+'</body></html>';
