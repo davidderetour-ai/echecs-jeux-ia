@@ -1,0 +1,87 @@
+/* Alicia Fusion v0.9 : ergonomie téléphone / Mac, typographie accessible. */
+.fusion-on{background:#050a17;color:#f1f5ff}
+.fusion-on .shell{background:radial-gradient(ellipse at 70% 12%,#152e6b 0%,transparent 47%),linear-gradient(165deg,#070c1b,#0b1430 56%,#080e20);max-width:1080px;overflow:clip}
+.fusion-on .shell>header{position:relative;z-index:20;padding:12px 18px;background:#060d20dd;gap:12px}
+.fusion-on .brand{min-width:0;flex:1}.fusion-on .brand strong{letter-spacing:.12em;font-size:20px}
+.fusion-on .brand small{font-size:12px}.fusion-on .header-actions{gap:6px}
+.fusion-menu-button{order:-1;min-width:45px;min-height:44px;padding:8px;font-size:22px;border:1px solid #5c83d2;border-radius:14px;background:#132044;color:#e6f2ff}
+.fusion-backdrop{position:fixed;inset:0;z-index:110;background:#000b;backdrop-filter:blur(3px)}
+.fusion-drawer{position:fixed;z-index:111;left:0;top:0;bottom:0;width:min(365px,89vw);overflow-y:auto;background:linear-gradient(155deg,#070b14,#0b1630 70%,#0a1021);border-right:1px solid #536aac;padding:24px 17px 30px;box-shadow:10px 0 70px #000a}
+.fusion-drawer[hidden],.fusion-backdrop[hidden]{display:none!important}
+.fusion-drawer-head{display:flex;align-items:center;gap:12px;margin:14px 4px 26px;font-size:24px;letter-spacing:.1em}
+.fusion-mark,.fusion-hero-logo{display:grid;place-items:center;color:#fff;background:linear-gradient(120deg,#27aaff,#7854f8 60%,#bc55e8);box-shadow:0 0 30px #7463ff55}
+.fusion-mark{width:45px;height:45px;border-radius:14px}
+.fusion-close{margin-left:auto;font-size:20px;background:transparent;border-color:#475b85;padding:9px 13px}
+.fusion-menu,.fusion-extra{display:grid;gap:6px}
+.fusion-nav-item{display:flex;gap:14px;align-items:center;text-align:left;width:100%;padding:12px 15px;min-height:50px;border:0;background:transparent;border-radius:14px;font-size:18px}
+.fusion-nav-item:hover,.fusion-nav-item:focus-visible{background:#1b2a50}
+.fusion-nav-item>span:first-child{color:#89cdff;min-width:26px;font-size:24px;text-align:center}
+.fusion-nav-item:disabled{opacity:.42}
+.fusion-drawer hr{margin:24px 3px;border:0;border-top:1px solid #354970}
+.fusion-section-caption{font-weight:750;font-size:12px;letter-spacing:.14em;color:#a5bde9;padding:0 13px}
+.fusion-dashboard{margin:14px 18px 2px;padding:0 3px}
+.fusion-title{text-align:center;padding:17px 5px 19px;background:radial-gradient(ellipse at center,#1e3978a3,transparent 72%)}
+.fusion-hero-logo{width:61px;height:61px;margin:0 auto 10px;border-radius:20px;font-size:37px}
+.fusion-title h1{margin:0;font-size:clamp(32px,6vw,48px);letter-spacing:.2em;line-height:1.15;color:#f0f6ff}
+.fusion-title p{color:#b6c9f7;font-size:clamp(12px,2vw,15px);margin:8px 0 14px}
+.fusion-ready{display:inline-flex;align-items:center;gap:9px;border:1px solid #5378db;border-radius:28px;padding:10px 20px;background:#15244e;font-size:17px;font-weight:700}
+.fusion-ready i{background:#49ebbb;box-shadow:0 0 13px #47f4c3;width:11px;height:11px;border-radius:50%}
+.fusion-section-head{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px}
+.fusion-section-head h2{font-size:20px;margin:0}
+.fusion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fusion-grid button{background:linear-gradient(133deg,#14264f,#0c1734);border:1px solid #4d6bb6;border-radius:18px;min-height:132px;padding:15px 13px;text-align:left;display:flex;flex-direction:column;justify-content:flex-start;gap:7px;min-width:0}
+.fusion-grid button:focus-visible,.fusion-modes button:focus-visible{outline:3px solid #93daff;outline-offset:2px}
+.fusion-tile-icon{font-size:30px;color:#9b9bff;line-height:1}
+.fusion-grid strong{font-size:clamp(15px,2.4vw,20px);line-height:1.2}
+.fusion-grid small{font-size:14px;line-height:1.4;color:#b8cced}
+.fusion-modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:8px 0 16px}
+.fusion-modes button{display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:7px;min-width:0;background:transparent;border:0;font-size:12px;padding:4px 1px;overflow-wrap:anywhere}
+.fusion-modes button span{display:grid;place-items:center;width:min(100%,66px);aspect-ratio:1;border-radius:17px;border:1px solid #6476cd;background:#101d44;color:#8bcbff;font-size:28px}
+.fusion-modes button[aria-pressed="true"] span{border:2px solid #61c7ff;background:#153d85;box-shadow:0 0 15px #398aff9b}
+.fusion-on .avatar-shell{display:grid;grid-template-columns:minmax(0,39%) minmax(0,1fr);gap:10px;margin:0 19px 14px;padding:13px;border-radius:20px;align-items:center;overflow:hidden;scroll-margin-top:18px}
+.fusion-on .avatar-stage,.fusion-on .avatar-stage.alicia3d-enabled{grid-column:1;min-height:0!important;height:225px;max-height:225px;width:100%;padding:0;overflow:hidden;border-radius:16px;background:linear-gradient(130deg,#081434,#132955)}
+.fusion-on .avatar-stage::before,.fusion-on .avatar-stage::after{display:none}
+.fusion-on .avatar-stage .alicia-reference-overlay{display:none!important}
+.fusion-on .avatar-stage #alicia-avatar{width:100%!important;max-width:100%!important;height:100%!important}
+.fusion-on .avatar-stage .alicia-avatar3d{height:100%;width:100%;max-width:100%;justify-content:center}
+.fusion-on .avatar-stage .alicia-avatar3d-toolbar,.fusion-on .avatar-stage .alicia-avatar3d-import,.fusion-on .avatar-stage .alicia-avatar3d-caption{display:none}
+.fusion-on .avatar-stage.alicia3d-enabled .alicia-avatar3d-view{height:225px;max-height:225px;min-height:225px;display:block}
+.fusion-on .avatar-stage.alicia3d-enabled .alicia-avatar3d-view canvas{display:block;width:100%!important;height:100%!important;max-height:100%!important}
+.fusion-intro{grid-column:2;min-width:0}.fusion-intro h2{font-size:clamp(19px,3vw,26px);margin:0 0 10px}.fusion-intro p{font-size:clamp(14px,2vw,17px);line-height:1.5;color:#d3e1fd;margin:0 0 13px}
+.fusion-intro span{font-size:12px;color:#73ceff;border:1px solid #4e71b5;padding:5px 8px;border-radius:12px;white-space:normal}
+.fusion-ideas{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%}
+.fusion-ideas button{min-height:45px;text-align:left;font-size:13px;border:1px solid #5771aa;background:#132348;padding:10px}
+.fusion-on .avatar-shell .avatar-side{grid-column:1/-1;display:none;background:#0d1835;border-radius:14px;padding:14px}
+.fusion-on.fusion-controls-open .avatar-shell .avatar-side{display:flex}
+.fusion-on .alicia-reference-modes{display:none}
+.fusion-on .tools{display:none}
+.fusion-on.fusion-tools-open .tools{display:flex}
+.fusion-on .bottom{margin:14px 12px 20px;border-radius:19px}
+.fusion-on #question{font-size:18px;min-height:85px}
+.fusion-on .conversation{max-height:none;min-height:210px}
+@media(max-width:640px){
+ .fusion-on .shell>header{padding:10px 12px}
+ .fusion-on .brand .app-version-label,.fusion-on .alicia-level-pill{display:none}
+ .fusion-on .header-actions #new{display:none}
+ .fusion-on .brand strong{font-size:18px}
+ .fusion-dashboard{margin:10px 12px 0}
+ .fusion-title{padding:10px 0 14px}
+ .fusion-grid strong{font-size:16px}
+ .fusion-grid button{min-height:125px;padding:12px}
+ .fusion-grid small{font-size:13px}
+ .fusion-modes button{font-size:11px}
+ .fusion-on .avatar-shell{margin:4px 12px 12px;grid-template-columns:minmax(0,43%) minmax(0,1fr);padding:10px;gap:9px}
+ .fusion-on .avatar-stage,.fusion-on .avatar-stage.alicia3d-enabled{height:205px;max-height:205px}
+ .fusion-on .avatar-stage.alicia3d-enabled .alicia-avatar3d-view{height:205px;min-height:205px;max-height:205px}
+ .fusion-intro h2{font-size:19px}.fusion-intro p{font-size:14px;line-height:1.5}
+ .fusion-ideas button{font-size:12px;padding:9px}
+}
+@media(max-width:370px){
+ .fusion-on .brand small{display:none}
+ .fusion-grid{gap:7px}.fusion-grid button{padding:10px;min-height:120px}
+ .fusion-grid strong{font-size:15px}
+ .fusion-modes{gap:3px}.fusion-modes button{font-size:10px}
+ .fusion-on .avatar-shell{grid-template-columns:minmax(0,42%) minmax(0,1fr)}
+ .fusion-intro p{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.fusion-on *{scroll-behavior:auto!important}}
