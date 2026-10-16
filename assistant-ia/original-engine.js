@@ -39,7 +39,7 @@ function normalize(v){return String(v==null?"":v).toLowerCase().normalize("NFD")
 function words(v){return normalize(v).match(/[\p{L}\p{N}]+/gu)||[];}
 function tokens(v){return words(v).map(w=>lex[w]||w).filter(w=>w.length>1&&!STOP.has(w));}
 function clean(v,n){return String(v||"").replace(/\0/g,"").trim().slice(0,n);}
-function defaults(){return {schema:1,version:VERSION,examples:[],history:[],cortectNotes:[],revision:0,weights:{overlap:0.75,sequence:0.25,threshold:0.61},metrics:{trained:0,adaptations:0,lastAccuracy:0},last:null};}
+function defaults(){return {schema:1,version:VERSION,examples:[],history:[],cortectNotes:[],cortectScores:[],revision:0,weights:{overlap:0.75,sequence:0.25,threshold:0.61},metrics:{trained:0,adaptations:0,lastAccuracy:0},last:null};}
 function validate(entry){
  if(!entry||typeof entry!=="object"||typeof entry.q!=="string"||typeof entry.a!=="string")return null;
  var q=clean(entry.q,limits.maxQuestion),a=clean(entry.a,limits.maxAnswer);
@@ -53,6 +53,14 @@ function validateCortect(entry){
  if(!tags.includes("a_traiter"))tags.push("a_traiter");
  return {id:clean(entry.id||"",72)||"note-"+Date.now(),created:Number(entry.created)||Date.now(),source:source||"Note personnelle",content:content,tags:tags,reliability:"A verifier"};
 }
+function validateStroopScore(entry){
+ if(!entry||entry.exercise!=="Stroop")return null;
+ var duration=Number(entry.durationSeconds),accuracy=Number(entry.accuracy);
+ if(!Number.isFinite(duration)||duration<0||duration>3600||![0,100].includes(accuracy))return null;
+ return {exercise:"Stroop",durationSeconds:Math.round(duration*100)/100,accuracy,
+  word:clean(entry.word,12),expected:clean(entry.expected,12),answer:clean(entry.answer,12),
+  created:Number(entry.created)||Date.now()};
+}
 function read(){
  try{
    var obj=JSON.parse(root.localStorage.getItem(STORE)||"null");
@@ -60,6 +68,7 @@ function read(){
     var d=defaults();
     d.examples=obj.examples.map(validate).filter(Boolean).slice(-limits.maxExamples);
     d.cortectNotes=Array.isArray(obj.cortectNotes)?obj.cortectNotes.map(validateCortect).filter(Boolean).slice(-limits.maxNotes):[];
+    d.cortectScores=Array.isArray(obj.cortectScores)?obj.cortectScores.map(validateStroopScore).filter(Boolean).slice(-60):[];
     d.history=Array.isArray(obj.history)?obj.history.filter(x=>x&&typeof x.q==="string"&&typeof x.target==="string").slice(-limits.maxHistory):[];
     d.revision=Math.max(0,Math.min(999999,Number(obj.revision)||0));
     d.metrics=obj.metrics&&typeof obj.metrics==="object"?Object.assign(d.metrics,obj.metrics):d.metrics;
@@ -231,7 +240,7 @@ function answer(payload){
  var r=reply(last?last.content:"");
  return Object.assign({verified:false,sources:[],engineVersion:VERSION},r);
 }
-function exportMemory(){return JSON.stringify({schema:1,version:VERSION,examples:data.examples,history:data.history,cortectNotes:data.cortectNotes,revision:data.revision,weights:data.weights,metrics:data.metrics},null,2);}
+function exportMemory(){return JSON.stringify({schema:1,version:VERSION,examples:data.examples,history:data.history,cortectNotes:data.cortectNotes,cortectScores:data.cortectScores,revision:data.revision,weights:data.weights,metrics:data.metrics},null,2);}
 // Restauration indépendante des ports du navigateur: fichier natif persistant.
 function restoreSnapshot(json){
  var obj;try{obj=JSON.parse(json);}catch(e){return {ok:false};}
@@ -250,6 +259,8 @@ function restoreSnapshot(json){
    noteMap.set(note.id,note);
  }
  merged.cortectNotes=Array.from(noteMap.values()).sort((a,b)=>a.created-b.created).slice(-limits.maxNotes);
+ var scoreEntries=(Array.isArray(obj.cortectScores)?obj.cortectScores:[]).concat(existing.cortectScores||[]);
+ merged.cortectScores=scoreEntries.map(validateStroopScore).filter(Boolean).sort((a,b)=>a.created-b.created).slice(-60);
  var remoteHistory=Array.isArray(obj.history)?obj.history.filter(x=>x&&typeof x.q==="string"&&typeof x.target==="string"):[];
  merged.history=remoteHistory.concat(existing.history).slice(-limits.maxHistory);
  merged.revision=Math.max(Number(obj.revision)||0,Number(existing.revision)||0);
@@ -285,6 +296,13 @@ function importMemory(json){
   data.cortectNotes.push(note);noteIDs.add(note.id);importedNotes++;
  }
  data.cortectNotes=data.cortectNotes.slice(-limits.maxNotes);
+ var importedScores=(Array.isArray(parsed.cortectScores)?parsed.cortectScores:[]).map(validateStroopScore).filter(Boolean);
+ var scoreKeys=new Set((data.cortectScores||[]).map(x=>x.created+"-"+x.durationSeconds+"-"+x.word));
+ for(var score of importedScores){
+  var key=score.created+"-"+score.durationSeconds+"-"+score.word;
+  if(!scoreKeys.has(key)){data.cortectScores.push(score);scoreKeys.add(key);}
+ }
+ data.cortectScores=data.cortectScores.slice(-60);
  data.revision++;
  persist();
  return {ok:true,importedNotes:importedNotes,imported:Math.max(0,data.examples.length-before),total:data.examples.length};
@@ -304,8 +322,15 @@ function deleteCortectNote(id){
  data.cortectNotes=data.cortectNotes.filter(x=>x.id!==id);
  if(data.cortectNotes.length!==before){data.revision++;persist();return true;}return false;
 }
+function addStroopScore(raw){
+ var item=validateStroopScore(raw);
+ if(!item)return {ok:false,reason:"Mesure Stroop invalide."};
+ data.cortectScores.push(item);data.cortectScores=data.cortectScores.slice(-60);
+ data.revision++;return {ok:persist(),score:item};
+}
+function listStroopScores(){return (data.cortectScores||[]).map(x=>({...x}));}
 function clearMemory(){data=defaults();persist();}
-function inspect(){return {name:"Alicia Original",version:VERSION,examples:data.examples.length,revision:data.revision,autonomousAdaptations:Number(data.metrics.adaptations)||0,cortectNotes:data.cortectNotes.length,offline:true,noPaidServices:true};}
-root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,restoreSnapshot:restoreSnapshot,nativeSnapshot:nativeSnapshot,clearMemory:clearMemory,addCortectNote:addCortectNote,listCortectNotes:listCortectNotes,deleteCortectNote:deleteCortectNote,
+function inspect(){return {name:"Alicia Original",version:VERSION,examples:data.examples.length,revision:data.revision,autonomousAdaptations:Number(data.metrics.adaptations)||0,cortectNotes:data.cortectNotes.length,stroopSessions:data.cortectScores.length,offline:true,noPaidServices:true};}
+root.AliciaOriginalEngine={answer:answer,reply:reply,teach:teach,inspect:inspect,autoEvolve:autoEvolve,exportMemory:exportMemory,importMemory:importMemory,restoreSnapshot:restoreSnapshot,nativeSnapshot:nativeSnapshot,clearMemory:clearMemory,addCortectNote:addCortectNote,listCortectNotes:listCortectNotes,deleteCortectNote:deleteCortectNote,addStroopScore:addStroopScore,listStroopScores:listStroopScores,
   _test:{normalize:normalize,tokens:tokens,similarity:similarity,mathParse:mathParse,testWeights:testWeights}};
 })(typeof window==="undefined"?globalThis:window);
