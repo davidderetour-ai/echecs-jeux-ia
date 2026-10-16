@@ -62,6 +62,10 @@
     return;
    }
    const isReal=value.startsWith("real-"),isFull=value.endsWith("-entier");
+   // Le moteur 3D peut avoir déjà émis ses événements avant l’ouverture de la galerie.
+   // Lire aussi son état actuel pour éviter qu’une ancienne photo masque définitivement la 3D.
+   rendered=Boolean(window.Alicia3D?.isVisible?.());
+   realReady=Boolean(window.Alicia3D?.hasRealistic?.());
    fallback(true,"archive-portrait");
    if(!window.Alicia3D?.ready){
     setStatus("3D indisponible sur cet appareil : portrait photographique de secours.");
