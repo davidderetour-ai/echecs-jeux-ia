@@ -1,0 +1,24 @@
+/* CORTECT-IA, Image->3D et École Alicia : interface mobile et Big Sur. */
+.cortect-panel,.alicia-image3d,.alicia-school{border:1px solid #627cbd;border-radius:14px;background:#111d40;color:#eaf1ff;margin:14px 0;padding:10px 14px;max-width:100%;box-sizing:border-box}
+.cortect-panel>summary,.alicia-image3d>summary,.alicia-school>summary{font-weight:700;cursor:pointer;font-size:15px;line-height:1.5;color:#b9dbff}
+.cortect-body,.alicia-image3d-body,.alicia-school-body{display:flex;flex-direction:column;gap:11px;padding-top:13px}
+.cortect-body h3{font-size:17px;margin:14px 0 0;color:#b8defd}
+.cortect-body label,.alicia-image3d-body label,.alicia-school-body label{display:flex;flex-direction:column;gap:5px;font-size:13px}
+.cortect-body textarea,.cortect-body input,.alicia-image3d-body input,.alicia-school-body input,.alicia-school-body select{box-sizing:border-box;max-width:100%;padding:10px;background:#182850;color:#f3f7ff;border:1px solid #6782bc;border-radius:8px;font-size:15px}
+.cortect-body button,.alicia-image3d button,.alicia-school button{min-height:39px;padding:9px 13px;border-radius:9px;cursor:pointer}
+.cortect-disclaimer{font-size:12px;color:#b9cdec}
+.cortect-result-row,.cortect-note-row,.alicia-school-lesson{border:1px solid #465e93;padding:10px;border-radius:10px;overflow-wrap:anywhere}
+.cortect-note-row p{margin:5px 0}
+.cortect-note-row small{color:#a9c2e5}
+.cortect-result-row p{white-space:pre-wrap}
+.cortect-results{white-space:pre-wrap;overflow-wrap:anywhere;max-height:270px;overflow:auto;color:#c7e5ff;background:#081631;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
+.cortect-stroop-word{text-align:center;font-weight:900;font-size:clamp(40px,9vw,80px);padding:20px 5px;border-radius:15px;background:#f5f5f0;letter-spacing:2px}
+#cortect-stroop-choices{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+#cortect-stroop-choices button{background:#324b86;color:#fff}
+.alicia-image3d-actions{display:flex;flex-wrap:wrap;gap:9px}
+.alicia-image3d-check{flex-direction:row!important;align-items:center;gap:10px}
+#image3d-canvas{width:100%;height:auto;max-height:450px;border-radius:10px;border:1px solid #587ac3;background:#09142e}
+.alicia-school-body pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#081631;color:#ddedfa;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
+.alicia-school-lesson summary{cursor:pointer;font-weight:650;color:#bddcff}
+.alicia-school-lesson p{line-height:1.5;font-size:14px}
+@media(max-width:540px){.cortect-panel,.alicia-image3d,.alicia-school{margin:10px 0;padding:10px}.cortect-body h3{font-size:15px}}
