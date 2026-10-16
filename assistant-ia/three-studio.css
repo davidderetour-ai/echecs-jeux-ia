@@ -1,0 +1,15 @@
+.alicia-three-panel{margin:14px 0;padding:12px 14px;border:1px solid #6483bf;border-radius:15px;background:#0e1b3d;color:#e9f2ff;box-sizing:border-box;width:100%;max-width:100%}
+.alicia-three-panel>summary{font-size:15px;font-weight:700;color:#b8dafa;cursor:pointer;line-height:1.55}
+.alicia-three-body{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+.alicia-three-body p{font-size:13px;line-height:1.5}
+.alicia-three-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.alicia-three-controls label{display:flex;flex-direction:column;gap:7px;font-size:13px}
+.alicia-three-controls input,.alicia-three-controls select{width:100%;max-width:100%;box-sizing:border-box}
+.alicia-three-controls input[type=file],.alicia-three-controls select{border:1px solid #5f85c0;border-radius:9px;background:#182b50;color:#f2f7ff;padding:10px}
+.alicia-three-controls input[type=color]{height:43px;background:transparent;border:0;padding:0}
+.alicia-three-actions{display:flex;gap:9px;flex-wrap:wrap}
+.alicia-three-actions button{padding:10px 12px;border-radius:9px;min-height:42px}
+.alicia-three-viewport{display:flex;justify-content:center;min-height:270px;max-width:100%;overflow:hidden;border:1px solid #36578c;border-radius:12px;background:#08132d}
+.alicia-three-viewport canvas{max-width:100%;height:auto!important;touch-action:none}
+#alicia-three-status{font-size:13px;color:#bce2fa}
+.alicia-three-panel small{line-height:1.5;color:#c5d4e9}
