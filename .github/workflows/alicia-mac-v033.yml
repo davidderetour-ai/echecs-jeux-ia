@@ -1,0 +1,149 @@
+name: Alicia Mac V0.3.3 — avatar toujours visible et diagnostic IA
+
+on:
+  push:
+    branches:
+      - alicia-flutter-native-v1
+    paths:
+      - "native/alicia_mac_v033/**"
+      - "assistant-ia/**"
+      - ".github/workflows/alicia-mac-v033.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compiler Alicia Mac V0.3.3 pour Big Sur Intel
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assembler la version Mac native et ses modules d'Alicia Safari
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Alicia V0.3.3.app"
+          WEB="$APP/Contents/Resources/Web"
+          mkdir -p "$APP/Contents/MacOS" "$WEB"
+          # Copie des outils HTML/CSS/JS/JSON, en lecture seule, sans secrets ni scripts système.
+          find assistant-ia -maxdepth 1 -type f -print0 |
+          while IFS= read -r -d '' file; do
+            case "$file" in
+              *.html|*.js|*.mjs|*.css|*.json|*.svg|*.webmanifest|*.ico)
+                cp "$file" "$WEB/$(basename "$file")";;
+            esac
+          done
+          cp native/alicia_mac_v03/mac-large-composer.css "$WEB/alicia-mac.css"
+          cat native/alicia_mac_v032/avatar-fallback.css >> "$WEB/alicia-mac.css"
+          cat native/alicia_mac_v033/avatar-preview.css >> "$WEB/alicia-mac.css"
+          cp native/alicia_mac_v033/avatar-autonomous.js "$WEB/avatar.js"
+          cp native/alicia_mac_v032/avatar-motion-autonomous.mjs "$WEB/avatar-motion-autonomous.mjs"
+          cp native/alicia_mac_v033/avatar-fallback.js "$WEB/avatar-fallback.js"
+          cp native/alicia_mac_v033/puter-recovery.js "$WEB/puter-recovery.js"
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path(__import__('os').environ['RUNNER_TEMP'])/'Alicia V0.3.3.app'/'Contents'/'Resources'/'Web'
+          index=root/'index.html'
+          s=index.read_text(encoding='utf-8')
+          assert '</head>' in s and 'id="question" rows="2"' in s
+          s=s.replace('</head>', '<script>window.AliciaNativeMac=true;</script><script src="https://js.puter.com/v2/" defer></script><script src="./avatar-fallback.js" defer></script><script src="./puter-recovery.js" defer></script><link rel="stylesheet" href="./alicia-mac.css"></head>',1)
+          preview=Path('native/alicia_mac_v033/avatar-preview.html').read_text(encoding='utf-8')
+          assert '<div class="avatar-stage"><canvas' in s
+          s=s.replace('<div class="avatar-stage"><canvas', '<div class="avatar-stage">'+preview+'<canvas',1)
+          assert 'id="puter-connect"' in s and 'id="puter-state"' in s
+          s=s.replace('<button id="puter-connect"', '<button id="puter-connect"',1)
+          s=s.replace('<p id="puter-state"', '<button type="button" id="puter-retry" class="secondary">↻ Réessayer le chargement de Puter</button><p id="puter-state"',1)
+          s=s.replace('Sur iPhone, un compte Puter permet', 'Sur Mac, un compte Puter permet',1)
+          s=s.replace('iPhone — IA en ligne (compte Puter, quota gratuit)', 'Mac — IA en ligne (compte Puter, quota gratuit)', 1)
+          s=s.replace('glissez pour tourner sa tête', 'Alicia tourne automatiquement sur elle-même', 1)
+          s=s.replace("Les yeux suivent ton doigt sur l'écran.", "Ses yeux bougent automatiquement.", 1)
+          s=s.replace('Tester les yeux et la voix', 'Tester l’avatar autonome et la voix', 1)
+          s=s.replace('id="question" rows="2"', 'id="question" rows="5"',1)
+          s=s.replace('<title>Alicia — Assistant personnel</title>', '<title>Alicia Mac V0.3.3 — Assistant personnel</title>',1)
+          index.write_text(s,encoding='utf-8')
+          app=root/'app.js'
+          js=app.read_text(encoding='utf-8')
+          original=':(isApplePhone?"puter":"local");'
+          assert original in js, 'Le choix du moteur a changé: vérifier avant de mettre à jour'
+          js=js.replace(original,':((isApplePhone||window.AliciaNativeMac)?"puter":"local");',1)
+          js=js.replace('if("serviceWorker" in navigator)window.addEventListener(', 'if(false&&"serviceWorker" in navigator)window.addEventListener(')
+          app.write_text(js,encoding='utf-8')
+          assert (root/'composer-tools.js').is_file()
+          assert (root/'puter-engine.js').is_file()
+          assert (root/'avatar.js').is_file()
+          assert (root/'design-studio.js').is_file()
+          assert (root/'data-lab.js').is_file()
+          assert (root/'wifi-policy.js').is_file()
+          print('Modules integrés :',len(list(root.iterdir())))
+          PY
+          cat > "$APP/Contents/Info.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>CFBundleDevelopmentRegion</key><string>fr</string>
+            <key>CFBundleExecutable</key><string>AliciaV03</string>
+            <key>CFBundleIdentifier</key><string>fr.alicia.assistant.mac.v033</string>
+            <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+            <key>CFBundleName</key><string>Alicia V0.3.3</string>
+            <key>CFBundleDisplayName</key><string>Alicia V0.3.3</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>CFBundleShortVersionString</key><string>0.3.3</string>
+            <key>CFBundleVersion</key><string>6</string>
+            <key>LSMinimumSystemVersion</key><string>11.0</string>
+            <key>NSHighResolutionCapable</key><true/>
+            <key>NSAppTransportSecurity</key><dict>
+              <key>NSAllowsLocalNetworking</key><true/>
+            </dict>
+            <key>NSMicrophoneUsageDescription</key><string>Alicia utilise le microphone seulement sur demande de l'utilisateur.</string>
+            <key>NSCameraUsageDescription</key><string>Alicia utilise la caméra seulement sur demande de l'utilisateur.</string>
+          </dict></plist>
+          PLIST
+          plutil -lint "$APP/Contents/Info.plist"
+
+      - name: Vérifier le code web existant et les tests sans frais API
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd assistant-ia
+          node --test tests/*.test.mjs
+          cd ..
+          node --test native/alicia_mac_v032/avatar-autonomy.test.mjs
+          node --test native/alicia_mac_v033/repair-smoke.test.mjs
+          node --input-type=module --check < native/alicia_mac_v033/avatar-autonomous.js
+          node --check native/alicia_mac_v033/avatar-fallback.js
+          node --input-type=module --check < native/alicia_mac_v032/avatar-motion-autonomous.mjs
+          node --check native/alicia_mac_v033/puter-recovery.js
+
+      - name: Compiler Alicia native en x86_64 macOS 11.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$RUNNER_TEMP/Alicia V0.3.3.app"
+          xcrun --sdk macosx swiftc -parse-as-library \
+            -target x86_64-apple-macos11.0 \
+            -framework AppKit -framework SwiftUI -framework WebKit \
+            -framework Network -framework Combine \
+            native/alicia_mac_v033/AliciaV033.swift \
+            -o "$APP/Contents/MacOS/AliciaV03"
+          chmod 755 "$APP/Contents/MacOS/AliciaV03"
+          /usr/bin/file "$APP/Contents/MacOS/AliciaV03"
+
+      - name: Archiver Alicia V0.3.3 sans remplacer V0.1 ou V0.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/Alicia V0.3.3.app" dist/Alicia-Mac-V0.3.3.zip
+          test -s dist/Alicia-Mac-V0.3.3.zip
+
+      - name: Publier le téléchargement personnel
+        uses: actions/upload-artifact@v4
+        with:
+          name: Alicia-Mac-V0.3.3
+          path: dist/Alicia-Mac-V0.3.3.zip
+          if-no-files-found: error
+          retention-days: 14

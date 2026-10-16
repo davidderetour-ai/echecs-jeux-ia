@@ -1,0 +1,25 @@
+/* V0.3.3 — affichage de secours intégré au HTML : visible même si les modules JS tombent en panne */
+.avatar-stage {position:relative!important;min-height:450px!important;overflow:hidden;}
+#alicia-avatar {position:relative;z-index:2;opacity:0;pointer-events:none;transition:opacity .25s ease;}
+.avatar-stage[data-alicia-3d="ready"] #alicia-avatar {opacity:1;}
+.avatar-stage[data-alicia-3d="ready"] #alicia-avatar-preview {opacity:0;visibility:hidden;pointer-events:none;}
+.alicia-preview {position:absolute;z-index:1;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
+ background:radial-gradient(ellipse at 50% 32%,#293f87 0%,#141f55 48%,#0d1332 92%);color:#d4e6ff;}
+.alicia-preview-character{position:relative;width:min(80%,270px);height:410px;
+ transform-style:preserve-3d;transform-origin:50% 50%;animation:alicia-start-turn 32s linear infinite;}
+.alicia-preview-side{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.alicia-preview-back{transform:rotateY(180deg);}
+.alicia-preview-side svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 13px #4f6ffa85);}
+.alicia-preview-arm-left{transform-origin:90px 155px;animation:alicia-arm-move 3.8s infinite alternate ease-in-out;}
+.alicia-preview-arm-right{transform-origin:190px 155px;animation:alicia-arm-move 4.2s infinite alternate-reverse ease-in-out;}
+.alicia-preview-eyes{transform-origin:140px 108px;animation:alicia-eye-blink 5.2s infinite;}
+.alicia-preview-mouth{transform-origin:141px 142px;animation:alicia-mouth-move 2.4s infinite alternate ease-in-out;}
+.alicia-preview-hint{position:absolute;z-index:3;bottom:11px;left:12px;right:12px;text-align:center;font-size:11px;
+ color:#bcdcff;text-shadow:0 2px 6px #06122f}
+@keyframes alicia-start-turn{0%,22%{transform:rotateY(0deg) translateY(0)}40%,55%{transform:rotateY(180deg) translateY(-4px)}76%,100%{transform:rotateY(360deg) translateY(0)}}
+@keyframes alicia-arm-move{0%{transform:rotate(3deg)}100%{transform:rotate(-12deg)}}
+@keyframes alicia-eye-blink{0%,68%,74%,100%{transform:scaleY(1)}71%{transform:scaleY(.07)}}
+@keyframes alicia-mouth-move{0%,30%,100%{transform:scaleY(.6)}60%{transform:scaleY(1.5)}}
+@media (prefers-reduced-motion:reduce){
+ .alicia-preview-character,.alicia-preview-arm-left,.alicia-preview-arm-right,.alicia-preview-eyes,.alicia-preview-mouth{animation:none!important}
+}

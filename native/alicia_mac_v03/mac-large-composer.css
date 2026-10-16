@@ -1,0 +1,91 @@
+/* Alicia Mac 0.3 — ajouts de confort (sans supprimer les outils Safari) */
+:root { color-scheme: dark; }
+body { background: #050b21; }
+.shell {
+  max-width: 1360px;
+  background: linear-gradient(145deg, #090f2e 0%, #09122b 48%, #070d1e 100%);
+}
+header {
+  background: linear-gradient(95deg, #090f29, #101743);
+  border-bottom: 1px solid #485cab;
+}
+.logo, .sparkle {
+  background: linear-gradient(130deg, #4ca9ff, #6d63ff, #ad49e6);
+  box-shadow: 0 0 23px #666bff70;
+}
+.brand strong { font-size: 21px; color: #c4ddff; }
+.tools {
+  background: #0f1836;
+  border-bottom: 1px solid #394b92;
+}
+.avatar-shell {
+  border: 1px solid #4159b0;
+  margin: 15px 18px 10px;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 28% 30%, #26368c, #121a45 58%, #0a1130 100%);
+  box-shadow: 0 0 17px #4d46c536;
+}
+.avatar-stage {
+  border-color: #5778ff;
+  background: radial-gradient(ellipse at 50% 30%, #3f418e, #151d52 70%);
+}
+.bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  padding: 13px 23px 15px;
+  background: linear-gradient(180deg, #101839, #080f2a);
+  border-top: 1px solid #5367c4;
+  box-shadow: 0 -11px 30px #0007;
+}
+#chat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#question {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 124px !important;
+  height: 132px;
+  max-height: 380px !important;
+  resize: vertical;
+  display: block;
+  line-height: 1.58;
+  border: 1.5px solid #6985ef;
+  border-radius: 16px;
+  padding: 16px 18px;
+  color: #f2f7ff;
+  font-size: 17px;
+  background: linear-gradient(125deg, #14234f, #0e1a3b);
+  box-shadow: inset 0 0 0 1px #2a4070, 0 0 18px #5368e632;
+  outline-offset: 3px;
+}
+#question:focus {
+  outline: 2px solid #9f83ff;
+  border-color: #abd9ff;
+}
+#question::placeholder { color: #b4c6e7; opacity: 1; }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.actions button, .composer-attach button { font-size: 14px; }
+#send, #preview-voice, .primary {
+  background: linear-gradient(115deg, #359ef8, #676bff 60%, #b04ceb);
+  color: white;
+  border: 1px solid #828fff;
+  box-shadow: 0 0 14px #5979f655;
+}
+#question, #note, #chatgpt-learning-text { -webkit-user-select: text; user-select: text; }
+#question { -webkit-user-select: text; }
+.conversation { max-height: 58vh; min-height: 34vh; }
+.message { font-size: 15px; }
+.version-badge { color: #b8d5ff; }
+@media (max-width: 800px) {
+  .shell { width: 100%; }
+  .avatar-shell { margin: 9px; }
+  .bottom { padding: 8px 10px 11px; }
+  #question { min-height: 115px !important; font-size: 16px; }
+}
