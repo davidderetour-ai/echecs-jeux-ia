@@ -13,6 +13,8 @@ function init(){
  '<div id="alicia-avatar3d-view" class="alicia-avatar3d-view" aria-label="Avatar de femme blonde en 3D, articulations et expression"></div>'+
  '<p class="alicia-avatar3d-caption" id="alicia-avatar3d-status" role="status">Avatar Alicia 3D : modèle original stylisé, en préparation…</p>';
  stage.prepend(panel);
+ const hasReferencePortrait=Boolean($("alicia-photo-stage"));
+ if(hasReferencePortrait)panel.hidden=true;
  const status=x=>{$("alicia-avatar3d-status").textContent=x;};
  if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;return;}
  let scene,camera,renderer,orbit,root,rig,face,mouth,eyes=[],hair,armR,armL,legR,legL,head,blinking=false,active=false;
@@ -127,10 +129,17 @@ function init(){
     camera.aspect=w/h;camera.updateProjectionMatrix();
    };
    window.addEventListener("resize",resize);resize();
-   if(canvas)canvas.style.display="none";
-   document.querySelector(".avatar-stage")?.classList.add("alicia3d-enabled");
+   function showAvatar3D(){
+     panel.hidden=false;
+     if(canvas)canvas.style.display="none";
+     stage.classList.add("alicia3d-enabled");
+     resize();
+     document.querySelector(".avatar-shell")?.scrollIntoView({behavior:"smooth",block:"center"});
+     status("Avatar 3D stylisé : glisse pour faire le tour, ou utilise les boutons Face/Dos.");
+   }
+   if(!hasReferencePortrait)showAvatar3D();
    window.Alicia3D={
-      ready:true,open:()=>{document.querySelector(".avatar-shell")?.scrollIntoView({behavior:"smooth",block:"center"});status("Avatar 3D articulé : glisse pour faire le tour, ou utilise les boutons Face/Dos.");},
+      ready:true,open:showAvatar3D,
       setExpression(x){expression=String(x||"happy");},
       setSpeaking(on){speaking=!!on;},
       rotateTo(angle){turnTo=angle;auto=false;},
@@ -145,7 +154,7 @@ function init(){
  let last=0;
  function frame(t){
    requestAnimationFrame(frame);
-   if(document.hidden||t-last<32)return;
+   if(document.hidden||panel.hidden||t-last<32)return;
    const dt=Math.min(.075,(t-last)/1000||.033);last=t;
    // Auto rotation 25-second cycle unless user selects Face or Dos.
    if(turnTo!==null){
@@ -167,7 +176,7 @@ function init(){
    // Blink without depending on server/audio access; mouth follows TTS signal.
    const blink=Math.pow(Math.max(0,Math.cos(t*.0018+1.9)),28);
    for(const e of eyes)e.lid.scale.y=.004+blink*.034;
-   mouth.scale.y=speaking?.025+Math.abs(Math.sin(t*.017))*.035:.009;
+   mouth.scale.y=speaking ? (.025+Math.abs(Math.sin(t*.017))*.035) : .009;
    orbit.update();renderer.render(scene,camera);
  }
  requestAnimationFrame(frame);
