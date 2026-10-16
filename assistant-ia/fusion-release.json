@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -16,8 +16,11 @@
     "code",
     "repair",
     "teacher",
-    "menuFusion"
+    "menuFusion",
+    "modelesPrecedents",
+    "portrait3DEtCorpsEntier",
+    "portraitsPhotosDeSecours"
   ],
   "nativeInstallation": "manual",
-  "note": "La version web peut être commune aux appareils. Les binaires natifs ne peuvent pas s'installer seuls; les historiques et préférences locaux ne se synchronisent pas automatiquement."
+  "note": "Les applications comparent leur version à GitHub. Modèles humains et stylisés disponibles en portrait ou corps entier ; les anciens portraits restent des photos 2D. La mise à jour native requiert une installation autorisée, et les données locales ne sont pas synchronisées automatiquement."
 }
