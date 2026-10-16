@@ -1,0 +1,24 @@
+/* Alicia Mac V0.4 — interface de référence, affichage honnête de la 3D */
+.avatar-stage { position: relative; min-height: 530px !important; background: radial-gradient(ellipse at 40% 30%, #303d8e, #10153c 70%)!important; }
+.avatar-stage #alicia-avatar { min-height: 500px!important; height: 55vh!important; max-height: 660px; }
+.avatar-stage .alicia-photo-identity {
+ position:absolute; top:14px; right:14px; z-index:6; display:flex; flex-direction:column;
+ align-items:center; width:124px; max-width:28%; gap:7px; padding:7px; border:1px solid #6e72fa;
+ border-radius:16px; background:linear-gradient(135deg,#12194aee,#1d2457ee);
+ box-shadow:0 0 21px #695ef866; color:#d3e4ff; pointer-events:none;
+}
+.alicia-photo-identity img {width:100%;height:auto;aspect-ratio:1.1/1;object-fit:cover;
+  border-radius:11px;filter:drop-shadow(0 0 10px #74a8ff70);}
+.alicia-photo-identity small{text-align:center;font-size:10px;line-height:1.25;}
+.alicia-mac-connection{margin-top:10px;border-radius:12px;border:1px solid #51618c;
+ padding:11px 13px;font-size:13px;line-height:1.45;background:#141e47;color:#bed8ff;}
+.alicia-mac-connection[data-state="ok"]{border-color:#4bbd8a;color:#b7ffe0}
+.alicia-mac-connection[data-state="error"]{border-color:#ecaa70;color:#ffdcad}
+.alicia-mac-connection[data-state="offline"]{border-color:#9cb0e0;color:#ced7ee}
+#puter-retry {font-size:14px;margin:7px 0;min-height:39px}
+#question{min-height:155px!important;height:172px!important;max-height:440px!important;line-height:1.5;
+ font-size:17px!important;padding:16px 18px!important;}
+#question:focus {outline:2px solid #b5baff}
+@media(max-width:760px){.avatar-stage .alicia-photo-identity{width:96px;right:8px;top:8px}
+ .avatar-stage{min-height:420px!important}
+ .avatar-stage #alicia-avatar{min-height:400px!important}}
