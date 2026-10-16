@@ -6,22 +6,18 @@
 <meta name="apple-mobile-web-app-title" content="Alicia">
 <meta name="description" content="Assistant IA polyvalent, programmation et diagnostic informatique.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css"><meta name="alicia-version" content="0.6.2"><title>Alicia — Assistant personnel</title>
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./original-controls.css"><meta name="alicia-version" content="0.7.0"><title>Alicia — Assistant personnel</title>
 </head>
 <body>
 <div class="shell">
-<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.6.2">v0.6.2</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.6.2</small></div></div><div class="header-actions"><a href="#intelligence-panel" class="alicia-level-pill" aria-label="Voir le niveau mesuré d'Alicia"><span>✦ Niveau Alicia</span><strong id="alicia-level">Non évaluée</strong></a><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
+<header><div class="brand"><div class="logo">✦</div><div><strong>ALICIA <span class="version-badge" aria-label="Version 0.7.0">v0.7.0</span></strong><small>Assistant · Code · Diagnostic · Création</small><small class="app-version-label" id="app-version-label">Version 0.7.0</small></div></div><div class="header-actions"><a href="#intelligence-panel" class="alicia-level-pill" aria-label="Voir le niveau mesuré d'Alicia"><span>✦ Niveau Alicia</span><strong id="alicia-level">Non évaluée</strong></a><span id="status" role="status">Prêt</span><button id="update-app" class="secondary refresh-app" type="button" aria-label="Recharger la dernière version d’Alicia" title="Recharger Alicia">↻</button><button id="new" class="secondary" type="button">Nouveau</button></div></header>
 <section class="tools" aria-label="Réglages de l'assistant">
 <label>Expertise<select id="mode"><option value="general">Général</option><option value="code">Programmation experte</option><option value="repair">Réparation et diagnostic</option><option value="mac">Optimisation et réparation Mac</option><option value="create">Création informatique</option><option value="teach">Professeur pas à pas</option><option value="analysis">Analyse et vérification de données</option><option value="french">Français et orthographe</option><option value="math">Mathématiques</option><option value="science">Sciences</option><option value="geography">Géographie</option><option value="history">Histoire</option><option value="arts">Dessin et arts plastiques</option><option value="music">Musique et composition</option><option value="singing">Chant et technique vocale</option></select></label>
-<label class="check"><input id="verify" type="checkbox"> Auto-vérifier les réponses <span title="Deux appels à l'IA : peut entraîner des frais supplémentaires.">ⓘ</span></label>
-<label>Connexion IA<select id="connection-mode" aria-label="Connexion au modèle IA">
-<option value="puter">iPhone — IA en ligne (compte Puter, quota gratuit)</option>
-<option value="local">Hors ligne / local (gratuit)</option>
-<option value="online">En ligne (API facultative, potentiellement payante)</option>
-</select></label>
+<label class="check"><input id="verify" type="checkbox"> Auto-vérifier les réponses <span title="Aucun appel payant. La double vérification sera ajoutée au moteur original.">ⓘ</span></label>
+<label>Moteur IA<select id="connection-mode" aria-label="Moteur Alicia original"><option value="original">🧠 Alicia Original · gratuit · hors ligne</option></select></label>
 <label class="check"><input id="search" type="checkbox"> Naviguer sur Internet en direct</label>
-<small class="web-search-info">Si désactivé : Alicia utilise les connaissances de son modèle IA, sans consulter Internet. Si activé : elle lit les pages HTTPS publiques que tu lui donnes ou lance une recherche Web via Puter. Les pages consultées sont indiquées comme sources quand disponibles. La recherche peut utiliser davantage de crédits Puter, avec des limites selon le site et le modèle.</small>
-<small id="connection-status" role="status">Sur iPhone, un compte Puter permet des échanges IA en ligne avec une allocation gratuite limitée. Aucun achat automatique.</small>
+<small class="web-search-info">La navigation Internet par IA n’est pas encore disponible avec le moteur original hors ligne. Aucune API payante n’est utilisée.</small>
+<small id="connection-status" role="status">Alicia Original fonctionne sur ton iPhone sans compte ni paiement.</small>
 <details class="network-settings" id="wifi-policy">
  <summary class="network-summary">
    <span class="network-icon" id="network-icon" aria-hidden="true">◌</span>
@@ -44,7 +40,7 @@
  </div>
 </details>
 <a href="./installer-iphone.html" class="iphone-install-guide">📲 Installer Alicia sur l’écran d’accueil iPhone — guide</a>
-<div id="puter-panel" class="puter-panel" hidden>
+<div id="puter-panel" class="puter-panel" hidden aria-hidden="true">
  <button id="puter-connect" class="primary" type="button">Connecter mon compte IA (Puter)</button>
  <p id="puter-state" role="status">Ouvre ce site dans Safari sur iPhone, puis connecte ton compte Puter.</p>
  <small>Le service Puter offre une allocation gratuite mensuelle, puis peut proposer des crédits payants. Alicia ne les achète jamais. Tes questions sont transmises à Puter et aux fournisseurs de modèles qu'il utilise. Aucun compte ChatGPT ou clé API OpenAI n'est nécessaire.</small>
@@ -91,7 +87,7 @@
   <p id="alicia-level-caption" role="status">Aucun test du modèle exécuté</p>
   <label class="check"><input type="checkbox" id="intelligence-extended"> Tester 10 exercices (au lieu de 5 : plus long)</label>
   <div class="intelligence-actions"><button id="intelligence-start" type="button" class="primary">Évaluer Alicia (modèle connecté)</button><button id="intelligence-reset" class="secondary" type="button">Effacer le niveau</button></div>
-  <p id="intelligence-progress" role="status" aria-live="polite">Lance des tests avec le modèle local ou Puter (allocation gratuite limitée). Une confirmation est demandée avant tout test Puter. Le mode API potentiellement payant est exclu.</p>
+  <p id="intelligence-progress" role="status" aria-live="polite">Évalue le moteur Alicia Original local. Les APIs payantes sont désactivées.</p>
   <p id="intelligence-detail">Aucun score attribué avant de tester le moteur IA actif.</p>
   <details class="capability-evaluator">
    <summary>Comparer les compétences observables d'une personne, d'une IA, d'un animal ou d'un objet</summary>
@@ -305,14 +301,14 @@
  <p id="chatgpt-learning-status" role="status"></p>
 </details>
 <textarea id="question" rows="2" placeholder="Écris ta question ou décris ton problème…" aria-label="Votre message" required></textarea><div class="actions"><button id="voice" class="secondary" type="button" title="Dicter une question">🎙️</button><button id="speak" class="secondary" type="button" title="Lire la dernière réponse">🔊</button><button id="review" class="secondary" type="button" title="Relire et corriger la dernière réponse" disabled>🔍 Corriger</button><span class="grow"></span><button id="send" class="primary" type="submit">Envoyer ➤</button></div></form>
-<p class="disclaimer">Alicia peut se tromper. Le mode Puter demande Internet et un compte (quota gratuit limité). Le mode local nécessite un moteur compatible. Aucun achat ni modification de ton appareil sans ta permission.</p>
+<p class="disclaimer">Alicia Original est un petit moteur expérimental écrit pour Alicia. Il sait apprendre des réponses et calculer, mais ne possède pas encore les capacités d’une grande IA générative. Aucun abonnement, aucune API payante.</p>
 <details class="version-details" id="app-version-details">
- <summary>ℹ️ À propos d’Alicia — version 0.6.2</summary>
- <p><strong>Version de l’application : 0.6.2</strong> · publiée le 15 octobre 2026.</p>
+ <summary>ℹ️ À propos d’Alicia — version 0.7.0</summary>
+ <p><strong>Version de l’application : 0.7.0</strong> · mise à jour le 16 octobre 2026.</p>
  <p>Cette indication correspond à la version du code chargé sur ton appareil. Elle ne prouve pas que toutes les fonctions envisagées sont déjà disponibles. Pour récupérer la dernière version, ferme puis rouvre Alicia avec une connexion Wi-Fi, ou actualise sa page dans Safari.</p>
  <p>Le numéro interne du cache de l’application est différent du numéro de version.</p>
 </details>
 </div>
 </div>
-<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script type="module" src="./web-browse.js"></script><script type="module" src="./design-studio.js"></script><script src="./app.js" defer></script><script src="./puter-engine.js" defer></script><script type="module" src="./avatar.js"></script><script type="module" src="./emotion-ui.js"></script><script type="module" src="./intelligence-lab.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
+<script src="./wifi-policy.js" defer></script><script type="module" src="./composer-tools.js"></script><script type="module" src="./web-browse.js"></script><script type="module" src="./design-studio.js"></script><script src="./original-engine.js" defer></script><script src="./app.js" defer></script><script src="./original-controls.js" defer></script><script type="module" src="./avatar.js"></script><script type="module" src="./emotion-ui.js"></script><script type="module" src="./intelligence-lab.js"></script><script src="./tool-finder.js" defer></script><script type="module" src="./data-lab.js"></script><script type="module" src="./mac-lab.js"></script><script type="module" src="./github-health.js"></script><script type="module" src="./copy-learning.js"></script>
 </body></html>
