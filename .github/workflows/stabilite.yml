@@ -1,0 +1,26 @@
+name: Tests de stabilite
+on:
+  push:
+    branches: [main, tests-stabilite-20261015]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  moteur:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verifier la syntaxe JavaScript
+        run: |
+          for file in *.js; do
+            node --experimental-default-type=module --check "$file"
+          done
+      - name: Tester le moteur des echecs
+        run: node --experimental-default-type=module --test tests/engine.test.mjs
