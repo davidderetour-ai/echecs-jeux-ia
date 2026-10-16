@@ -96,7 +96,7 @@ jobs:
           assert 'connection.value="original"' in js
           js=js.replace('if("serviceWorker" in navigator)window.addEventListener(', 'if(false&&"serviceWorker" in navigator)window.addEventListener(',1)
           app.write_text(js,encoding='utf-8')
-          for required in ('original-engine.js','original-controls.js','original-controls.css','native-memory-bridge.js','cortect-ui.js','image3d-ui.js','three-studio.js','three-studio.css','vendor/three.r147.min.js','vendor/OrbitControls.r147.js','vendor/THREE-LICENSE.txt','python-vscode-ui.js','cortect-rag-core.mjs','cortect-agent-core.mjs','portrait-front.webp','portrait-back.webp'):
+          for required in ('original-engine.js','original-controls.js','original-controls.css','native-memory-bridge.js','cortect-ui.js','image3d-ui.js','three-studio.js','three-studio.css','alicia-avatar3d.js','alicia-reference-theme.css','alicia-reference-ui.js','vendor/three.r147.min.js','vendor/OrbitControls.r147.js','vendor/THREE-LICENSE.txt','python-vscode-ui.js','cortect-rag-core.mjs','cortect-agent-core.mjs','portrait-front.webp','portrait-back.webp'):
               assert (root/required).is_file(),required
           print('Alicia Mac Original 0.4.4 : moteur inclus, aucune requête IA externe ni service payant.')
           PY
@@ -136,6 +136,8 @@ jobs:
           node --test native/alicia_mac_v04/v04.test.mjs
           node --test native/alicia_mac_v041/v041.test.mjs
           node --check assistant-ia/three-studio.js
+          node --check assistant-ia/alicia-avatar3d.js
+          node --check assistant-ia/alicia-reference-ui.js
           node --check assistant-ia/original-engine.js
           node --check assistant-ia/original-controls.js
           node --input-type=module --check < assistant-ia/cortect-ui.js
