@@ -9,9 +9,10 @@ test("L'avatar qui utilise import ES est chargé comme module",()=>{
 });
 test("Le moteur IA iPhone est réellement relié à l'interface",()=>{
  assert.match(html,/id="connection-mode"/);
- assert.match(html,/option value="puter"/);
- assert.match(html,/src="\.\/puter-engine\.js"/);
- assert.match(sw,/puter-engine\.js/);
+ assert.match(html,/option value="original"/);
+ assert.match(html,/src="\.\/original-engine\.js"/);
+ assert.match(sw,/original-engine\.js/);
+ assert.doesNotMatch(html,/src="\.\/puter-engine\.js"/);
 });
 test("Le guide iPhone et l'avatar figurent dans le cache de l'application",()=>{
  assert.match(sw,/installer-iphone\.html/);
