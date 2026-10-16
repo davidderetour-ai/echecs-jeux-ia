@@ -1,0 +1,63 @@
+name: Alicia — générer avatar humain réaliste libre MIT
+on:
+  push:
+    branches:
+      - alicia-tests-cor-3d
+    paths:
+      - ".github/workflows/alicia-build-realistic-model.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  create-human-glb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Récupérer le dépôt Alicia
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Télécharger modèle humain riggé Rocketbox MIT — hors application
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --connect-timeout 10 --max-time 120 \
+            "https://raw.githubusercontent.com/927tanmay/react-ai-voice-avatar/main/assets/avatars/ananya.glb" \
+            --output "$RUNNER_TEMP/alicia-rocketbox-source.glb"
+          # Empêcher la substitution du modèle source.
+          test "$(git hash-object "$RUNNER_TEMP/alicia-rocketbox-source.glb")" = "41e05337ee06a1b12dc9e76ecce07508ea7fdd1a"
+          test "$(wc -c < "$RUNNER_TEMP/alicia-rocketbox-source.glb" | tr -d ' ')" = "4480100"
+          curl --fail --location --retry 3 --max-time 30 \
+            "https://raw.githubusercontent.com/microsoft/Microsoft-Rocketbox/master/LICENSE.md" \
+            --output "assistant-ia/models/ROCKETBOX-MIT-LICENSE.md"
+      - name: Construire vrai fichier 3D animé et inspecter son squelette
+        run: |
+          set -euo pipefail
+          python3 native/alicia_mac_v044/build_rocketbox_realistic.py \
+            "$RUNNER_TEMP/alicia-rocketbox-source.glb" \
+            assistant-ia/models/alicia_realiste_rocketbox.glb \
+            assistant-ia/models/alicia_realiste_manifest.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("assistant-ia/models/alicia_realiste_manifest.json")
+          d=json.loads(p.read_text())
+          assert d["skinnedMesh"]>=1 and d["meshCount"]>=1
+          assert d["animationCount"]>=1
+          assert d["fileBytes"]>100000
+          assert d["textureCount"]>0
+          print("PASS mesh, rig, textures, idle animation: ", d["idleTargets"])
+          PY
+      - name: Installer le modèle vérifié dans Alicia sans remplacer les autres fichiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Alicia CI"
+          git config user.email "alicia-ci@users.noreply.github.com"
+          git add assistant-ia/models/alicia_realiste_rocketbox.glb \
+                  assistant-ia/models/alicia_realiste_manifest.json \
+                  assistant-ia/models/ROCKETBOX-MIT-LICENSE.md
+          git diff --cached --quiet && exit 0
+          git commit -m "Ajouter véritable avatar féminin Rocketbox MIT GLB riggé, texturé et animé"
+          git push origin HEAD:alicia-tests-cor-3d
