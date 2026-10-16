@@ -8,7 +8,7 @@
   border:1px solid #596cdb7d;border-radius:20px;perspective:1100px;position:relative;}
 .alicia-photo-scene{height:min(440px,48vw);min-height:330px;width:100%;display:flex;justify-content:center;align-items:center;
   perspective:1000px;overflow:visible;}
-.alicia-photo-rotator{height:100%;width:min(225px,41%);position:relative;transform-style:preserve-3d;
+.alicia-photo-rotator{height:100%;width:min(225px,41%);position:relative;top:0;transform-style:preserve-3d;
   -webkit-transform-style:preserve-3d;transform-origin:50% 50%;
   animation:alicia-photo-turn 32s linear infinite,alicia-photo-breathe 5.7s ease-in-out infinite;}
 .alicia-photo-side{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
@@ -35,8 +35,8 @@
   75%{transform:rotateY(360deg)}
   100%{transform:rotateY(360deg)}
 }
-@keyframes alicia-photo-breathe{0%,100%{translate:0 0}50%{translate:0 -5px}}
-@keyframes alicia-photo-eye-life{0%,79%,83%,100%{opacity:.15;scale:1 1}81%{opacity:.65;scale:1 .12}}
+@keyframes alicia-photo-breathe{0%,100%{top:0}50%{top:-5px}}
+@keyframes alicia-photo-eye-life{0%,79%,83%,100%{opacity:.15;transform:scaleY(1)}81%{opacity:.65;transform:scaleY(.12)}}
 @media (max-width:850px){.alicia-photo-scene{min-height:350px;height:390px}
   .alicia-photo-rotator{width:190px}.avatar-stage.alicia-v04-stage,.alicia-photo-stage{min-height:465px!important}}
 @media (prefers-reduced-motion:reduce){.alicia-photo-rotator,.alicia-photo-face-motion{animation:none!important}}
