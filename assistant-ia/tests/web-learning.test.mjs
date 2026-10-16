@@ -89,5 +89,5 @@ test("Réponses Alicia : oriente vers des recherches réelles et des cours, pas 
  assert.match(chat,/WEB_COURSES/);
  assert.match(chat,/six moteurs|Google, Bing, DuckDuckGo/);
  assert.match(chat,/ne garantit pas|ne garantit pas|sans inventer de résultats/i);
- assert.match(read("index.html"),/Version 0\.8\.4/);
+ assert.match(read("index.html"),/Version 0\.9\.0/);
 });
