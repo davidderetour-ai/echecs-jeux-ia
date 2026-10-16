@@ -9,7 +9,7 @@ function init(){
  const stage=document.querySelector(".avatar-stage");
  if(!stage||$("alicia-avatar3d"))return;
  const panel=document.createElement("section");panel.id="alicia-avatar3d";panel.className="alicia-avatar3d";panel.setAttribute("aria-label","Alicia, avatar 3D articulé, tournant sur lui-même");
- panel.innerHTML='<div class="alicia-avatar3d-toolbar"><button type="button" id="alicia-avatar3d-pause">⏸ Rotation</button><button type="button" id="alicia-avatar3d-front">Face</button><button type="button" id="alicia-avatar3d-turn">Dos</button><button type="button" id="alicia-avatar3d-view">Recentrer</button></div>'+
+ panel.innerHTML='<div class="alicia-avatar3d-toolbar"><button type="button" id="alicia-avatar3d-pause">⏸ Rotation</button><button type="button" id="alicia-avatar3d-front">Face</button><button type="button" id="alicia-avatar3d-turn">Dos</button><button type="button" id="alicia-avatar3d-recenter">Recentrer</button></div>'+
  '<div id="alicia-avatar3d-view" class="alicia-avatar3d-view" aria-label="Avatar de femme blonde en 3D, articulations et expression"></div>'+
  '<div class="alicia-avatar3d-import">'+
  '<label for="alicia-avatar3d-file">Modèle animé .glb / .gltf</label>'+
@@ -133,12 +133,15 @@ function init(){
    orbit.maxPolarAngle=Math.PI*.76;orbit.minPolarAngle=Math.PI*.17;
    orbit.update();
    const resize=()=>{
-    const w=Math.max(250,Math.min(580,Math.round(view.clientWidth||350)));
-    const h=Math.max(280,Math.min(490,Math.round(w*1.12)));
+    const w=Math.max(220,Math.round(view.clientWidth||stage.clientWidth||350));
+    const h=Math.max(280,Math.round(view.clientHeight||Math.min(520,w*1.18)));
     renderer.setSize(w,h,false);
     camera.aspect=w/h;camera.updateProjectionMatrix();
+    if(root)fitCharacterCamera();
    };
-   window.addEventListener("resize",resize);resize();
+   window.addEventListener("resize",resize);
+   if(window.ResizeObserver)new ResizeObserver(()=>{if(!panel.hidden)resize();}).observe(view);
+   resize();
    function fitCharacterCamera(){
      // Cadrage plein pied d'un modèle de hauteur variable, même sur petit iPhone.
      const box=imported?new THREE.Box3().setFromObject(imported):new THREE.Box3().setFromObject(rig);
@@ -283,7 +286,7 @@ function init(){
  $("alicia-avatar3d-pause").addEventListener("click",e=>{auto=!auto;turnTo=null;e.currentTarget.textContent=auto?"⏸ Rotation":"▶ Rotation";});
  $("alicia-avatar3d-front").addEventListener("click",()=>{turnTo=0;auto=false;});
  $("alicia-avatar3d-turn").addEventListener("click",()=>{turnTo=Math.PI;auto=false;});
- $("alicia-avatar3d-view").addEventListener("click",fitCharacterCamera);
+ $("alicia-avatar3d-recenter").addEventListener("click",fitCharacterCamera);
  loadRealisticModel();
  let last=0;
  function frame(t){
