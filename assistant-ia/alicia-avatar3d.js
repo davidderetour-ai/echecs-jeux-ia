@@ -11,6 +11,12 @@ function init(){
  const panel=document.createElement("section");panel.id="alicia-avatar3d";panel.className="alicia-avatar3d";panel.setAttribute("aria-label","Alicia, avatar 3D articulé, tournant sur lui-même");
  panel.innerHTML='<div class="alicia-avatar3d-toolbar"><button type="button" id="alicia-avatar3d-pause">⏸ Rotation</button><button type="button" id="alicia-avatar3d-front">Face</button><button type="button" id="alicia-avatar3d-turn">Dos</button><button type="button" id="alicia-avatar3d-view">Recentrer</button></div>'+
  '<div id="alicia-avatar3d-view" class="alicia-avatar3d-view" aria-label="Avatar de femme blonde en 3D, articulations et expression"></div>'+
+ '<div class="alicia-avatar3d-import">'+
+ '<label for="alicia-avatar3d-file">Modèle animé .glb / .gltf</label>'+
+ '<input id="alicia-avatar3d-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" aria-label="Importer un modèle humain 3D stocké sur cet appareil">'+
+ '<button id="alicia-avatar3d-realistic" type="button">✦ Alicia réaliste</button>'+
+ '<button id="alicia-avatar3d-restore" type="button">↶ Personnage stylisé</button>'+
+ '</div>'+
  '<p class="alicia-avatar3d-caption" id="alicia-avatar3d-status" role="status">Avatar Alicia 3D : modèle original stylisé, en préparation…</p>';
  stage.prepend(panel);
  const hasReferencePortrait=Boolean($("alicia-photo-stage"));
@@ -18,6 +24,8 @@ function init(){
  const status=x=>{$("alicia-avatar3d-status").textContent=x;};
  if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;return;}
  let scene,camera,renderer,orbit,root,rig,face,mouth,eyes=[],hair,armR,armL,legR,legL,head,blinking=false,active=false;
+ let imported=null,mixer=null,importGeneration=0,faceJaw=null,jawBase=0;
+ const clock=new THREE.Clock();
  const canvas=$("alicia-avatar");
  let auto=true,speaking=false,expression="happy",turnTo=null,lastT=0;
  const mat=(color,metalness=0,roughness=.8)=>new THREE.MeshStandardMaterial({color,metalness,roughness});
@@ -147,10 +155,108 @@ function init(){
    };
    status("Alicia en vraie 3D stylisée : mouvements autonomes, vue 360°, visage et voix.");
  }catch(e){panel.hidden=true;if(canvas)canvas.style.display="";status("Moteur 3D indisponible : "+e.message);try{renderer?.dispose();}catch{}return;}
+ function restoreOriginal(){
+   importGeneration++;
+   if(mixer){mixer.stopAllAction();mixer.uncacheRoot(imported);mixer=null;}
+   if(imported){
+     root.remove(imported);
+     // Destroy only user-loaded assets; never touch materials of Alicia's bundled avatar.
+     imported.traverse(node=>{
+       if(node.geometry)node.geometry.dispose();
+       const materials=Array.isArray(node.material)?node.material:(node.material?[node.material]:[]);
+       for(const material of materials){
+         for(const key of ["map","normalMap","metalnessMap","roughnessMap","emissiveMap","aoMap","bumpMap","alphaMap"]){
+           if(material[key]?.isTexture)material[key].dispose();
+         }
+         material.dispose();
+       }
+     });
+     imported=null;
+   }
+   faceJaw=null;rig.visible=true;
+   status("Personnage Alicia stylisé restauré. Clique sur Alicia réaliste pour la version humaine texturée.");
+ }
+ function activateHumanModel(gltf,label){
+   const model=gltf.scene;
+   const bounds=new THREE.Box3().setFromObject(model);
+   const size=bounds.getSize(new THREE.Vector3());
+   if(!Number.isFinite(size.y)||size.y<.01||size.y>1e8){status("Dimensions du personnage invalides");return false;}
+   restoreOriginal();
+   const scale=2.52/size.y;
+   model.scale.multiplyScalar(scale);
+   model.updateMatrixWorld(true);
+   const fitted=new THREE.Box3().setFromObject(model);
+   const center=fitted.getCenter(new THREE.Vector3());
+   model.position.x-=center.x;
+   model.position.y-=fitted.min.y;
+   model.position.z-=center.z;
+   model.updateMatrixWorld(true);
+   root.add(model);imported=model;rig.visible=false;
+   faceJaw=model.getObjectByName("Bip01 MJaw")||model.getObjectByName("Jaw")||null;
+   jawBase=faceJaw?faceJaw.rotation.x:0;
+   const clips=Array.isArray(gltf.animations)?gltf.animations:[];
+   if(clips.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(clips[0]).play();}
+   turnTo=0;auto=true;
+   status(label+" : véritable modèle humain texturé et articulé, "+clips.length+
+     " animation(s). Tourne-le à 360°. Son apparence n'est pas encore identique au portrait de référence.");
+   return true;
+ }
+ function loadRealisticModel(){
+   if(!THREE.GLTFLoader){status("Chargeur GLB non disponible hors ligne.");return;}
+   const generation=++importGeneration;
+   status("Chargement d'Alicia réaliste depuis le fichier 3D local intégré…");
+   new THREE.GLTFLoader().load("./models/alicia_realiste_rocketbox.glb",gltf=>{
+     if(generation!==importGeneration)return;
+     activateHumanModel(gltf,"Alicia réaliste");
+   },undefined,error=>{
+     if(generation!==importGeneration)return;
+     status("Le modèle réaliste n'est pas accessible. L'avatar stylisé reste disponible. "+String(error?.message||error));
+   });
+ }
+ $("alicia-avatar3d-realistic").addEventListener("click",loadRealisticModel);
+ $("alicia-avatar3d-restore").addEventListener("click",restoreOriginal);
+ const input=$("alicia-avatar3d-file");
+ input.addEventListener("change",()=>{
+   const file=input.files?.[0]; if(!file)return;
+   if(!THREE.GLTFLoader){status("GLTFLoader hors ligne manquant dans cette version.");return;}
+   if(!/\.(?:glb|gltf)$/i.test(file.name)||file.size>20_000_000||file.size<40){
+     status("Choisis un fichier .glb ou .gltf de 20 Mo maximum.");return;
+   }
+   const token=++importGeneration;
+   status("Lecture locale du modèle "+file.name+"…");
+   const reader=new FileReader();
+   reader.onerror=()=>status("Impossible de lire ce fichier 3D.");
+   reader.onload=()=>{
+     if(token!==importGeneration)return;
+     let payload=reader.result;
+     if(/\.gltf$/i.test(file.name)){
+       let document3D;
+       try{document3D=JSON.parse(String(payload));}
+       catch{status("Fichier GLTF JSON invalide.");return;}
+       const references=[...(document3D.buffers||[]),...(document3D.images||[])];
+       if(references.some(item=>item.uri&&!item.uri.startsWith("data:"))){
+         status("Un .gltf avec textures ou données externes n'est pas autonome. Exporte-le en .glb ou intègre ses ressources.");return;
+       }
+     }
+     const loader=new THREE.GLTFLoader();
+     loader.parse(payload,"",(gltf)=>{
+       if(token!==importGeneration){
+         gltf.scene.traverse(node=>{node.geometry?.dispose?.();});
+         return;
+       }
+       activateHumanModel(gltf,file.name);
+     },err=>{
+       status("Chargement GLTF impossible : "+String(err?.message||err));
+     });
+   };
+   if(/\.glb$/i.test(file.name))reader.readAsArrayBuffer(file);
+   else reader.readAsText(file);
+ });
  $("alicia-avatar3d-pause").addEventListener("click",e=>{auto=!auto;turnTo=null;e.currentTarget.textContent=auto?"⏸ Rotation":"▶ Rotation";});
  $("alicia-avatar3d-front").addEventListener("click",()=>{turnTo=0;auto=false;});
  $("alicia-avatar3d-turn").addEventListener("click",()=>{turnTo=Math.PI;auto=false;});
  $("alicia-avatar3d-view").addEventListener("click",()=>{camera.position.set(0,1.48,4.85);orbit.target.set(0,1.47,0);orbit.update();});
+ loadRealisticModel();
  let last=0;
  function frame(t){
    requestAnimationFrame(frame);
@@ -162,7 +268,10 @@ function init(){
      root.rotation.y+=diff*Math.min(1,dt*4);
    } else if(auto)root.rotation.y+=dt*.18;
    const phase=t*.0015;
-   rig.position.y=Math.sin(phase*2)*.012;
+   if(mixer&&imported)mixer.update(dt);
+   if(faceJaw)faceJaw.rotation.x=jawBase+(speaking?(.07+Math.abs(Math.sin(t*.015))*.09):0);
+   if(rig.visible)rig.position.y=Math.sin(phase*2)*.012;
+   if(rig.visible){
    legL.hip.rotation.x=Math.sin(phase)*.12;
    legR.hip.rotation.x=-Math.sin(phase)*.12;
    legL.knee.rotation.x=Math.max(0,-Math.sin(phase))*.055;
@@ -177,10 +286,11 @@ function init(){
    const blink=Math.pow(Math.max(0,Math.cos(t*.0018+1.9)),28);
    for(const e of eyes)e.lid.scale.y=.004+blink*.034;
    mouth.scale.y=speaking ? (.025+Math.abs(Math.sin(t*.017))*.035) : .009;
+   }
    orbit.update();renderer.render(scene,camera);
  }
  requestAnimationFrame(frame);
- window.addEventListener("pagehide",()=>{try{renderer.dispose();}catch{}},{once:true});
+ window.addEventListener("pagehide",()=>{try{mixer?.stopAllAction();renderer.dispose();}catch{}},{once:true});
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
 else init();
