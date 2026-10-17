@@ -33,7 +33,7 @@ test("Les commandes de jeu fonctionnent via le moteur de chat sans changer les v
  assert.match(app,/AliciaPlay\?\.answer/);
  assert.match(html,/alicia-play-ui\.mjs/);
  assert.match(sw,/alicia-play-ui\.mjs/);
- assert.match(ui,/data-role/);
+ assert.match(ui,/b\.dataset\.role/);
  assert.match(ui,/target="_self"|a\.target="_self"/);
  assert.doesNotMatch(ui,/speechSynthesis\.getVoices|ALICIA_GITHUB_TOKEN/);
 });
