@@ -1,5 +1,5 @@
 /* Échecs & Jeux IA — MAJ 2.1 : réseau d'abord, secours hors ligne. */
-const CACHE='echecs-jeux-ia-v3-8-6-go-sauvegardes-20261017';
+const CACHE='echecs-jeux-ia-v3-9-1-iphone-simple-20261017';
 const PREFIX='echecs-jeux-ia-';
 const CORE=['./','./index.html','./go.html','./peace.html','./go.js','./go-persistence.mjs','./peace.js','./peace-puzzles.json','./app.js','./alicia-games.mjs','./dames-francaises.html','./dames-francaises.js','./dames-francaises-engine.mjs','./universal-360.js','./game-clocks.js','./academy-path.js','./shogi-engine.js','./shogi-lessons.js','./shogi-app.js','./engine.js','./mini.js','./coach.js','./extras.js','./backup.js','./nearby.js','./bluetooth-chat.js','./theme-presets.js','./board-view.js','./chess-3d.js','./webgpu-3d.js','./piece-figures.js','./masterclass.js','./atelier.js','./styles.css','./manifest.webmanifest','./assets/icone-v241-192.png','./assets/icone-v241-512.png','./apple-touch-icon.png','./favicon.png','./apple-touch-icon-couleur-241.png','./favicon-couleur-241.png','./assets/icone-couleur-241-192.png','./assets/icone-couleur-241-512.png','./manifest-icone-couleur.webmanifest','./installer-icone-couleur.html','./assets/house-of-chess.jpg'];
 const DOCUMENTS=['./docs/Regles_4_joueurs.pdf','./docs/Guide_M800.pdf','./docs/Notice_V24_A4.pdf','./docs/Installation_iPhone_Android_PC_Mac.pdf'];
