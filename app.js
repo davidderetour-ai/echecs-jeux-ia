@@ -70,7 +70,7 @@ function save(){if(game&&!roomLive&&!nearbyLive){const g=JSON.parse(JSON.stringi
 function kind(){return game?.kind==='chess'?(game.type==='chess4'?'chess4':'chess2'):game?.id;}
 function isHuman(){if(nearbyLive){if(!game||game.over||game.kind!=='chess')return false;return game.colors[game.turn]===(nearbyRole==='host'?(game.type==='chess4'?'red':'white'):(game.type==='chess4'?'blue':'black'));}if(roomLive)return !!(game&&!game.over&&roomData?.started&&game.colors[game.turn]===roomData.seat);if(!game||game.over)return false;const c=game.kind==='chess'?game.colors[game.turn]:game.turn===0?'A':'B';return controllers[c]==='human';}
 function cancelBot(){if(pendingBot){clearTimeout(pendingBot);pendingBot=null;}botBusy=false;}
-function goto(t){if(immersiveGame && !['play','extras'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
+function goto(t){document.querySelector('.nav-more')?.removeAttribute('open');if(immersiveGame && !['play','extras'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
 function playWithAlicia(id,role=aliciaRole){
  const spec=getAliciaGame(id);
  if(!spec)return toast('Ce jeu n’est pas reconnu.');
