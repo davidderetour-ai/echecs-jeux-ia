@@ -96,9 +96,16 @@ function playWithAlicia(id,role=aliciaRole){
  }
  aliciaOpponent=true;
  aiMode='offline';
+ if(id==='chess4'&&chosenRole==='partner'){
+  if(!fourMode.includes('teams'))store.set('alicia-fourmode-before-partner',fourMode);
+  fourMode='chesscom-teams';
+ }else if(id==='chess4'&&fourMode==='chesscom-teams'&&chosenRole==='opponent'){
+  const previous=store.get('alicia-fourmode-before-partner','chesscom-ffa');
+  if(['chesscom-ffa','house-a','house-b','house-teams','chesscom-teams'].includes(previous))fourMode=previous;
+ }
  controllers={...controllers,white:'human',black:'bot',red:'human',blue:'bot',yellow:'bot',green:'bot',A:'human',B:'bot'};
  save();start(id);
- miniInfo=chosenRole==='training'?'🎓 Entraînement avec Alicia : réussis des coups autorisés, demande un indice, puis étudie sa réponse.':chosenRole==='partner'?'🤝 Alicia t’aide à réfléchir et donne des conseils pendant la partie.':'♟ Alicia joue contre toi sans serveur ni abonnement.';
+ miniInfo=chosenRole==='training'?'🎓 Entraînement avec Alicia : réussis des coups autorisés, demande un indice, puis étudie sa réponse.':chosenRole==='partner'?(id==='chess4'?'🤝 Alicia joue Jaune dans ton équipe Rouge + Jaune contre Bleu + Vert.':'🤝 Alicia t’aide à réfléchir et donne des conseils pendant la partie.'):'♟ Alicia joue contre toi sans serveur ni abonnement.';
  render();
 }
 function start(id){gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
@@ -301,7 +308,7 @@ function boardSelectionClick(r,c,ctx){
 }
 function moveMini(m){if(!isHuman())return;const next=playMini(game,m);if(!next){toast('Coup non autorisé.');return;}game=next;selected=null;save();render();queueBot();}
 function setController(c,v){if(roomLive)return toast('Les couleurs sont attribuées par le salon privé.');controllers[c]=v;if(v==='human'&&aliciaOpponent&&c!=='white'&&c!=='red'&&c!=='A')aliciaOpponent=false;save();render();queueBot();}
-function controlPlayer(color){if(nearbyLive)return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<span>${color===(game.type==='chess4'?'red':'white')?'👑 Hôte':color===(game.type==='chess4'?'blue':'black')?'👤 Ami':'🤖 IA locale'}</span></div>`;if(roomLive)return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<span>${E(roomData?.players.find(p=>p.seat===color)?.name||'En attente')}</span></div>`;return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<select data-player="${color}" aria-label="Qui joue ${labels[color]} ?"><option value="human" ${controllers[color]==='human'?'selected':''}>👤 Humain</option><option value="bot" ${controllers[color]==='bot'?'selected':''}>${aliciaOpponent?'✦ Alicia':'🤖 IA locale'}</option></select></div>`;}
+function controlPlayer(color){if(nearbyLive)return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<span>${color===(game.type==='chess4'?'red':'white')?'👑 Hôte':color===(game.type==='chess4'?'blue':'black')?'👤 Ami':'🤖 IA locale'}</span></div>`;if(roomLive)return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<span>${E(roomData?.players.find(p=>p.seat===color)?.name||'En attente')}</span></div>`;return `<div class="player-row">${champ(color,game.colors?.[game.turn]===color)}<select data-player="${color}" aria-label="Qui joue ${labels[color]} ?"><option value="human" ${controllers[color]==='human'?'selected':''}>👤 Humain</option><option value="bot" ${controllers[color]==='bot'?'selected':''}>${aliciaOpponent&&aliciaRole==='partner'&&game?.type==='chess4'?(color==='yellow'?'✦ Alicia · alliée':'🤖 IA adverse'):(aliciaOpponent?'✦ Alicia':'🤖 IA locale')}</option></select></div>`;}
 function renderPlay(){
  if(!game)return `<div class="card"><h2>Choisis un jeu</h2><p>Échecs à quatre joueurs ou l’un des huit jeux du M800.</p><button data-tab="home" class="btn primary">Voir les jeux</button></div>`;
  const id=kind(),isChess=game.kind==='chess';let title=id==='chess4'?'Échecs à 4 joueurs':(M800.find(x=>x.id===id)?.name||'Jeu');
