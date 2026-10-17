@@ -87,8 +87,7 @@ function play(m){
   return;
  }
  const didCapture=m.captures.length?" · "+m.captures.length+" prise(s)":"";
- const note=(activeRole==="partner"?" Ta partenaire Alicia conseille : "+frenchAdvice(game,level).text:"");
- setMessage("Tu as joué "+line(m)+didCapture+"."+note);
+ setMessage("Tu as joué "+line(m)+didCapture+". Alicia prépare sa réponse.");
  persist();render();scheduleBot();
 }
 let botTicket=0;
@@ -99,7 +98,7 @@ function scheduleBot(){
   if(ticket!==botTicket||game.turn!=="black"||game.over){busy=false;render();return;}
   try{
    const move=chooseFrenchAlicia(game,{level});
-   if(move){const n=applyFrenchMove(game,move);if(n){game=n;setMessage("✦ Alicia joue "+line(move)+(move.captures.length?" et capture "+move.captures.length+" pièce(s)":"")+". À toi !");persist();}}
+   if(move){const n=applyFrenchMove(game,move);if(n){game=n;setMessage("✦ Alicia joue "+line(move)+(move.captures.length?" et capture "+move.captures.length+" pièce(s)":"")+". À toi !"+(activeRole==="partner"&&!game.over?" 🤝 Conseil pour ton tour : "+frenchAdvice(game,level).text:""));persist();}}
   }catch(error){setMessage("Calcul d'Alicia interrompu : "+String(error?.message||error));}
   busy=false;render();
  },280);
