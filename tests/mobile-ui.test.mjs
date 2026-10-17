@@ -17,9 +17,13 @@ test("Les six jeux directs sont disponibles avec un moteur Alicia",()=>{
  }
 });
 test("Accueil simple : bouton reprendre sans réinitialiser la partie",()=>{
- assert.match(js,/data-tab="play">↩ Reprendre ma partie/);
+ assert.match(js,/data-tab="play" class="chosen-resume-button">▶ Reprendre/);
  assert.match(js,/game&&!game.over/);
  assert.match(js,/data-alicia-role=/);
+ assert.match(js,/chosen-home/);
+ assert.match(js,/chosen-header/);
+ assert.match(js,/chosen-games/);
+ assert.match(js,/chosen-continue/);
  assert.match(js,/data-alicia-game=/);
  assert.match(js,/easy-games-extra/);
  assert.match(js,/easy-more/);
@@ -40,8 +44,8 @@ test("App iPhone : identité préservée et lancement pleine taille",()=>{
  assert.match(ipa,/<string>fr\.echecsjeuxia\.iphone\.native<\/string>/);
  assert.match(ipa,/LaunchScreen\.storyboardc/);
  assert.match(ipa,/UILaunchStoryboardName/);
- assert.match(ipa,/3\.9\.1/);
- assert.match(swift,/private let displayVersion = "3\.9\.1"/);
+ assert.match(ipa,/3\.9\.2/);
+ assert.match(swift,/private let displayVersion = "3\.9\.2"/);
 });
 
 test("Changement de jeu : confirmation et copie sûre sans remplacer les anciennes sauvegardes",()=>{
@@ -60,4 +64,24 @@ test("iPhone : barre compacte et navigation native de secours",()=>{
  assert.match(swift,/nativeHome\(\)/);
  assert.match(swift,/nativeGo\(\)/);
  assert.match(swift,/nativeDames\(\)/);
+});
+
+test("Interface exacte choisie : rubriques et actions fonctionnelles",()=>{
+ for(const label of ["Échecs & Jeux IA","Bonjour !","Jouer","Continuer","Réglages rapides","Mode de jeu","Minuteur","Difficulté de l'IA","Partager avec mes amis"]){
+  assert(js.includes(label),label);
+ }
+ for(const key of ['data-action="toggle-clock"','data-ui-level="','data-action="share-app"','data-action="show-other-games"','data-action="choose-local"','data-tab="friends"']){
+  assert(js.includes(key),key);
+ }
+ assert.match(js,/navigator\.share\(/);
+ assert.match(js,/level=chosen;save\(\);render\(\)/);
+});
+test("La barre inférieure a Accueil, Jouer, Amis, Plus",()=>{
+ const nav=html.match(/<nav class="topnav"[\s\S]*?<\/nav>/)?.[0];
+ assert(nav);
+ for(const key of ['data-tab="home"','data-tab="play"','data-tab="friends"','data-tab="train"']){
+  assert(nav.includes(key),key);
+ }
+ assert.match(css,/body\.chosen-home-active \.topnav\{position:fixed/);
+ assert.match(css,/\.chosen-role button\.selected/);
 });
