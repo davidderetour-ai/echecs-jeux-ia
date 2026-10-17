@@ -38,7 +38,8 @@ function classify(query,{useAliases=true}={}){
  // Ne confondre ni l'étude des fiches avec un apprentissage neuronal ni avec
  // l'autorisation d'installer Python sur l'ordinateur.
  if(/\b(?:apprend|apprends|apprendre|etudie|etudier|etudies|enseigne|enseigner|explique|expliquer|montre)\b/.test(n)
-    && /\bpython\b/.test(n))
+    && /\bpython\b/.test(n)
+    && !/\b(?:print|input|variables?|boucles?|fonctions?|fichiers?|debug|vscode|vs code|pip|terminal|json|venv|conditions?)\b/.test(n))
   return {intent:"study-python",confidence:.98};
  if(/\b(?:mets toi|passe|active|bascule)\s+(?:en|au|sur)\s+mode\s+(code|programmation|reparation|creation|professeur)\b/.test(n)){
   const m=n.match(/\bmode\s+(code|programmation|reparation|creation|professeur)\b/)[1];
