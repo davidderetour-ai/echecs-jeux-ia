@@ -126,7 +126,7 @@ function playWithAlicia(id,role=aliciaRole){
  render();
 }
 function start(id,previousProtected=false){if(!previousProtected&&!protectCurrentGame())return;gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
-function render(){document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+function render(){document.body?.classList?.toggle('chosen-home-active',tab==='home');document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  if(tab==='home')root.innerHTML=renderHome();
  if(tab==='play')root.innerHTML=renderPlay();
  if(tab==='train'){if(!practice)loadPractice();root.innerHTML=renderTraining();}
