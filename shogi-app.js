@@ -122,6 +122,20 @@ function onClick(ev){if(!state.root?.contains(ev.target))return;
  if(action==='next'){state.lessonStep=state.progress[state.active];state.validated=false;state.wrong='';state.tip='';state.choice=-1;state.selection=null;loadPuzzle();}
  remember();draw();
 }
+// Commande reçue de l'assistant Alicia : même mode sur iPhone et sur Mac.
+if(typeof window!=="undefined")window.addEventListener('alicia:shogi-role',event=>{
+ const role=event.detail?.role;
+ if(!['opponent','partner','training'].includes(role))return;
+ if(role==='training'){
+  state.mode='academy';state.active=null;state.selection=null;
+  state.tip='🎓 Alicia : choisis une catégorie, puis réussis chaque niveau pour progresser.';
+ }else{
+  state.mode='match';state.options.againstBot=true;state.selection=null;
+  state.tip=role==='partner'?'🤝 Alicia te conseille : '+shogiAdvice(state.game).text:
+   '♟ Alicia joue contre toi avec l’IA hors ligne du Shogi.';
+ }
+ remember();if(state.root)draw();
+});
 export function mountShogi(root){state.root=root;if(!root.dataset.shogiEvents){root.addEventListener('click',onClick);root.dataset.shogiEvents='yes';}draw();}
 
 export function unmountShogi(){if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}
