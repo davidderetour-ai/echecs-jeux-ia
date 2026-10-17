@@ -23,7 +23,7 @@ required = [
     "index.html", "app.js", "engine.js", "mini.js", "shogi-app.js", "shogi-engine.js",
     "go.html", "go.js", "go-persistence.mjs", "dames-francaises.html",
     "dames-francaises.js", "dames-francaises-engine.mjs", "peace.html", "peace.js",
-    "peace-puzzles.json", "sw.js", "backup.js",
+    "peace-puzzles.json", "sw.js", "backup.js", "game-bots.mjs", "game-setup.mjs", "game-setup-ui.mjs", "standalone-play.mjs", "game-setup.css",
     "assets/icone-couleur-241-192.png", "assets/icone-couleur-241-512.png"
 ]
 for name in required:
