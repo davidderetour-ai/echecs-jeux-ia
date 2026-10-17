@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {OWNER,validName,validProjectFile,prepareProposal,listPublicRepositories,
+import {OWNER,MAIN_GAME,validName,validProjectFile,prepareProposal,listPublicRepositories,
  inspectPublicRepository,accessStatus} from "../github-projects-core.mjs";
 const read=name=>readFileSync(new URL("../"+name,import.meta.url),"utf8");
 const fakeRepo=(name,more={})=>({name,private:false,archived:false,
@@ -64,4 +64,11 @@ test("L'interface et le cache hors ligne incluent la consultation GitHub autoris
  assert.match(app,/AliciaGitHubProjects\?\.answer/);
  assert.match(sw,/\.\/github-projects-core\.mjs/);
  assert.match(sw,/\.\/github-projects-ui\.mjs/);
+});
+
+test("Le site Échecs & Jeux IA est lié au bon dépôt et à sa page d'accueil",()=>{
+ assert.equal(MAIN_GAME.website,"https://davidderetour-ai.github.io/echecs-jeux-ia/index.html");
+ assert.equal(MAIN_GAME.repository,"echecs-jeux-ia");
+ assert.ok(read("github-projects-ui.mjs").includes("Ouvrir le jeu Échecs"));
+ assert.ok(read("../index.html").includes("<title>Échecs & Jeux IA"));
 });
