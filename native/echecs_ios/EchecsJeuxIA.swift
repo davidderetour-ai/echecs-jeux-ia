@@ -190,8 +190,8 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
                 guard error == nil,
                       let http = response as? HTTPURLResponse, http.statusCode == 200,
                       let data = data, let html = String(data: data, encoding: .utf8),
-                      html.contains("id=\\"content\\"") else {
-                    self.showStatus("Le serveur local ne renvoie pas le menu des jeux.\\nDétail : \\(error?.localizedDescription ?? String(describing: (response as? HTTPURLResponse)?.statusCode))\\n\\nFerme puis rouvre l'application.")
+                       html.contains("id=") && html.contains("content") else {
+                    self.showStatus("Le serveur local ne renvoie pas le menu des jeux. Vérifie la connexion locale. Détail : " + (error?.localizedDescription ?? "Code HTTP ou contenu inattendu"))
                     return
                 }
                 self.showStatus("Ouverture des plateaux…")
@@ -199,7 +199,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
                 self.startupTimeout?.cancel()
                 let timeout = DispatchWorkItem { [weak self] in
                     guard let self = self, !self.message.isHidden else { return }
-                    self.showStatus("L'écran de jeu ne répond pas après 12 secondes.\\nFerme puis rouvre l'application et envoie une capture de ce message.")
+                    self.showStatus("Le chargement du jeu dépasse 12 secondes. Ferme puis rouvre l’application et envoie une capture de ce message.")
                 }
                 self.startupTimeout = timeout
                 DispatchQueue.main.asyncAfter(deadline: .now() + 12, execute: timeout)
@@ -218,7 +218,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
                 self.startupTimeout?.cancel()
                 self.message.isHidden = true
             } else {
-                self.showStatus("La page locale a été reçue mais le menu des jeux est absent.\\nDétail : \\(error?.localizedDescription ?? "HTML incomplet")")
+                self.showStatus("La page locale a été reçue mais le menu des jeux est absent. " + (error?.localizedDescription ?? "HTML incomplet"))
             }
         }
     }
