@@ -17,9 +17,10 @@ private final class OfflineGameServer {
 
     func start(ready: @escaping (Result<URL, Error>) -> Void) {
         do {
-            let params = NWParameters.tcp
-            params.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: Self.port)!)
-            let l = try NWListener(using: params, on: NWEndpoint.Port(rawValue: Self.port)!)
+            // requiredLocalEndpoint + on: doublonnait la configuration du port,
+            // provoquant POSIX EINVAL (22) lors du test d'intégration.
+            // Écoute TCP standard, requêtes acceptées uniquement depuis 127.0.0.1.
+            let l = try NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: Self.port)!)
             self.listener = l
             var responded = false
             l.stateUpdateHandler = { state in
@@ -40,6 +41,11 @@ private final class OfflineGameServer {
     }
 
     private func handle(_ connection: NWConnection) {
+        guard case .hostPort(let host, _) = connection.endpoint,
+              String(describing: host) == "127.0.0.1" || String(describing: host) == "::1" else {
+            connection.cancel()
+            return
+        }
         connection.start(queue: queue)
         receive(connection, buffer: Data())
     }
