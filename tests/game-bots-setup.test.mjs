@@ -40,11 +40,11 @@ test('IA locale : cinq profils, niveaux bornés et choix cohérent',()=>{
 test('Mode Alicia contre IA uniquement lorsque les deux camps peuvent jouer',()=>{
  for(const id of PREPARABLE_GAME_IDS){
   const spec=gameSetupSpec(id);
-  assert.equal(spec.modes.includes('duel'),supportsLocalDuel(id),id);
+  assert.equal(spec.modes.includes('duel'),supportsLocalDuel(id)||/^go(9|13|19)$/.test(id)||id==='dames10',id);
   if(spec.modes.includes('duel'))assert.match(renderGamePreparation(id,{mode:'duel',bot:'tacticien'},[]),/Alicia contre une autre IA/);
  }
- assert.equal(gameSetupSpec('go19').modes.includes('duel'),false);
- assert.equal(gameSetupSpec('dames10').modes.includes('duel'),false);
+ assert.equal(gameSetupSpec('go19').modes.includes('duel'),true);
+ assert.equal(gameSetupSpec('dames10').modes.includes('duel'),true);
  assert.equal(gameSetupSpec('peace').modes.includes('duel'),false);
 });
 test('Moteurs réels : deux coups IA légaux aux échecs à deux',()=>{
@@ -89,4 +89,20 @@ test('iPhone : cache et script de duel présents, sans perte du stockage',()=>{
  assert.match(app,/localStorage\.setItem\("v2-saves"/);
  assert.match(shogi,/scheduleShogiDuel\(\)/);
  assert.match(shogi,/export function unmountShogi\(\)\{state\.root=null/);
+});
+
+test('Le mode duel fonctionne aussi avec les trois Go et les dames sans altérer les parties',()=>{
+ const go=readFileSync(new URL('../go.js',import.meta.url),'utf8');
+ const dames=readFileSync(new URL('../dames-francaises.js',import.meta.url),'utf8');
+ const persistence=readFileSync(new URL('../go-persistence.mjs',import.meta.url),'utf8');
+ for(const id of ['go9','go13','go19','dames10']){
+  const url=standaloneGameUrl({id,mode:'duel',bot:'tacticien'});
+  assert(url.includes('mode=duel'),id);
+  assert(url.includes('bot=tacticien'),id);
+ }
+ assert.match(go,/function botTurn\(\)/);
+ assert.match(go,/gomode'\)\.value==='duel'/);
+ assert.match(dames,/const duelActive=params\.get\("mode"\)==="duel"/);
+ assert.match(dames,/alicia-dames-francaises-duel-v1/);
+ assert.match(persistence,/\["bot","local","duel"\]/);
 });
