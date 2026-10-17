@@ -2,6 +2,7 @@
  * Alicia utilise le moteur local ; aucun compte, réseau ni paiement requis après chargement.
  */
 import {SIZE,newFrenchDraughts,legalFrenchMoves,applyFrenchMove,undoFrench,chooseFrenchAlicia,frenchAdvice,square} from "./dames-francaises-engine.mjs";
+import {botSettings} from "./game-bots.mjs";
 const $=id=>document.getElementById(id);
 const STORE="alicia-dames-francaises-v1",PROGRESS="alicia-dames-francaises-exercices-v1";
 const params=new URLSearchParams(location.search);
@@ -101,7 +102,7 @@ function scheduleBot(){
  setTimeout(()=>{
   if(ticket!==botTicket||game.turn!=="black"||game.over){busy=false;render();return;}
   try{
-   const move=chooseFrenchAlicia(game,{level});
+   const move=chooseFrenchAlicia(game,{level:botSettings(params.get("bot"),level,5).level});
    if(move){const n=applyFrenchMove(game,move);if(n){game=n;setMessage("✦ Alicia joue "+line(move)+(move.captures.length?" et capture "+move.captures.length+" pièce(s)":"")+". À toi !"+(activeRole==="partner"&&!game.over?" 🤝 Conseil pour ton tour : "+frenchAdvice(game,level).text:""));persist();}}
   }catch(error){setMessage("Calcul d'Alicia interrompu : "+String(error?.message||error));}
   busy=false;render();
