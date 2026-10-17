@@ -10,11 +10,13 @@ const swift=readFileSync(new URL("../native/echecs_ios/EchecsJeuxIA.swift",impor
 const ipa=readFileSync(new URL("../native/echecs_ios/build_ipa.sh",import.meta.url),"utf8");
 
 test("Les six jeux directs sont disponibles avec un moteur Alicia",()=>{
- const ids=["chess2","chess4","dames10","go9","shogi","peace"];
+ const ids=["chess2","chess4","dames10","go9","shogi"];
  for(const id of ids){
   assert(ALICIA_GAMES.some(g=>g.id===id),id);
   assert(js.includes('["'+id+'",'),id+" absent de l'accueil simple");
  }
+ assert(ALICIA_GAMES.some(g=>g.id==="peace"),"Les défis restent accessibles dans les autres jeux");
+ assert.match(js,/ALICIA_GAMES\.filter\(g=>!mainIds\.has\(g\.id\)\)/);
 });
 test("Accueil simple : bouton reprendre sans réinitialiser la partie",()=>{
  assert.match(js,/data-tab="play" class="chosen-resume-button">▶ Reprendre/);
