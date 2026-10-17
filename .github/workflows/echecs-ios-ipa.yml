@@ -32,6 +32,8 @@ jobs:
           node --check shogi-app.js
       - name: Compiler l'IPA iOS native avec moteur hors ligne
         run: bash native/echecs_ios/build_ipa.sh
+      - name: Tester en HTTP local les pages et moteurs embarqués
+        run: bash native/echecs_ios/host_server_smoke.sh
       - name: Publier le fichier pour AltStore Classic
         uses: actions/upload-artifact@v4
         with:
