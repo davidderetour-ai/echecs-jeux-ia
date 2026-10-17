@@ -118,16 +118,6 @@ private final class OfflineGameServer {
     }
 }
 
-private final class WeakGameDisplayHandler: NSObject, WKScriptMessageHandler {
-    weak var target: GamesViewController?
-    init(target: GamesViewController) { self.target = target }
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.name == "gameDisplay", let enabled = message.body as? Bool {
-            target?.setGameFullscreen(enabled)
-        }
-    }
-}
-
 private final class GamesViewController: UIViewController, WKNavigationDelegate {
     private var server: OfflineGameServer?
     private var web: WKWebView!
@@ -409,6 +399,17 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         } else { decisionHandler(.cancel) }
     }
 }
+
+private final class WeakGameDisplayHandler: NSObject, WKScriptMessageHandler {
+    weak var target: GamesViewController?
+    init(target: GamesViewController) { self.target = target }
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "gameDisplay", let enabled = message.body as? Bool {
+            target?.setGameFullscreen(enabled)
+        }
+    }
+}
+
 
 @main
 final class ChessGamesApp: UIResponder, UIApplicationDelegate {
