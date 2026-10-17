@@ -33,6 +33,13 @@ function classify(query,{useAliases=true}={}){
     && !/\b(?:deja installes?|cours installes?|fiches installees?)\b/.test(n))
   return {intent:null,confidence:0,reason:"action sur fichiers non autorisée"};
  if(/^(?:apprends|apprend|retiens|memorise|correction)\s*:/.test(n))return {intent:null,confidence:0};
+ // Une courte demande comme « apprend python » doit lancer un vrai cours local,
+ // plutôt que tomber dans une réponse approximative du moteur général.
+ // Ne confondre ni l'étude des fiches avec un apprentissage neuronal ni avec
+ // l'autorisation d'installer Python sur l'ordinateur.
+ if(/\b(?:apprend|apprends|apprendre|etudie|etudier|etudies|enseigne|enseigner|explique|expliquer|montre)\b/.test(n)
+    && /\bpython\b/.test(n))
+  return {intent:"study-python",confidence:.98};
  if(/\b(?:mets toi|passe|active|bascule)\s+(?:en|au|sur)\s+mode\s+(code|programmation|reparation|creation|professeur)\b/.test(n)){
   const m=n.match(/\bmode\s+(code|programmation|reparation|creation|professeur)\b/)[1];
   return {intent:"mode-"+({programmation:"code",reparation:"repair",creation:"create",professeur:"teach"}[m]||m),confidence:.97};
@@ -83,6 +90,20 @@ function respond(query){
  const {intent}=parsed;
  if(intent!=="help")previous={intent,request:String(query||"").slice(0,200)};
  if(intent==="study")return AliciaCourseLearning.response("Apprends les cours installés");
+ if(intent==="study-python"){
+  const index=AliciaCourseLearning.activate();
+  const first=COURSES.find(c=>c.id==="print")||COURSES.find(c=>c.topic==="python");
+  if(!first)return answer("Je n'ai pas trouvé de leçon Python dans les cours intégrés.");
+  return answer("J'ai rendu accessibles "+index.coursPython+" cours Python / VS Code et "+
+   index.fiches+" autres fiches pédagogiques sur cet appareil. "+
+   (index.persistent?"L'index est enregistré localement. ":"L'enregistrement local n'est pas confirmé. ")+
+   "Ce n'est pas un entraînement de mon modèle d'IA ni une installation de Python.\n\n"+
+   "Première leçon — "+first.title+"\n"+first.lesson+"\n\n"+
+   "Exemple :\n"+first.snippet+"\n\n"+
+   "Exercice : "+first.exercise+"\n\n"+
+   "Pour continuer, dis « explique input en Python » ou « montre moi les cours ».");
+ }
+
  if(intent==="status")return AliciaCourseLearning.response("Combien de cours as-tu appris ?");
  if(intent==="list"){
   const domains=[...new Set(LESSONS.map(x=>x.domain))].sort();
