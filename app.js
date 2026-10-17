@@ -239,6 +239,40 @@ function renderAliciaLauncher(){
  <div class="grid-cards">${ALICIA_GAMES.map(g=>`<button type="button" class="gamecard" data-alicia-game="${g.id}" aria-label="Jouer avec Alicia à ${g.label}"><span class="emoji">${g.type==='opponent'?'♟️':'🎓'}</span><strong>${g.label}</strong><small>${g.type==='coach'?'Conseils et exercices':aliciaRole==='training'?'Exercices guidés':aliciaRole==='partner'?'Conseils pendant la partie':'Contre Alicia · IA locale'}</small></button>`).join('')}</div></section>`;
 }
 
+
+function openGameSetup(id){
+ const spec=gameSetupSpec(id);if(!spec){toast('Jeu non reconnu.');return;}
+ setupGameId=id;pendingSetup=safeSetup(id,{mode:spec.modes[0],role:aliciaRole,level,
+ clock:window.GameClocks?.enabled?.()===true,goban:spec.isGo?Number(id.slice(2)):9,
+ rules:fourMode,view:real3D?'3d':'2d'});goto('setup');
+}
+function enterGameFullscreen(){if(!immersiveGame)toggleImmersive();}
+function launchConfiguredGame(){
+ const spec=gameSetupSpec(setupGameId),o=safeSetup(setupGameId,pendingSetup||{});
+ if(!spec||!o)return;
+ if(roomLive||nearbyLive){toast('Quitte d’abord ta partie connectée.');return;}
+ if(spec.path!=='index.html'){const link=standaloneGameUrl(o);if(link)location.href=link;return;}
+ if(spec.id==='shogi'){
+  aliciaRole=o.role;aliciaOpponent=o.mode==='ai';store.set('alicia-game-role',aliciaRole);
+  tab='shogi';render();window.dispatchEvent(new CustomEvent('launch:shogi-options',{detail:{mode:o.mode,role:o.role,view:o.view}}));
+  if(spec.clock&&window.GameClocks?.enabled?.()!==o.clock)window.GameClocks?.toggle?.();
+  enterGameFullscreen();return;
+ }
+ if(spec.id==='tictactoe'||spec.id==='memory'){
+  aliciaRole=o.role;aliciaOpponent=o.mode==='ai';if(extraGame?.id!==spec.id)extraGame=newExtra(spec.id);
+  save();tab='extras';render();enterGameFullscreen();return;
+ }
+ if(!protectCurrentGame())return;
+ aliciaRole=o.role;aliciaOpponent=o.mode==='ai';if(spec.id==='chess4')fourMode=o.rules;
+ controllers={...controllers,white:'human',black:o.mode==='ai'?'bot':'human',
+ red:'human',blue:o.mode==='ai'?'bot':'human',yellow:o.mode==='ai'?'bot':'human',
+ green:o.mode==='ai'?'bot':'human',A:'human',B:o.mode==='ai'?'bot':'human'};
+ if(spec.id==='chess4'&&o.role==='partner'&&o.mode==='ai')fourMode='chesscom-teams';
+ level=o.level||level;aiMode='offline';real3D=o.view==='3d';
+ if(spec.clock&&window.GameClocks?.enabled?.()!==o.clock)window.GameClocks?.toggle?.();
+ store.set('alicia-game-role',aliciaRole);
+ start(spec.id,true);enterGameFullscreen();
+}
 function renderHome(){
  const mainGames=[
  ["chess2","♔","Échecs","2 joueurs","♔ ♚"],
@@ -536,6 +570,11 @@ function renderSettings(){return `<div class="section-head"><div><div class="tag
  <div class="card"><h3>📲 Installer sur ton appareil</h3><p><b>iPhone :</b> ouvre l’adresse HTTPS dans Safari → Partager → « Sur l’écran d’accueil ».</p><p><b>Android :</b> ouvre l’adresse HTTPS dans Chrome → menu ⋮ → « Installer l’application » ou « Ajouter à l’écran d’accueil ».</p><p><b>PC Windows / Mac :</b> ouvre dans Chrome ou Edge → « Installer » dans la barre d’adresse ; Safari sur Mac peut proposer « Ajouter au Dock » selon la version.</p><p class="note">Pour une véritable installation sur iPhone et Android, publie ce dossier sur un site HTTPS gratuit (par exemple GitHub Pages). L’ouverture d’un fichier HTML isolé sur téléphone ne suffit pas. La première visite nécessite internet, ensuite l’application est mise en cache.</p><button class="btn primary" data-action="install">⬇ Installer quand disponible</button><hr><h3>🧾 Mes progrès</h3><p>${stats.lessons} exercices · ${stats.quizzes} bonnes réponses</p><button data-action="reset-stats" class="btn outline sm">Remettre les progrès à zéro</button></div>
  <div class="card"><h3>🔐 Vie privée</h3><p>Les parties et la progression sont enregistrées dans le navigateur de l’appareil. Hors connexion, aucune position n’est transmise. En mode serveur, l’état du jeu est envoyé uniquement à l’adresse que tu as configurée.</p><p>Pas de compte à créer, pas de publicité ni de suivi intégré.</p></div><div class="card"><h3>📚 Documents importés</h3><p>L’application est élaborée à partir des deux PDF fournis. Tu peux les ouvrir et les imprimer.</p><div class="btn-row"><a href="docs/Regles_4_joueurs.pdf" target="_blank" class="btn outline">Échecs à 4</a><a href="docs/Guide_M800.pdf" target="_blank" class="btn outline">Millennium M800</a><a href="docs/Notice_V24_A4.pdf" target="_blank" class="btn outline">Notice V2.4</a></div></div></div>`;}
 function handleAction(action){
+ if(action==='launch-configured-game'){launchConfiguredGame();return;}
+ if(action==='resume-fullscreen'){goto('play');enterGameFullscreen();return;}
+ if(action==='exit-immersion-to-options'){leaveImmersive();openGameSetup(tab==='shogi'?'shogi':tab==='extras'?extraGame.id:kind());return;}
+ if(action==='exit-fullscreen'){leaveImmersive();render();return;}
+
   if(action==='toggle-clock'){const on=window.GameClocks?.toggle?.();render();toast(on?'Minuteur activé.':'Sans minuteur : les pendules restent arrêtées.');return;}
   if(action==='choose-local'){aiMode='offline';save();render();toast('IA locale sélectionnée : fonctionne sans serveur.');return;}
   if(action==='show-other-games'){const details=document.getElementById('all-games');if(details){details.open=true;details.scrollIntoView({behavior:'smooth',block:'start'});}return;}
@@ -934,6 +973,13 @@ document.addEventListener('click',ev=>{
   render();return;
  }
  el=ev.target.closest('[data-external-alicia]');if(el){el.href='https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/';return;}
+ el=ev.target.closest('[data-prepare-game]');if(el){openGameSetup(el.dataset.prepareGame);return;}
+ for(const prop of ['mode','role','level','goban','clock','view']){
+  el=ev.target.closest('[data-setup-'+prop+']');
+  if(el&&pendingSetup){const value=el.dataset['setup'+prop[0].toUpperCase()+prop.slice(1)];
+   pendingSetup[prop]=['level','goban'].includes(prop)?Number(value):prop==='clock'?value==='true':value;
+   render();return;}
+ }
  el=ev.target.closest('[data-tab]');if(el){goto(el.dataset.tab);return;}
  el=ev.target.closest('[data-junior-challenge]');if(el){const j=JUNIOR_CHALLENGES[Number(el.dataset.juniorChallenge)];if(!j)return;practiceIndex=j.exercise;loadPractice();trainTab='moves';goto('train');toast('Défi du Junior : '+j.title);return;}
  el=ev.target.closest('[data-open-game]');if(el){start(el.dataset.openGame);return;}
@@ -961,6 +1007,7 @@ document.addEventListener('change',ev=>{
  if(el.id==='backup-import-file'){const f=el.files?.[0];importBackupFile(f);el.value='';return;}if(el.matches('[data-player]')){setController(el.dataset.player,el.value);return;}
  if(!el.matches('[data-select]'))return;
  const field=el.dataset.select;
+ if(el.matches('[data-setup-rules]')&&pendingSetup){pendingSetup.rules=el.value;return;}
  if(field==='fourmode'){fourMode=el.value;start('chess4');toast('Nouvelle partie avec la règle choisie.');return;}
  if(field==='level')level=+el.value;
  if(field==='ai-style')aiStyle=el.value;
