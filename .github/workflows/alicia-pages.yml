@@ -4,6 +4,16 @@ on:
     branches: [main]
     paths:
       - "assistant-ia/**"
+      - "app.js"
+      - "index.html"
+      - "alicia-games.mjs"
+      - "dames-francaises*"
+      - "go.js"
+      - "go.html"
+      - "shogi-app.js"
+      - "peace.js"
+      - "peace.html"
+      - "sw.js"
       - ".github/workflows/alicia-pages.yml"
       - ".nojekyll"
   workflow_dispatch:
@@ -32,6 +42,9 @@ jobs:
           test -f assistant-ia/app.js
           test -f assistant-ia/puter-engine.js
           test -f assistant-ia/manifest.webmanifest
+          test -f dames-francaises.html
+          test -f dames-francaises-engine.mjs
+          test -f dames-francaises.js
           grep -q 'Échecs & Jeux' index.html
           grep -q '<title>Alicia' assistant-ia/index.html
       - name: Construire un site avec deux chemins indépendants
@@ -75,3 +88,6 @@ jobs:
             exit 1
           fi
           echo "OK : les échecs sont toujours accessibles à $games"
+          curl -L --max-time 20 -fsS "${games}dames-francaises.html" -o /tmp/dames-online.html
+          grep -q "Dames françaises" /tmp/dames-online.html
+          echo "OK : les dames françaises gratuites sont disponibles en ligne"
