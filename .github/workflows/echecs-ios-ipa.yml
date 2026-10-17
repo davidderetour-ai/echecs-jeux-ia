@@ -55,3 +55,33 @@ jobs:
           path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-v3.9.1.ipa
           if-no-files-found: error
           retention-days: 14
+
+  release:
+    name: Publier le téléchargement direct de l'application iPhone
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Récupérer l'IPA compilé et testé
+        uses: actions/download-artifact@v4
+        with:
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.1
+          path: release-ipa
+      - name: Publier le fichier .ipa sur GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ipa="release-ipa/Echecs-Jeux-IA-v3.9.1.ipa"
+          test -s "$ipa"
+          if gh release view "v3.9.1" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "v3.9.1" "$ipa" --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "v3.9.1" "$ipa" --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" --latest \
+              --title "Échecs & Jeux IA iPhone v3.9.1" \
+              --notes "Application iPhone native gratuite pour AltStore. Télécharge le fichier IPA directement sans chercher dans Actions ni Artifacts. Mise à jour de la version existante, sans désinstaller les jeux ni les sauvegardes. L'IPA est non signé : AltStore et AltServer sont nécessaires pour l'installation."
+          fi
+          gh release view "v3.9.1" --repo "$GITHUB_REPOSITORY" --json url,assets
