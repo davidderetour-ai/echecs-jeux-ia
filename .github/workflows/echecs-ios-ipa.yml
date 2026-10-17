@@ -25,6 +25,7 @@ on:
       - "styles.css"
       - "alicia-games.mjs"
       - "tests/mobile-ui.test.mjs"
+      - ".github/workflows/echecs-ios-ipa.yml"
   workflow_dispatch:
 permissions:
   contents: read
