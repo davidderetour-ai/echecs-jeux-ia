@@ -136,6 +136,14 @@ if(typeof window!=="undefined")window.addEventListener('alicia:shogi-role',event
  }
  remember();if(state.root)draw();
 });
+if(typeof window!=="undefined")window.addEventListener('launch:shogi-options',event=>{
+ const options=event.detail||{};
+ state.mode='match';state.selection=null;
+ state.options.againstBot=options.mode!=='local';
+ state.options.webgl=options.view!=='2d';
+ state.tip=state.options.againstBot?'Alicia est prête à jouer !':'Deux joueurs sur le même appareil.';
+ remember();if(state.root)draw();
+});
 export function mountShogi(root){state.root=root;if(!root.dataset.shogiEvents){root.addEventListener('click',onClick);root.dataset.shogiEvents='yes';}draw();}
 
 export function unmountShogi(){if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}
