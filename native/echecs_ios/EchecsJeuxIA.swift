@@ -121,18 +121,21 @@ private final class OfflineGameServer {
 private final class GamesViewController: UIViewController, WKNavigationDelegate {
     private var server: OfflineGameServer?
     private var web: WKWebView!
+    private var nativeBar: UIView!
+    private var normalWebTop: NSLayoutConstraint!
+    private var fullWebTop: NSLayoutConstraint!
     private let message = UILabel()
     private var startupTimeout: DispatchWorkItem?
     private var expectedLocalPage: URL?
     private var diagnosticRequested = false
-    private let displayVersion = "3.9.1"
+    private let displayVersion = "3.9.3"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.07, green: 0.12, blue: 0.20, alpha: 1)
         // Barre UIKit indépendante de WebKit : visible même quand la page
         // web est blanche. Affiche la vraie version installée dans l'iPhone.
-        let nativeBar = UIView()
+        nativeBar = UIView()
         nativeBar.translatesAutoresizingMaskIntoConstraints = false
         nativeBar.backgroundColor = UIColor(red: 0.07, green: 0.12, blue: 0.20, alpha: 1)
         view.addSubview(nativeBar)
@@ -179,6 +182,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
             controls.heightAnchor.constraint(equalToConstant: 40)
         ])
         let config = WKWebViewConfiguration()
+        config.userContentController.add(WeakGameDisplayHandler(target: self), name: "gameDisplay")
         config.websiteDataStore = .default() // stockage propre a l'app iOS ; aucune purge
         web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self
@@ -188,8 +192,10 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         web.scrollView.contentInsetAdjustmentBehavior = .never
         web.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(web)
+        normalWebTop = web.topAnchor.constraint(equalTo: nativeBar.bottomAnchor)
+        fullWebTop = web.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         NSLayoutConstraint.activate([
-            web.topAnchor.constraint(equalTo: nativeBar.bottomAnchor),
+            normalWebTop,
             web.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             web.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             web.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -248,6 +254,19 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         }
         present(sheet, animated: true)
     }
+    func setGameFullscreen(_ enabled: Bool) {
+        guard normalWebTop != nil, fullWebTop != nil else { return }
+        if enabled {
+            normalWebTop.isActive = false
+            fullWebTop.isActive = true
+        } else {
+            fullWebTop.isActive = false
+            normalWebTop.isActive = true
+        }
+        nativeBar.isHidden = enabled
+        view.layoutIfNeeded()
+    }
+
     @objc private func nativeHome() { navigate("index.html") }
     @objc private func nativeGo() { navigate("go.html") }
     @objc private func nativeDames() { navigate("dames-francaises.html") }
@@ -380,6 +399,17 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         } else { decisionHandler(.cancel) }
     }
 }
+
+private final class WeakGameDisplayHandler: NSObject, WKScriptMessageHandler {
+    weak var target: GamesViewController?
+    init(target: GamesViewController) { self.target = target }
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "gameDisplay", let enabled = message.body as? Bool {
+            target?.setGameFullscreen(enabled)
+        }
+    }
+}
+
 
 @main
 final class ChessGamesApp: UIResponder, UIApplicationDelegate {

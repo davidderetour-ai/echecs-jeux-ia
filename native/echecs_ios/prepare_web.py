@@ -23,7 +23,7 @@ required = [
     "index.html", "app.js", "engine.js", "mini.js", "shogi-app.js", "shogi-engine.js",
     "go.html", "go.js", "go-persistence.mjs", "dames-francaises.html",
     "dames-francaises.js", "dames-francaises-engine.mjs", "peace.html", "peace.js",
-    "peace-puzzles.json", "sw.js", "backup.js",
+    "peace-puzzles.json", "sw.js", "backup.js", "game-bots.mjs", "game-setup.mjs", "game-setup-ui.mjs", "standalone-play.mjs", "game-setup.css",
     "assets/icone-couleur-241-192.png", "assets/icone-couleur-241-512.png"
 ]
 for name in required:
@@ -57,7 +57,7 @@ assert "</head>" in source_html
 # Désinscription des anciens SW dans l'origine isolée de WKWebView :
 # ne supprime JAMAIS localStorage, cookies ni sauvegardes de jeu.
 cleanup = """<script>
-window.__iosNativeVersion="3.9.1";
+window.__iosNativeVersion="3.9.3";
 document.documentElement.classList.add('native-ios');
 if ('serviceWorker' in navigator) {
  navigator.serviceWorker.getRegistrations().then(function(list){

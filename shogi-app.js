@@ -1,5 +1,6 @@
 import {mountExtra360} from './chess-3d.js';
 import {freshShogi,shogiMoves,playShogi,undoShogi,shogiBot,shogiAdvice,inShogiCheck,SHOGI_NAMES,SHOGI_SIGNS,HAND_TYPES} from './shogi-engine.js';
+import {selectedBot} from './game-bots.mjs';
 import {SHOGI_COURSES,shogiCourse,shogiProgressClean,shogiPass,shogiPuzzle} from './shogi-lessons.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key='v28-shogi-match',progKey='v28-shogi-progress',optKey='v28-shogi-options';
@@ -9,6 +10,30 @@ let shogi3d=null,savedOrbit=null;
 const state={root:null,mode:'academy',active:null,lessonStep:0,validated:false,wrong:'',tip:'',choice:-1,selection:null,promotion:null,
  game:read(key,freshShogi()),progress:shogiProgressClean(read(progKey,{})),options:read(optKey,{perspective:true,coords:true,angle:0,againstBot:true}),puzzle:null,busy:false};
 if(state.game?.kind!=='shogi'||!Array.isArray(state.game.board)||state.game.board.length!==9)state.game=freshShogi();
+let duelTimer=null;
+function shogiAiMove(profileId){
+ const profile=selectedBot(profileId),moves=shogiMoves(state.game);
+ if(!moves.length)return null;
+ if(profile.id==='explorateur')return moves[Math.floor(Math.random()*moves.length)];
+ if(profile.id==='tacticien'){
+  const ranked=moves.map(m=>({m,score:(state.game.board[m.to.r]?.[m.to.c]?5:0)+(m.promote?2:0)+Math.random()*.2})).sort((a,b)=>b.score-a.score);
+  return ranked[0].m;
+ }
+ return shogiBot(state.game);
+}
+function scheduleShogiDuel(){
+ if(duelTimer||!state.options.duel||state.mode!=='match'||state.game.over||!state.root?.isConnected)return;
+ duelTimer=setTimeout(()=>{
+  duelTimer=null;
+  if(!state.options.duel||state.mode!=='match'||state.game.over||!state.root?.isConnected)return;
+  try{
+   const move=shogiAiMove(state.game.turn==='b'?'alicia':state.options.bot);
+   if(!move)return;
+   state.game=playShogi(state.game,move)||state.game;
+   state.selection=null;remember();draw();scheduleShogiDuel();
+  }catch(err){state.tip='Duel arrêté : '+err.message;state.options.duel=false;draw();}
+ },750);
+}
 function remember(){write(key,state.game);write(progKey,state.progress);write(optKey,state.options);}
 const name=s=>s==='b'?'Sente (en bas)':'Gote (en haut)';
 function currentStep(){return shogiCourse(state.active)?.steps[state.lessonStep];}
@@ -77,12 +102,12 @@ function attempt(m){
  }
  const next=playShogi(state.game,m);if(!next){state.tip='Coup interdit : choisis une case indiquée en vert.';draw();return;}
  state.game=next;state.selection=null;state.promotion=null;state.tip='';remember();draw();
- if(state.options.againstBot&&!state.game.over&&state.game.turn==='w'){state.busy=true;setTimeout(()=>{
+ if(!state.options.duel&&state.options.againstBot&&!state.game.over&&state.game.turn==='w'){state.busy=true;setTimeout(()=>{
   state.busy=false;if(state.mode!=='match'||!state.options.againstBot||state.game.over||state.game.turn!=='w')return;
   const bm=shogiBot(state.game);if(bm){state.game=playShogi(state.game,bm)||state.game;remember();draw();}
  },280);}
 }
-function square(r,c){if(state.busy)return;
+function square(r,c){if(state.busy||state.options.duel)return;
  const g=activeGame();if(!g||state.validated||g.over)return;if(state.mode==='academy'&&currentStep()?.type!=='board')return;
  if(state.mode==='match'&&state.options.againstBot&&g.turn==='w')return;
  const p=g.board[r][c],sel=state.selection;
@@ -104,15 +129,15 @@ function onClick(ev){if(!state.root?.contains(ev.target))return;
  button=ev.target.closest('[data-shogi-hand]');if(button){if(!state.busy){state.selection={drop:button.dataset.shogiHand};state.tip='Choisis une case libre en vert pour poser ta pièce capturée.';draw();}return;}
  button=ev.target.closest('[data-shogi]');if(!button)return;
  const action=button.dataset.shogi;
- if(action==='academy'){state.mode='academy';state.active=null;state.selection=null;state.tip='';}
- if(action==='courses'){state.mode='academy';state.active=null;state.selection=null;state.tip='';}
+ if(action==='academy'){state.options.duel=false;state.mode='academy';state.active=null;state.selection=null;state.tip='';}
+ if(action==='courses'){state.options.duel=false;state.mode='academy';state.active=null;state.selection=null;state.tip='';}
  if(action==='match'){state.mode='match';state.selection=null;state.tip='';}
  if(action==='webgl')state.options.webgl=state.options.webgl===false;
  if(action==='view')state.options.perspective=!state.options.perspective;
  if(action==='rotate')state.options.angle=(state.options.angle+1)%4;
  if(action==='coords')state.options.coords=!state.options.coords;
  if(action==='expand')state.root.classList.toggle('shogi-fullscreen');
- if(action==='new-match'){if(confirm('Commencer une nouvelle partie de Shogi ? La partie actuelle sera remplacée.')){state.game=freshShogi();state.selection=null;state.tip='';}}
+ if(action==='new-match'){if(confirm('Commencer une nouvelle partie de Shogi ? La partie actuelle sera remplacée.')){state.game=freshShogi();state.selection=null;state.tip='';scheduleShogiDuel();}}
  if(action==='bot-switch'){state.options.againstBot=!state.options.againstBot;state.tip=state.options.againstBot?'Alicia est prête à jouer !':'Mode deux joueurs activé.';}
  if(action==='undo'&&state.mode==='match'){const back=undoShogi(state.game);if(back){state.game=back;if(state.options.againstBot&&back.turn==='w'&&back.history?.length)state.game=undoShogi(back)||back;state.selection=null;}}
  if(action==='hint'){if(state.mode==='match')state.tip=shogiAdvice(state.game).text;else state.tip=currentStep()?.tip||'Relis attentivement la consigne.';}
@@ -136,6 +161,16 @@ if(typeof window!=="undefined")window.addEventListener('alicia:shogi-role',event
  }
  remember();if(state.root)draw();
 });
-export function mountShogi(root){state.root=root;if(!root.dataset.shogiEvents){root.addEventListener('click',onClick);root.dataset.shogiEvents='yes';}draw();}
+if(typeof window!=="undefined")window.addEventListener('launch:shogi-options',event=>{
+ const options=event.detail||{};
+ state.mode='match';state.selection=null;
+ state.options.againstBot=options.mode!=='local';
+ state.options.duel=options.mode==='duel';
+ state.options.bot=selectedBot(options.bot).id;
+ state.options.webgl=options.view!=='2d';
+ state.tip=state.options.duel?'Duel : Alicia contre '+selectedBot(state.options.bot).name+'. Les IA jouent automatiquement.':state.options.againstBot?'Alicia est prête à jouer !':'Deux joueurs sur le même appareil.';
+ remember();if(state.root)draw();scheduleShogiDuel();
+});
+export function mountShogi(root){state.root=root;if(!root.dataset.shogiEvents){root.addEventListener('click',onClick);root.dataset.shogiEvents='yes';}draw();scheduleShogiDuel();}
 
-export function unmountShogi(){if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}
+export function unmountShogi(){state.root=null;if(duelTimer){clearTimeout(duelTimer);duelTimer=null;}if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}

@@ -46,7 +46,7 @@ test("Go : sauvegarde corrompue ou taille invalide rejetée sans crash",()=>{
 test("Go : chargement de la partie avant toute création, cache hors ligne inclus",()=>{
  const app=source("go.js"),serviceWorker=source("sw.js"),page=source("go.html");
  assert.match(app,/restoreOrFresh\(\)/);
- assert.match(app,/readGoSave\(size\)/);
+ assert.match(app,/readGoSave\(size,null,\$\([\x27\x22]gomode[\x27\x22]\)\.value===\x27duel\x27\)/);
  assert.match(app,/writeGoSave\(n,/);
  assert.match(app,/\$\(['\"]size['\"]\)\.onchange=restoreOrFresh/);
  assert.match(serviceWorker,/go-persistence\.mjs/);
@@ -57,4 +57,16 @@ test("Dames : ouverture d'un lien Alicia sans effacer une partie du même rôle"
  assert.match(app,/if\(params\.has\("role"\)&&role!==savedRole\)/);
  assert.match(app,/study:study/);
  assert.doesNotMatch(app,/if\(params\.has\("role"\)\)\{game=newFrenchDraughts\(\);study=0;\}/);
+});
+
+test("Go : duel IA contre IA et partie humaine ne se remplacent jamais",()=>{
+ const base=state(9,'bot');base.board[0][0]=1;
+ const duel=state(9,'duel');duel.board[8][8]=2;
+ assert.equal(writeGoSave(9,base,storage),true);
+ assert.equal(writeGoSave(9,duel,storage),true);
+ assert.notEqual(goStorageKey(9),goStorageKey(9,true));
+ assert.equal(readGoSave(9,storage).mode,'bot');
+ assert.equal(readGoSave(9,storage).board[0][0],1);
+ assert.equal(readGoSave(9,storage,true).mode,'duel');
+ assert.equal(readGoSave(9,storage,true).board[8][8],2);
 });

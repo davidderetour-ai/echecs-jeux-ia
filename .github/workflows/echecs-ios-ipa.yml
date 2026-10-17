@@ -9,9 +9,26 @@ on:
       - fix-ios-go-false-diagnostic-20261017
       - ui-iphone-simple-jeux-20261017
       - ui-iphone-compact-safety-v391-20261017
+      - interface-choisie-claire-392-20261017
+      - prep-partie-plein-ecran-tous-jeux-20261017
     paths:
       - "native/echecs_ios/**"
       - "app.js"
+      - "game-clocks.js"
+      - "game-setup.mjs"
+      - "game-bots.mjs"
+      - "go-persistence.mjs"
+      - "extras.js"
+      - "dames-francaises.js"
+      - "shogi-app.js"
+      - "tests/game-bots-setup.test.mjs"
+      - "game-setup-ui.mjs"
+      - "standalone-play.mjs"
+      - "game-setup.css"
+      - "go.html"
+      - "go.js"
+      - "dames-francaises.html"
+      - "peace.html"
       - "index.html"
       - "styles.css"
       - "alicia-games.mjs"
@@ -21,6 +38,21 @@ on:
     paths:
       - "native/echecs_ios/**"
       - "app.js"
+      - "game-clocks.js"
+      - "game-setup.mjs"
+      - "game-bots.mjs"
+      - "go-persistence.mjs"
+      - "extras.js"
+      - "dames-francaises.js"
+      - "shogi-app.js"
+      - "tests/game-bots-setup.test.mjs"
+      - "game-setup-ui.mjs"
+      - "standalone-play.mjs"
+      - "game-setup.css"
+      - "go.html"
+      - "go.js"
+      - "dames-francaises.html"
+      - "peace.html"
       - "index.html"
       - "styles.css"
       - "alicia-games.mjs"
@@ -52,8 +84,8 @@ jobs:
       - name: Publier le fichier pour AltStore Classic
         uses: actions/upload-artifact@v4
         with:
-          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.1
-          path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-v3.9.1.ipa
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.3
+          path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-v3.9.3.ipa
           if-no-files-found: error
           retention-days: 14
 
@@ -68,21 +100,21 @@ jobs:
       - name: Récupérer l'IPA compilé et testé
         uses: actions/download-artifact@v4
         with:
-          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.1
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.3
           path: release-ipa
       - name: Publier le fichier .ipa sur GitHub Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          ipa="release-ipa/Echecs-Jeux-IA-v3.9.1.ipa"
+          ipa="release-ipa/Echecs-Jeux-IA-v3.9.3.ipa"
           test -s "$ipa"
-          if gh release view "v3.9.1" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "v3.9.1" "$ipa" --clobber --repo "$GITHUB_REPOSITORY"
+          if gh release view "v3.9.3" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "v3.9.3" "$ipa" --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "v3.9.1" "$ipa" --repo "$GITHUB_REPOSITORY" \
+            gh release create "v3.9.3" "$ipa" --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" --latest \
-              --title "Échecs & Jeux IA iPhone v3.9.1" \
+              --title "Échecs & Jeux IA iPhone v3.9.3" \
               --notes "Application iPhone native gratuite pour AltStore. Télécharge le fichier IPA directement sans chercher dans Actions ni Artifacts. Mise à jour de la version existante, sans désinstaller les jeux ni les sauvegardes. L'IPA est non signé : AltStore et AltServer sont nécessaires pour l'installation."
           fi
-          gh release view "v3.9.1" --repo "$GITHUB_REPOSITORY" --json url,assets
+          gh release view "v3.9.3" --repo "$GITHUB_REPOSITORY" --json url,assets
