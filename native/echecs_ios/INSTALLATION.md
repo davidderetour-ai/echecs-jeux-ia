@@ -1,4 +1,4 @@
-# Échecs & Jeux IA — application iPhone native (v3.8.6)
+# Échecs & Jeux IA — application iPhone native (v3.8.7)
 
 **Produit distinct de l'application Alicia Fusion.**
 
@@ -14,7 +14,7 @@
 Depuis GitHub connecté :
 1. Ouvrir l'onglet **Actions** du dépôt, choisir le workflow **Échecs & Jeux IA — Compiler IPA iPhone native gratuite**.
 2. Ouvrir une exécution marquée d'un cercle vert.
-3. Sous **Artifacts**, télécharger `Echecs-Jeux-IA-iPhone-IPA-v3.8.6`.
+3. Sous **Artifacts**, télécharger `Echecs-Jeux-IA-iPhone-IPA-v3.8.7`.
 4. Décompresser **une seule fois** le ZIP de GitHub pour récupérer `Echecs-Jeux-IA-iPhone-unsigned.ipa`.
 5. **Ne pas double-cliquer sur ce fichier IPA depuis le Finder Mac.** Ce fichier n'est ni une application Mac ni une archive à décompresser pour l'installer.
 
@@ -43,3 +43,14 @@ Documentation officielle : https://faq.altstore.io/altstore-classic/how-to-insta
 Le workflow `.github/workflows/echecs-ios-ipa.yml` utilise `macos-15`, les outils Swift/iPhoneOS d'Xcode et le script `native/echecs_ios/build_ipa.sh`. L'IPA est volontairement **non signée** afin de pouvoir être signée par AltStore au moment de l'installation personnelle, sans frais Apple Developer.
 
 La voix et les versions d'Alicia ne sont pas modifiées par ce projet.
+
+## Correctif iPhone 3.8.7 — écran blanc
+
+Une capture d'écran iPhone a révélé une page blanche après installation de l'IPA initiale.
+Le test HTTP local a reproduit une erreur de démarrage `POSIXErrorCode 22 (Invalid argument)` : le port était défini deux fois dans les paramètres de `NWListener`. Le correctif utilise une écoute TCP ordinaire sur le même port, filtrée pour n'accepter que les connexions de boucle locale, et un test d'intégration HTTP vérifie les fichiers des jeux.
+
+- **Ne supprimer ni Alicia ni la première version des jeux** avant la mise à jour.
+- Télécharger l'artefact `Echecs-Jeux-IA-iPhone-IPA-v3.8.7` depuis un run vert récent sur main.
+- Dans AltStore Classic, sélectionner le nouvel IPA pour mettre à jour la version existante portant le même identifiant `fr.echecsjeuxia.iphone.native`. Éviter toute désinstallation ou changement d'identifiant : cela pourrait perdre des données.
+- Tester le menu de jeux ; si un message d'erreur apparaît, envoyer la capture. Un diagnostic natif lisible indique désormais si le serveur local ou la page WebKit échoue.
+- La réussite du test Mac n'est pas une garantie de fonctionnement physique sur iPhone : il faut confirmer après installation.
