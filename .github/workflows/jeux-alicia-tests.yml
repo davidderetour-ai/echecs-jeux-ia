@@ -1,0 +1,44 @@
+name: Jeux gratuits Alicia — Tests moteurs et roles
+on:
+  push:
+    paths:
+      - "app.js"
+      - "index.html"
+      - "alicia-games.mjs"
+      - "dames-francaises*"
+      - "shogi-app.js"
+      - "go.js"
+      - "go.html"
+      - "peace.js"
+      - "peace.html"
+      - "sw.js"
+      - "tests/**"
+      - ".github/workflows/jeux-alicia-tests.yml"
+  pull_request:
+    paths:
+      - "app.js"
+      - "alicia-games.mjs"
+      - "dames-francaises*"
+      - "tests/**"
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Contrôler la syntaxe de chaque jeu
+        run: |
+          node --check app.js
+          node --check alicia-games.mjs
+          node --check dames-francaises-engine.mjs
+          node --check dames-francaises.js
+          node --check go.js
+          node --check shogi-app.js
+          node --check peace.js
+          node --check assistant-ia/alicia-play-ui.mjs
+      - name: Vérifier les règles et l'accès aux jeux
+        run: node --test tests/dames-francaises.test.mjs
