@@ -470,3 +470,90 @@ body.game-immersive[data-game-view="extras"] .extra-grid{max-height:none;}
 .chess4-clock-stage .clock-corner b{font-size:clamp(13px,3.2vw,19px);line-height:1.2}
 .chess4-clock-stage .clock-four-controls{position:static;grid-column:1/-1;transform:none;max-width:none;justify-content:center;width:100%;border-radius:7px;padding:4px;gap:7px}
 .chess4-clock-stage .clock-four-controls select,.chess4-clock-stage .clock-four-controls button{font-size:12px;padding:5px 8px}
+
+
+/* V3.9.0 — Accueil tactile simplifié, sans modification des parties enregistrées. */
+.easy-home{max-width:1040px;margin:0 auto 40px;display:grid;gap:17px}
+.easy-intro{padding:20px 22px;border-radius:20px;background:linear-gradient(125deg,#173453,#245879);color:white}
+.easy-tag{font-size:12px;color:#aeeada;font-weight:800;margin-bottom:6px}
+.easy-intro h1{font-size:clamp(26px,4.5vw,36px);line-height:1.17;margin:0 0 8px}
+.easy-intro p{color:#e1eaf2;margin:0;font-size:14px}
+.easy-resume{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:17px;border:2px solid #078879;border-radius:16px;background:#e7f9f4;color:#0c635b;text-align:left;font-size:16px;font-weight:800;min-height:58px}
+.easy-resume strong{flex:1;white-space:nowrap}
+.easy-resume span{font-size:12px;color:#31736d}
+.easy-role{background:#fff;border:1px solid #d9e4ec;padding:16px 18px;border-radius:18px}
+.easy-role h2,.easy-heading h2{font-size:19px;margin:0 0 10px}
+.easy-role-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.easy-role-buttons button{background:#eef3f9;border:2px solid #d5dfe9;color:#31465b;border-radius:12px;min-height:48px;padding:9px 5px;font-size:14px;font-weight:800;line-height:1.3}
+.easy-role-buttons button.is-selected{background:#ddf5ec;border-color:#007c6b;color:#08695f}
+.easy-role-help{font-size:13px;color:#425568;margin:10px 0 0}
+.easy-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.easy-heading h2{margin:0 0 6px}
+.easy-heading span{font-size:12px;color:#56677e}
+.easy-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.easy-game{display:flex;min-width:0;min-height:108px;align-items:center;gap:13px;border:1px solid #d7e3ed;border-radius:18px;padding:18px 14px;background:white;text-align:left;color:#1d2d45;box-shadow:0 4px 12px #1b35530b}
+.easy-game:active{transform:scale(.987)}
+.easy-emoji{font-size:30px;flex:0 0 auto}
+.easy-copy{min-width:0;display:flex;flex-direction:column;gap:6px}
+.easy-copy strong{font-size:16px;line-height:1.25}
+.easy-copy small{font-size:12px;line-height:1.35;color:#52687f}
+.easy-arrow{margin-left:auto;font-size:27px;color:#098579;flex:0 0 auto}
+.easy-learning{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.easy-learning button{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:1px solid #cbe4e2;background:#eaf8f6;color:#155950;border-radius:15px;padding:15px;text-align:left;min-height:76px}
+.easy-learning strong{font-size:15px}
+.easy-learning span{width:100%;font-size:12px;color:#376c65}
+.easy-more{border:1px solid #d8e3ec;background:white;border-radius:16px;padding:6px 14px}
+.easy-more>summary{cursor:pointer;font-size:16px;font-weight:850;padding:14px 2px;min-height:48px;display:flex;align-items:center;justify-content:space-between}
+.easy-more>summary span{font-size:12px;color:#52647a}
+.easy-more[open]>summary{border-bottom:1px solid #e0e8f0;margin-bottom:12px}
+.easy-games-extra{grid-template-columns:repeat(3,minmax(0,1fr))}
+.easy-games-extra .easy-game{background:#f8fafc;min-height:90px}
+.easy-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px;padding-bottom:14px}
+.easy-tools button{background:#eef4f8;border:1px solid #cedfe8;border-radius:10px;font-weight:800;min-height:48px}
+.topnav{position:relative;display:flex;align-items:stretch}
+.topnav>button{flex:1}
+.nav-more{position:relative;z-index:5;flex:0 0 auto;min-width:100px}
+.nav-more>summary{display:flex;align-items:center;justify-content:center;min-height:100%;cursor:pointer;list-style:none;border-radius:11px;padding:10px 15px;font-size:13px;font-weight:850;color:#344d66;white-space:nowrap}
+.nav-more>summary::-webkit-details-marker{display:none}
+.nav-more[open]>summary{background:#d7ebe8;color:#106a64}
+.nav-more-items{position:absolute;right:0;top:calc(100% + 4px);width:min(360px,calc(100vw - 30px));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px;border:1px solid #d0e0e9;background:white;border-radius:14px;box-shadow:0 18px 42px #142e4c33}
+.nav-more-items button,.nav-more-items a{display:flex;align-items:center;justify-content:flex-start;text-align:left;padding:11px;min-width:0;min-height:48px;border:0;border-radius:10px;font-size:13px;font-weight:800;background:#f0f5fa;color:#23465c;white-space:normal}
+.nav-more-items button.active{background:#d5f3ec;color:#075e54}
+@media(max-width:760px){
+ .easy-games,.easy-games-extra{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .easy-game{padding:14px 11px;min-height:100px;gap:7px}
+ .easy-emoji{font-size:26px}
+ .easy-copy strong{font-size:15px}
+ .easy-copy small{font-size:11px}
+ .easy-arrow{font-size:20px}
+ .easy-intro{padding:17px 18px}
+ .easy-role{padding:14px 12px}
+ .easy-role-buttons button{font-size:12px}
+ .topnav{gap:4px;overflow:visible}
+ .topnav>button{min-width:0;flex:1;padding:13px 3px;font-size:13px;white-space:nowrap}
+ .nav-more{min-width:66px}
+ .nav-more>summary{font-size:13px;padding:9px 5px}
+ .easy-learning button{padding:12px}
+ .nav-more-items button{font-size:13px}
+}
+@media(max-width:370px){
+ .easy-game{min-height:110px;align-items:flex-start;flex-direction:column;position:relative}
+ .easy-arrow{position:absolute;right:10px;top:10px}
+ .easy-copy{gap:3px}
+ .easy-role-buttons{gap:4px}
+ .easy-role-buttons button{font-size:11px}
+}
+.native-ios .header{display:none}
+.native-ios .topnav{margin-top:7px}
+
+/* Actions secondaires du plateau repliées pour éviter les erreurs de sélection. */
+.game-switcher{margin:5px 0 13px;border:1px solid #d8e3ed;border-radius:12px;background:#f9fbfe;padding:5px 12px}
+.game-switcher>summary{cursor:pointer;min-height:45px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2b5365}
+.game-switcher>summary small{font-size:11px;font-weight:500;color:#6c7b8c;margin-left:auto}
+.game-switcher .game-tabs{margin:8px 0 5px}
+@media(max-width:650px){
+ .game-toolbar{display:flex;gap:7px;flex-wrap:wrap}
+ .game-toolbar button{min-height:43px}
+ .board-card .btn-row button{min-height:43px;flex:1 1 auto}
+ .game-switcher>summary{min-height:48px}
+}

@@ -125,7 +125,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
     private var startupTimeout: DispatchWorkItem?
     private var expectedLocalPage: URL?
     private var diagnosticRequested = false
-    private let displayVersion = "3.8.9"
+    private let displayVersion = "3.9.0"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -178,7 +178,6 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
             controls.heightAnchor.constraint(equalToConstant: 31)
         ])
         let config = WKWebViewConfiguration()
-        config.websiteDataStore = .default() // conserver les parties et réglages
         config.websiteDataStore = .default() // stockage propre a l'app iOS ; aucune purge
         web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self

@@ -19,8 +19,9 @@ cat > "$APP/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>Échecs &amp; Jeux IA</string>
   <key>CFBundleDisplayName</key><string>Échecs &amp; Jeux IA</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>3.8.9</string>
-  <key>CFBundleVersion</key><string>3864</string>
+  <key>CFBundleShortVersionString</key><string>3.9.0</string>
+  <key>CFBundleVersion</key><string>3900</string>
+  <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
   <key>LSRequiresIPhoneOS</key><true/>
   <key>MinimumOSVersion</key><string>15.0</string>
   <key>UIDeviceFamily</key><array><integer>1</integer><integer>2</integer></array>
@@ -39,6 +40,7 @@ cat > "$APP/Info.plist" <<'PLIST'
 </dict></plist>
 PLIST
 plutil -lint "$APP/Info.plist"
+xcrun ibtool --compile "$APP/LaunchScreen.storyboardc" native/echecs_ios/LaunchScreen.storyboard
 sips -s format png -z 120 120 assets/icone-couleur-241-512.png --out "$APP/AppIcon120.png" >/dev/null
 sips -s format png -z 180 180 assets/icone-couleur-241-512.png --out "$APP/AppIcon180.png" >/dev/null
 SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
@@ -52,7 +54,7 @@ xcrun --sdk iphoneos swiftc \
 chmod 755 "$APP/EchecsJeuxIA"
 file "$APP/EchecsJeuxIA"
 # AltStore assure la signature gratuite lors de l'installation ; IPA ici volontairement non signée.
-(cd "$OUT" && zip -qry Echecs-Jeux-IA-iPhone-unsigned.ipa Payload)
-test -s "$OUT/Echecs-Jeux-IA-iPhone-unsigned.ipa"
-unzip -l "$OUT/Echecs-Jeux-IA-iPhone-unsigned.ipa" | grep -q 'Payload/EchecsJeuxIA.app/GameWeb/index.html'
+(cd "$OUT" && zip -qry Echecs-Jeux-IA-v3.9.0.ipa Payload)
+test -s "$OUT/Echecs-Jeux-IA-v3.9.0.ipa"
+unzip -l "$OUT/Echecs-Jeux-IA-v3.9.0.ipa" | grep -q 'Payload/EchecsJeuxIA.app/GameWeb/index.html'
 echo "OK : IPA native créée. Installation physique et renouvellement AltStore non testés."
