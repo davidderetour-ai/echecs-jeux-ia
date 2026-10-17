@@ -1,0 +1,22 @@
+name: echecs_jeux_ia
+description: Échecs et Jeux IA pour iPhone, véritable conteneur natif avec moteurs de jeux locaux.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.10.0
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/game_web/index.html
