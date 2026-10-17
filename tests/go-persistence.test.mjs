@@ -58,3 +58,15 @@ test("Dames : ouverture d'un lien Alicia sans effacer une partie du même rôle"
  assert.match(app,/study:study/);
  assert.doesNotMatch(app,/if\(params\.has\("role"\)\)\{game=newFrenchDraughts\(\);study=0;\}/);
 });
+
+test("Go : duel IA contre IA et partie humaine ne se remplacent jamais",()=>{
+ const base=state(9,'bot');base.board[0][0]=1;
+ const duel=state(9,'duel');duel.board[8][8]=2;
+ assert.equal(writeGoSave(9,base,storage),true);
+ assert.equal(writeGoSave(9,duel,storage),true);
+ assert.notEqual(goStorageKey(9),goStorageKey(9,true));
+ assert.equal(readGoSave(9,storage).mode,'bot');
+ assert.equal(readGoSave(9,storage).board[0][0],1);
+ assert.equal(readGoSave(9,storage,true).mode,'duel');
+ assert.equal(readGoSave(9,storage,true).board[8][8],2);
+});
