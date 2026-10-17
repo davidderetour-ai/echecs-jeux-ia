@@ -46,8 +46,8 @@ test("App iPhone : identité préservée et lancement pleine taille",()=>{
  assert.match(ipa,/<string>fr\.echecsjeuxia\.iphone\.native<\/string>/);
  assert.match(ipa,/LaunchScreen\.storyboardc/);
  assert.match(ipa,/UILaunchStoryboardName/);
- assert.match(ipa,/3\.9\.2/);
- assert.match(swift,/private let displayVersion = "3\.9\.2"/);
+ assert.match(ipa,/3\.9\.3/);
+ assert.match(swift,/private let displayVersion = "3\.9\.3"/);
 });
 
 test("Changement de jeu : confirmation et copie sûre sans remplacer les anciennes sauvegardes",()=>{
