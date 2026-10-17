@@ -248,13 +248,15 @@ function openGameSetup(id){
  const spec=gameSetupSpec(id);if(!spec){toast('Jeu non reconnu.');return;}
  setupGameId=id;pendingSetup=safeSetup(id,{mode:spec.modes[0],role:aliciaRole,level,
  clock:window.GameClocks?.enabled?.()===true,bot:gameBotId,goban:spec.isGo?Number(id.slice(2)):9,
- rules:fourMode,view:real3D?'3d':'2d'});goto('setup');
+ rules:fourMode,view:real3D?'3d':'2d',
+ ...store.get('game-setup-'+id,{})});goto('setup');
 }
 function enterGameFullscreen(){if(!immersiveGame)toggleImmersive();}
 function launchConfiguredGame(){
  const spec=gameSetupSpec(setupGameId),o=safeSetup(setupGameId,pendingSetup||{});
  if(!spec||!o)return;
  if(roomLive||nearbyLive){toast('Quitte d’abord ta partie connectée.');return;}
+ store.set('game-setup-'+spec.id,o);
  if(spec.path!=='index.html'){const link=standaloneGameUrl(o);if(link)location.href=link;return;}
  if(spec.id==='shogi'){
   aliciaRole=o.role;aliciaOpponent=o.mode!=='local';gameBotId=o.bot;aiDuel=o.mode==='duel';store.set('alicia-game-role',aliciaRole);
