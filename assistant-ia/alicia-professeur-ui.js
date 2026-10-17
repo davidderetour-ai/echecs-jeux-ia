@@ -2,6 +2,7 @@
  * Il s'agit de consultation/auto-tests, pas d'entraînement de poids de réseau neuronal.
  */
 import {LESSONS,subjects,searchLessons,lessonById,gradeLesson,selfCheckAcademy} from "./alicia-academy.mjs";
+import {AliciaCourseLearning} from "./course-learning.mjs";
 const $=id=>document.getElementById(id);
 const engine=window.AliciaOriginalEngine;
 const TITLE={info:"Informatique et Python",ia:"Intelligence artificielle",maths:"Mathématiques",science:"Sciences",
@@ -16,6 +17,7 @@ function init(){
  '<p>Je suis le professeur d’Alicia. Ses fiches sont chargées sur cet appareil, sans Internet ni API payante. Le moteur peut retrouver leurs explications, mais <strong>cela ne transforme pas Alicia en grand modèle de langage.</strong></p>'+
  '<div id="alicia-professeur-stats" aria-live="polite"></div>'+
  '<div class="alicia-professeur-actions">'+
+ '<button type="button" id="alicia-professeur-learn">Apprendre les cours installés</button>'+
  '<button type="button" id="alicia-professeur-autotest">Vérifier ce qu’Alicia sait restituer</button>'+
  '<button type="button" id="alicia-professeur-quiz">Interroge-moi</button>'+
  '</div>'+
@@ -36,6 +38,8 @@ function init(){
   const p=$("alicia-professeur-stats");p.replaceChildren();
   p.append(safeText("strong",null,LESSONS.length+" fiches disponibles · "+subjects().length+" matières"));
   p.append(safeText("p",null,learned.length+" fiches réussies au moins une fois · "+checked+" exercice(s) effectués sur cet appareil."));
+  const index=AliciaCourseLearning.stats();
+  p.append(safeText("p",null,index.indexed+" / "+index.available+" cours intégrés indexés localement."));
  }
  function render(){
   const q=$("alicia-professeur-search").value.trim(),domain=select.value;
@@ -80,6 +84,11 @@ function init(){
   testBox.append(choices,report);
   testBox.scrollIntoView({block:"nearest",behavior:"smooth"});
  }
+ $("alicia-professeur-learn").addEventListener("click",()=>{
+  const result=AliciaCourseLearning.activate();
+  stats();
+  status.textContent="✓ "+result.indexed+" cours intégrés indexés. Demande maintenant une explication à Alicia. "+(result.persistent?"État sauvegardé sur cet appareil.":"Activation non conservée après fermeture.");
+ });
  $("alicia-professeur-autotest").addEventListener("click",()=>{
    const test=selfCheckAcademy();
    status.textContent=test.failures.length?
