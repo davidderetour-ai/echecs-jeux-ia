@@ -173,4 +173,4 @@ if(typeof window!=="undefined")window.addEventListener('launch:shogi-options',ev
 });
 export function mountShogi(root){state.root=root;if(!root.dataset.shogiEvents){root.addEventListener('click',onClick);root.dataset.shogiEvents='yes';}draw();scheduleShogiDuel();}
 
-export function unmountShogi(){if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}
+export function unmountShogi(){state.root=null;if(duelTimer){clearTimeout(duelTimer);duelTimer=null;}if(shogi3d){savedOrbit=shogi3d.getOrbit();shogi3d.dispose();shogi3d=null;}}
