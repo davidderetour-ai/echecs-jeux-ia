@@ -10,7 +10,7 @@ test("Alicia Fusion : numéro de version commun et origine de confiance",()=>{
  const html=read("index.html");
  const sync=read("fusion-sync.js");
  assert.match(release.version,/^\d+\.\d+\.\d+$/);
- assert.equal(release.version,"0.9.4");
+ assert.equal(release.version,"0.9.5");
  assert.ok(html.includes('name="alicia-version" content="'+release.version+'"'));
  assert.match(sync,/alicia\.github\.io|davidderetour-ai\.github\.io/);
  assert.match(sync,/newer/);
@@ -30,7 +30,7 @@ test("Alicia Fusion : portrait 3D, sans enlever les fonctions de l'ancienne app"
 });
 test("Alicia Fusion : cache conservé et nouvelle version isolée",()=>{
  const sw=read("sw.js");
- assert.match(sw,/alicia-shell-v37/);
+ assert.match(sw,/alicia-shell-v39/);
  assert.match(sw,/fusion-release\.json/);
  assert.match(sw,/ALICIA_CACHE_PREFIX/);
  assert.doesNotMatch(sw,/caches\.delete\("games/);

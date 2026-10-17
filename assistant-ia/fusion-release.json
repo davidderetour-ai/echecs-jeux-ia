@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -26,8 +26,11 @@
     "commandeApprendsLesCours",
     "comprehensionDemandesFrancaises",
     "expressionsPersonnaliseesLocales",
-    "coursIndexables"
+    "coursIndexables",
+    "entrainementStatistiqueSupervise",
+    "reevaluationApresCorrection",
+    "evolutionLocaleSansCodeAutonome"
   ],
   "nativeInstallation": "manual",
-  "note": "Alicia comprend plusieurs formulations de demandes et peut mémoriser des expressions explicitement enseignées sur chaque appareil. Les cours intégrés sont consultables, sans entraînement neuronal. Les applications natives nécessitent une installation autorisée, et les données privées ne se synchronisent pas automatiquement."
+  "note": "Apprentissage supervisé local de demandes avec corpus vérifié et corrections explicites. Aucune copie de GPT-6, aucune API GPT-6 payante activée. Mise à jour native manuelle ; synchronisation des données uniquement via export/import volontaire."
 }

@@ -27,6 +27,6 @@ test("Galerie incluse dans les mêmes versions Web iPhone et Mac",()=>{
  const index=read("index.html"),sw=read("sw.js"),release=JSON.parse(read("fusion-release.json"));
  assert.match(index,/src="\.\/alicia-model-gallery\.js"/);
  assert.match(sw,/\.\/alicia-model-gallery\.js/);
- assert.equal(release.version,"0.9.4");
+ assert.equal(release.version,"0.9.5");
  assert.ok(release.webFeatures.includes("portrait3DEtCorpsEntier"));
 });
