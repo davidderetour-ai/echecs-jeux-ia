@@ -25,7 +25,7 @@ function init(){
  if(!THREE?.WebGLRenderer||!THREE?.OrbitControls){panel.hidden=true;window.dispatchEvent(new CustomEvent("alicia:3d-failed",{detail:{reason:"WebGL ou OrbitControls indisponible"}}));return;}
  let scene,camera,renderer,orbit,root,rig,face,mouth,eyes=[],hair,armR,armL,legR,legL,head,blinking=false,active=false;
  let imported=null,mixer=null,importGeneration=0,faceJaw=null,jawBase=0;
-  let framing="portrait",firstDrawn=false;
+  let framing="portrait",firstDrawn=false,renderFailed=false;
  const clock=new THREE.Clock();
  const canvas=$("alicia-avatar");
  let auto=false,speaking=false,expression="happy",turnTo=null,lastT=0;
@@ -122,6 +122,10 @@ function init(){
    renderer.outputEncoding=THREE.sRGBEncoding;
    const view=$("alicia-avatar3d-view");view.append(renderer.domElement);
    renderer.domElement.style.touchAction="none";
+   renderer.domElement.addEventListener("webglcontextlost",event=>{
+     event.preventDefault();renderFailed=true;firstDrawn=false;panel.hidden=true;
+     window.dispatchEvent(new CustomEvent("alicia:3d-failed",{detail:{reason:"Contexte WebGL perdu : relance Alicia pour réessayer"}}));
+   });
    scene.add(new THREE.AmbientLight(0xffffff,.73));
    const front=new THREE.DirectionalLight(0xffffff,1.15);front.position.set(3,5,6);scene.add(front);
    const back=new THREE.DirectionalLight(0x87b6ff,.7);back.position.set(-4,3,-5);scene.add(back);
@@ -134,8 +138,8 @@ function init(){
    orbit.maxPolarAngle=Math.PI*.76;orbit.minPolarAngle=Math.PI*.17;
    orbit.update();
    const resize=()=>{
-    const w=Math.max(220,Math.round(view.clientWidth||stage.clientWidth||350));
-    const h=Math.max(280,Math.round(view.clientHeight||Math.min(520,w*1.18)));
+    const w=Math.max(1,Math.round(view.getBoundingClientRect().width||view.clientWidth||stage.clientWidth||350));
+    const h=Math.max(1,Math.round(view.getBoundingClientRect().height||view.clientHeight||225));
     renderer.setSize(w,h,false);
     camera.aspect=w/h;camera.updateProjectionMatrix();
     if(root)fitCharacterCamera();
@@ -186,7 +190,8 @@ function init(){
        useRealistic(){showAvatar3D();loadRealisticModel();},
        hide(){panel.hidden=true;},
        hasRealistic(){return Boolean(imported);},
-       isVisible(){return firstDrawn&&!panel.hidden;},
+       isVisible(){return firstDrawn&&!panel.hidden&&!renderFailed;},
+       getStatus(){return {ready:true,rendered:firstDrawn,failed:renderFailed,hidden:panel.hidden,realistic:Boolean(imported),framing};},
       setExpression(x){expression=String(x||"happy");},
       setSpeaking(on){speaking=!!on;},
       rotateTo(angle){turnTo=angle;auto=false;},
@@ -302,7 +307,7 @@ function init(){
  let last=0;
  function frame(t){
    requestAnimationFrame(frame);
-   if(document.hidden||panel.hidden||t-last<32)return;
+   if(document.hidden||panel.hidden||renderFailed||t-last<32)return;
    const dt=Math.min(.075,(t-last)/1000||.033);last=t;
    // Auto rotation 25-second cycle unless user selects Face or Dos.
    if(turnTo!==null){
@@ -329,8 +334,15 @@ function init(){
    for(const e of eyes)e.lid.scale.y=.004+blink*.034;
    mouth.scale.y=speaking ? (.025+Math.abs(Math.sin(t*.017))*.035) : .009;
    }
-   orbit.update();renderer.render(scene,camera);
-    if(!firstDrawn){firstDrawn=true;if(canvas)canvas.style.display="none";window.dispatchEvent(new CustomEvent("alicia:3d-rendered"));}
+   try{
+     orbit.update();renderer.render(scene,camera);
+     if(!firstDrawn){firstDrawn=true;renderFailed=false;if(canvas)canvas.style.display="none";window.dispatchEvent(new CustomEvent("alicia:3d-rendered"));}
+   }catch(err){
+     renderFailed=true;firstDrawn=false;panel.hidden=true;
+     const reason=String(err?.message||err);
+     status("3D indisponible : "+reason);
+     window.dispatchEvent(new CustomEvent("alicia:3d-failed",{detail:{reason}}));
+   }
  }
  requestAnimationFrame(frame);
  window.addEventListener("pagehide",()=>{try{mixer?.stopAllAction();renderer.dispose();}catch{}},{once:true});

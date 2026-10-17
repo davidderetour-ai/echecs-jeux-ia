@@ -69,8 +69,11 @@ async function callIA(review=false){
  if(window.AliciaNativeMac && window.AliciaNativeMemory)await window.AliciaNativeMemory.ready;
  // Knowledge lessons and safe local tool router are optional plug-ins.
  const query=messages.filter(m=>m.role==="user").slice(-1)[0]?.content||"";
- const plugin=window.AliciaLocalTools?.answer?.(query);
+ let plugin=null;
+ try{plugin=window.AliciaLocalTools?.answer?.(query)||null;}
+ catch(err){console.warn("Outil optionnel indisponible",err);}
  const response=plugin||engine.answer({messages,mode:$("mode").value,notes:getNotes()});
+ if(!response||typeof response.answer!=="string"||!response.answer.trim())throw new Error("Le moteur n’a retourné aucune réponse.");
  if(window.AliciaNativeMac && window.AliciaNativeMemory){
    const saved=await window.AliciaNativeMemory.flush();
    if(!saved && response.trained){
@@ -95,8 +98,27 @@ $("chat-form").addEventListener("submit",async event=>{
  const notice=$("conversation-notice");if(notice)notice.hidden=true;
  const newLabel=$("new");if(newLabel)newLabel.textContent="Nouveau";
  const welcome=log.querySelector(".welcome");if(welcome)welcome.remove();
- messages.push({role:"user",content:contents});messageEl("user",q+(attachment?"\n📎 "+attachment.name:""));window.AliciaAvatar?.onUserMessage(q,$("mode").value);window.AliciaTools?.suggestForTask(q);$("question").value="";setBusy(true);
- try{const data=await callIA(false);messages.push({role:"assistant",content:data.answer});messageEl("assistant",data.answer,data.sources);window.AliciaComposer?.clear();window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);if(data.verified)$("status").textContent="Réponse revérifiée"}catch(err){messages.pop();messageEl("assistant","⚠️ "+err.message);window.AliciaAvatar?.setExpression("supportive");$("question").value=q}finally{setBusy(false)}
+ messages.push({role:"user",content:contents});
+ messageEl("user",q+(attachment?"\n📎 "+attachment.name:""));
+ $("question").value="";setBusy(true);
+ // Les effets visuels et modules optionnels ne doivent pas bloquer le chat.
+ try{window.AliciaAvatar?.onUserMessage(q,$("mode").value);}catch(err){console.warn("Avatar",err);}
+ try{window.AliciaTools?.suggestForTask(q);}catch(err){console.warn("Outils",err);}
+ try{
+   const data=await callIA(false);
+   messages.push({role:"assistant",content:data.answer});
+   messageEl("assistant",data.answer,data.sources);
+   $("status").textContent="Alicia a répondu";
+   try{window.AliciaComposer?.clear();}catch(err){console.warn("Pièce jointe",err);}
+   try{window.AliciaAvatar?.onAssistantMessage(data.answer,$("mode").value);}catch(err){console.warn("Avatar vocal",err);}
+   if(data.verified)$("status").textContent="Réponse revérifiée";
+ }catch(err){
+   messages.pop();
+   messageEl("assistant","⚠️ Je n’ai pas pu répondre : "+String(err?.message||err));
+   $("status").textContent="Erreur de réponse — ton message reste disponible";
+   try{window.AliciaAvatar?.setExpression("supportive");}catch{}
+   $("question").value=q;
+ }finally{setBusy(false)}
 });
 $("review").addEventListener("click",async()=>{
  if(busy||!messages.length||messages[messages.length-1].role!=="assistant")return;

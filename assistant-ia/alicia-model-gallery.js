@@ -62,6 +62,10 @@
     return;
    }
    const isReal=value.startsWith("real-"),isFull=value.endsWith("-entier");
+   // Le moteur 3D peut avoir déjà émis ses événements avant l’ouverture de la galerie.
+   // Lire aussi son état actuel pour éviter qu’une ancienne photo masque définitivement la 3D.
+   rendered=Boolean(window.Alicia3D?.isVisible?.());
+   realReady=Boolean(window.Alicia3D?.hasRealistic?.());
    fallback(true,"archive-portrait");
    if(!window.Alicia3D?.ready){
     setStatus("3D indisponible sur cet appareil : portrait photographique de secours.");
@@ -72,11 +76,16 @@
    else if(!first&&!window.Alicia3D.hasRealistic?.()) {realReady=false;window.Alicia3D.useRealistic?.();}
    else window.Alicia3D.open?.();
    if((isReal?realReady:rendered)&&window.Alicia3D.isVisible?.())fallback(false);
-   setStatus(isReal?(realReady?"Modèle humain 3D chargé · "+(isFull?"vue entière":"vue portrait"):"Chargement du modèle humain 3D…"):("Modèle 3D stylisé · "+(isFull?"vue entière":"vue portrait")));
+   setStatus(isReal
+    ?(realReady&&window.Alicia3D.isVisible?.()?"Modèle humain 3D affiché · "+(isFull?"vue entière":"vue portrait"):"Chargement du modèle humain 3D…")
+    :(window.Alicia3D.isVisible?.()?"Modèle 3D stylisé affiché · "+(isFull?"vue entière":"vue portrait"):"Préparation du modèle 3D stylisé…"));
   }
   window.addEventListener("alicia:3d-rendered",()=>{
    rendered=true;
-   if(selected.startsWith("style-")||(selected.startsWith("real-")&&realReady))fallback(false);
+   if(selected.startsWith("style-")||(selected.startsWith("real-")&&realReady)){
+     fallback(false);
+     setStatus("Modèle 3D affiché · "+(selected.endsWith("-entier")?"personnage entier":"portrait"));
+   }
   });
   window.addEventListener("alicia:3d-model-ready",()=>{
    realReady=true;
@@ -92,9 +101,10 @@
     setStatus("Le modèle humain ne peut pas s'afficher. Portrait de secours disponible ; choisis le 3D stylisé si besoin.");
    }
   });
-  window.addEventListener("alicia:3d-failed",()=>{
+  window.addEventListener("alicia:3d-failed",e=>{
    if(!PHOTOS[selected])fallback(true,"archive-portrait");
-   setStatus("Moteur 3D indisponible : ancien portrait conservé.");
+   const reason=String(e?.detail?.reason||"WebGL indisponible").slice(0,180);
+   setStatus("3D non affichée ("+reason+"). Ancien portrait conservé.");
   });
   select.addEventListener("change",()=>apply(select.value));
   let saved=null;try{saved=localStorage.getItem("alicia:modele-affichage");}catch{}
