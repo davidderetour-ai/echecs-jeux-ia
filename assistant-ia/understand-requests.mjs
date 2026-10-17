@@ -68,6 +68,7 @@ function teachExpression(query){
  aliases=aliases.slice(-MAX_ALIASES);
  let saved=false;
  try{globalThis.localStorage?.setItem(STORE,JSON.stringify(aliases));saved=true;}catch{}
+ if(typeof document!=="undefined")document.dispatchEvent(new Event("alicia:learning-updated"));
  return answer("J'ai compris : lorsque tu dis « "+match[1].trim()+" », tu veux que je "+({
   study:"consulte les cours intégrés",list:"présente la bibliothèque de cours",status:"indique mon niveau de consultation",
   test:"vérifie les fiches intégrées",help:"explique ma compréhension",
