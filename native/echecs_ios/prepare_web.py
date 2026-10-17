@@ -40,5 +40,31 @@ for page in destination.glob("*.html"):
     if updated != data:
         page.write_text(updated, encoding="utf-8")
 
+# Dans l'application native, le paquet est déjà disponible hors ligne.
+# Ne pas installer un service worker Web supplémentaire qui pourrait
+# naviguer automatiquement/recharger une partie après une mise à jour.
+# Ces changements portent UNIQUEMENT sur la copie embarquée dans l'IPA :
+# le site GitHub Pages/PWA conserve son service worker.
+main_js = destination / "app.js"
+source_js = main_js.read_text(encoding="utf-8")
+register = "if('serviceWorker' in navigator&&("
+assert register in source_js, "Le point d'enregistrement du service worker a changé"
+main_js.write_text(source_js.replace(register, "if(false&&'serviceWorker' in navigator&&(", 1), encoding="utf-8")
+
+home = destination / "index.html"
+source_html = home.read_text(encoding="utf-8")
+assert "</head>" in source_html
+# Désinscription des anciens SW dans l'origine isolée de WKWebView :
+# ne supprime JAMAIS localStorage, cookies ni sauvegardes de jeu.
+cleanup = """<script>
+window.__iosNativeVersion="3.8.8";
+if ('serviceWorker' in navigator) {
+ navigator.serviceWorker.getRegistrations().then(function(list){
+  return Promise.all(list.map(function(item){return item.unregister()}));
+ }).catch(function(){});
+}
+</script>"""
+home.write_text(source_html.replace("</head>",cleanup+"</head>",1),encoding="utf-8")
+
 files = [p for p in destination.rglob("*") if p.is_file()]
 print(f"OK : {len(files)} ressources incluses dans le paquet hors ligne.")

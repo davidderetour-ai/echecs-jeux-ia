@@ -124,11 +124,61 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
     private let message = UILabel()
     private var startupTimeout: DispatchWorkItem?
     private var expectedLocalPage: URL?
+    private var diagnosticRequested = false
+    private let displayVersion = "3.8.8"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.07, green: 0.12, blue: 0.20, alpha: 1)
+        // Barre UIKit indépendante de WebKit : visible même quand la page
+        // web est blanche. Affiche la vraie version installée dans l'iPhone.
+        let nativeBar = UIView()
+        nativeBar.translatesAutoresizingMaskIntoConstraints = false
+        nativeBar.backgroundColor = UIColor(red: 0.07, green: 0.12, blue: 0.20, alpha: 1)
+        view.addSubview(nativeBar)
+
+        let title = UILabel()
+        title.text = "Échecs & Jeux IA · v" + displayVersion
+        title.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        nativeBar.addSubview(title)
+
+        let controls = UIStackView()
+        controls.axis = .horizontal
+        controls.distribution = .fillEqually
+        controls.spacing = 6
+        controls.translatesAutoresizingMaskIntoConstraints = false
+        nativeBar.addSubview(controls)
+        for (name, action) in [
+            ("Accueil", #selector(nativeHome)),
+            ("Go", #selector(nativeGo)),
+            ("Dames", #selector(nativeDames)),
+            ("Diagnostic", #selector(nativeDiagnostic))
+        ] {
+            let button = UIButton(type: .system)
+            button.setTitle(name, for: .normal)
+            button.setTitleColor(.white, for: .normal)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+            button.backgroundColor = UIColor(red: 0.15, green: 0.27, blue: 0.44, alpha: 1)
+            button.layer.cornerRadius = 7
+            button.addTarget(self, action: action, for: .touchUpInside)
+            controls.addArrangedSubview(button)
+        }
+        NSLayoutConstraint.activate([
+            nativeBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            nativeBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            nativeBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            nativeBar.heightAnchor.constraint(equalToConstant: 80),
+            title.topAnchor.constraint(equalTo: nativeBar.topAnchor, constant: 5),
+            title.leadingAnchor.constraint(equalTo: nativeBar.leadingAnchor, constant: 12),
+            controls.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
+            controls.leadingAnchor.constraint(equalTo: nativeBar.leadingAnchor, constant: 8),
+            controls.trailingAnchor.constraint(equalTo: nativeBar.trailingAnchor, constant: -8),
+            controls.heightAnchor.constraint(equalToConstant: 31)
+        ])
         let config = WKWebViewConfiguration()
+        config.websiteDataStore = .default() // conserver les parties et réglages
         config.websiteDataStore = .default() // stockage propre a l'app iOS ; aucune purge
         web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self
@@ -139,7 +189,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         web.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(web)
         NSLayoutConstraint.activate([
-            web.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            web.topAnchor.constraint(equalTo: nativeBar.bottomAnchor),
             web.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             web.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             web.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -180,8 +230,39 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
 
     private func showStatus(_ info: String) {
         message.isHidden = false
-        message.text = "Échecs & Jeux IA\\n\\n" + info
+        message.text = "Échecs & Jeux IA v" + displayVersion + "\n\n" + info
         NSLog("[Échecs iOS] %@", info)
+    }
+
+    @objc private func nativeHome() { navigate("index.html") }
+    @objc private func nativeGo() { navigate("go.html") }
+    @objc private func nativeDames() { navigate("dames-francaises.html") }
+
+    private func navigate(_ path: String) {
+        diagnosticRequested = false
+        guard server != nil,
+              let url = URL(string: "http://127.0.0.1:\(OfflineGameServer.port)/" + path) else {
+            showStatus("Le serveur local n'est pas encore prêt.")
+            return
+        }
+        showStatus("Ouverture de " + path + "…")
+        web.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+    }
+
+    @objc private func nativeDiagnostic() {
+        diagnosticRequested = true
+        let source = """
+          JSON.stringify({page:location.pathname,pret:window.__appReady===true,
+          texte:document.body ? document.body.innerText.length : 0,
+          menu:!!document.getElementById('content'),
+          reseau:navigator.onLine})
+        """
+        web.evaluateJavaScript(source) { [weak self] value, error in
+            guard let self = self else { return }
+            let detail = (value as? String) ?? error?.localizedDescription ?? "Pas de résultat WebKit"
+            self.showStatus("Diagnostic local (aucun envoi Internet) :\n" + detail +
+              "\n\nSi l'écran reste vide, prends une capture de ce message.")
+        }
     }
 
     // Ne pas masquer le diagnostic au simple succès de navigation :
@@ -222,7 +303,9 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
             guard let self = self else { return }
             if error == nil, result as? Bool == true {
                 self.startupTimeout?.cancel()
-                self.message.isHidden = true
+                if !self.diagnosticRequested {
+                    self.message.isHidden = true
+                }
             } else {
                 self.showStatus("La page locale a été reçue mais le menu des jeux est absent. " + (error?.localizedDescription ?? "HTML incomplet"))
             }

@@ -5,6 +5,7 @@ on:
       - main
       - echecs-jeux-ios-natif-iphone-20261017
       - fix-ios-white-screen-20261017
+      - ios-native-visible-menu-diagnostic-20261017
     paths:
       - "native/echecs_ios/**"
       - ".github/workflows/echecs-ios-ipa.yml"
@@ -37,7 +38,7 @@ jobs:
       - name: Publier le fichier pour AltStore Classic
         uses: actions/upload-artifact@v4
         with:
-          name: Echecs-Jeux-IA-iPhone-IPA-v3.8.7
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.8.8
           path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-iPhone-unsigned.ipa
           if-no-files-found: error
           retention-days: 14

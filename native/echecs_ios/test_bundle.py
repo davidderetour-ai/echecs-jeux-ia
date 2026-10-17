@@ -23,4 +23,6 @@ for file in list(root.glob("*.js")) + list(root.glob("*.mjs")):
 assert (root / "backup.js").exists(), "Import / export des sauvegardes absent"
 assert (root / "go-persistence.mjs").exists(), "Sauvegardes des trois Go absentes"
 assert not (root / "assistant-ia").exists(), "L'interface Alicia ne doit pas être écrasée"
+assert 'window.__iosNativeVersion="3.8.8"' in (root / "index.html").read_text(encoding="utf-8"), "Marqueur native IPA absent"
+assert "if(false&&'serviceWorker' in navigator" in (root / "app.js").read_text(encoding="utf-8"), "Service worker PWA encore actif dans l'app native"
 print("OK : ressources principales, imports JS et sauvegardes présents dans l'IPA.")
