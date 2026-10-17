@@ -8,6 +8,7 @@ on:
       - ios-native-visible-menu-diagnostic-20261017
       - fix-ios-go-false-diagnostic-20261017
       - ui-iphone-simple-jeux-20261017
+      - ui-iphone-compact-safety-v391-20261017
     paths:
       - "native/echecs_ios/**"
       - "app.js"
@@ -50,7 +51,7 @@ jobs:
       - name: Publier le fichier pour AltStore Classic
         uses: actions/upload-artifact@v4
         with:
-          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.0
-          path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-v3.9.0.ipa
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.9.1
+          path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-v3.9.1.ipa
           if-no-files-found: error
           retention-days: 14
