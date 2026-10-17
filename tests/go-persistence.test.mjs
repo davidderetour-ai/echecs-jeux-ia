@@ -48,7 +48,7 @@ test("Go : chargement de la partie avant toute création, cache hors ligne inclu
  assert.match(app,/restoreOrFresh\(\)/);
  assert.match(app,/readGoSave\(size\)/);
  assert.match(app,/writeGoSave\(n,/);
- assert.match(app,/\$\("size"\)\.onchange=restoreOrFresh/);
+ assert.match(app,/\$\(['\"]size['\"]\)\.onchange=restoreOrFresh/);
  assert.match(serviceWorker,/go-persistence\.mjs/);
  assert.match(page,/sauvegardées automatiquement/);
 });
