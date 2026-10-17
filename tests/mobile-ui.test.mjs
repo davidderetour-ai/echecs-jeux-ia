@@ -40,6 +40,6 @@ test("App iPhone : identité préservée et lancement pleine taille",()=>{
  assert.match(ipa,/<string>fr\.echecsjeuxia\.iphone\.native<\/string>/);
  assert.match(ipa,/LaunchScreen\.storyboardc/);
  assert.match(ipa,/UILaunchStoryboardName/);
- assert.match(ipa,/3\.9\.0/);
- assert.match(swift,/private let displayVersion = "3\.9\.0"/);
+ assert.match(ipa,/3\.9\.1/);
+ assert.match(swift,/private let displayVersion = "3\.9\.1"/);
 });
