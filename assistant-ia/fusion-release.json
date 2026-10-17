@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -21,8 +21,10 @@
     "portrait3DEtCorpsEntier",
     "portraitsPhotosDeSecours",
     "diagnosticWebGL",
-    "chatFiable"
+    "chatFiable",
+    "coursIndexablesLocalement",
+    "commandeApprendsLesCours"
   ],
   "nativeInstallation": "manual",
-  "note": "Les applications comparent leur version à GitHub. Modèles humains et stylisés disponibles en portrait ou corps entier ; les anciens portraits restent des photos 2D. La mise à jour native requiert une installation autorisée, et les données locales ne sont pas synchronisées automatiquement."
+  "note": "55 cours intégrés consultables par index local activable. Ni lecture automatique de fichiers externes, ni entraînement d'un LLM. Voix conservées et installation native manuelle."
 }
