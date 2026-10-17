@@ -10,7 +10,9 @@ for entry in ("index.html", "go.html", "peace.html", "dames-francaises.html"):
     assert "<html" in page.lower(), entry
     for path in re.findall(r'(?:src|href)="(\.[^"]+|[a-zA-Z0-9][^":?#]*\.(?:js|mjs|css|json|png|webmanifest))(?:\?[^"]*)?"', page):
         path = path.partition("?")[0]
-        if path.endswith("/") or path.startswith("./assistant-ia/"):\n            continue  # lien vers Alicia ou dossier, pas une ressource locale de jeu\n        assert (root / path).is_file(), f"{entry} -> {path}"
+        if path.endswith("/") or path.startswith("./assistant-ia/"):
+            continue  # lien vers Alicia ou dossier, pas une ressource locale de jeu
+        assert (root / path).is_file(), f"{entry} -> {path}"
 
 # Le moteur local JS utilise des modules ES : tous les imports relatifs doivent être embarqués.
 for file in list(root.glob("*.js")) + list(root.glob("*.mjs")):
