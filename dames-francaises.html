@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#152342"><title>Dames françaises 10 × 10 — jouer avec Alicia</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17243d;background:#eff3fa}
+*{box-sizing:border-box}body{margin:0}.shell{max-width:1100px;margin:auto;padding:14px 14px 50px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+a{color:#096d76;font-weight:700}h1{font-size:clamp(23px,4vw,36px);margin:.4em 0}h2{font-size:20px}
+.hero{padding:16px;border-radius:17px;background:linear-gradient(120deg,#162951,#284774);color:white}
+.hero p{max-width:70ch;line-height:1.6}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select{font:inherit;color:inherit;min-height:43px;padding:9px 13px;border:1px solid #acbbd4;border-radius:10px;background:white;cursor:pointer}
+button:hover{border-color:#16726f}button[aria-pressed=true],button.primary{background:#086e72;color:white;border-color:#086e72}
+button:disabled{opacity:.45;cursor:not-allowed}.panel{background:white;border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 3px 18px #24375d14}
+.layout{display:grid;grid-template-columns:minmax(260px,690px) minmax(250px,1fr);gap:16px}
+.board{width:min(100%,680px);margin:auto;aspect-ratio:1;display:grid;grid-template-columns:repeat(10,1fr);border:6px solid #704830;box-shadow:0 12px 18px #2223;touch-action:manipulation}
+.cell{border:0;border-radius:0;padding:0;min-width:0;min-height:0;position:relative;display:flex;align-items:center;justify-content:center}
+.cell.light{background:#f1d4ab;cursor:default}.cell.dark{background:#8c5b38}
+.cell.from:after{content:"";position:absolute;inset:6%;border:2px dashed #e0f875;border-radius:50%;pointer-events:none}
+.cell.selected{box-shadow:inset 0 0 0 4px #0be0a0}.cell.target:after{content:"";position:absolute;width:25%;height:25%;background:#51f1a4;border-radius:50%;pointer-events:none}
+.piece{width:78%;height:78%;border-radius:50%;display:flex;align-items:center;justify-content:center;
+ font-size:clamp(13px,3.8vw,32px);box-shadow:inset -3px -5px 9px #0005,0 3px 4px #2227;position:relative;z-index:1}
+.piece.white{background:#f9f8ef;color:#ccb47f;border:3px solid #dbd6bf}
+.piece.black{background:#202b3a;color:#788999;border:3px solid #07151b}.piece.king{border-width:5px}
+.coord{position:absolute;bottom:1px;right:3px;color:#f3e6cf;font-size:10px}
+.final{color:#075e52;font-weight:800}.info{padding:9px 12px;border-left:4px solid #0b7a80;background:#eaf8f7;min-height:50px;line-height:1.6}
+.muted{color:#4b5971;font-size:14px;line-height:1.5}
+#paths{display:grid;gap:8px}.subtle{color:#66748a}.chip{border:1px solid #a6b8c5;border-radius:15px;padding:5px 9px;font-size:13px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.shell{padding:10px}.panel{padding:10px}.cell.from:after{border-width:1px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><a href="./index.html">← Échecs & Jeux IA</a><a href="./assistant-ia/">✦ Retour à Alicia</a></header>
+<section class="hero"><h1>♟ Dames françaises 10 × 10</h1>
+<p>Un vrai plateau international de 100 cases, avec 20 pions de chaque côté. <strong>Alicia joue gratuitement</strong> sur ton iPhone ou ton Mac, avec un moteur local. Aucun abonnement ni achat intégré.</p>
+<div class="row" id="roles" role="group" aria-label="Choisir le rôle d'Alicia">
+<button type="button" data-role="opponent" aria-pressed="true">♟ Adversaire</button>
+<button type="button" data-role="partner" aria-pressed="false">🤝 Partenaire</button>
+<button type="button" data-role="training" aria-pressed="false">🎓 Entraînement</button>
+</div></section>
+<div class="layout"><section class="panel">
+<h2 id="turn" role="status">À toi de jouer</h2>
+<div id="board" class="board" role="group" aria-label="Plateau dames internationales 10 par 10"></div>
+<p id="message" class="info" aria-live="polite"></p>
+<div id="paths" aria-label="Choix d'une rafle"></div>
+<div class="row"><button id="hint" class="primary">💡 Conseil d'Alicia</button>
+<button id="undo">↶ Annuler un tour</button><button id="new">⟳ Nouvelle partie</button></div></section>
+<aside><section class="panel"><h2>✦ Alicia joue avec toi</h2><p id="coach-note" class="muted"></p>
+<label>Force de l'IA <select id="levels"><option value="1">1 · Débutante</option><option value="2">2 · Facile</option><option value="3">3 · Intermédiaire</option><option value="4">4 · Stratégique</option><option value="5">5 · Tactique</option></select></label>
+<div class="row" style="margin-top:14px"><button id="next-training" hidden>Exercice suivant →</button></div>
+<p id="training-done" hidden class="info">Bravo ! Tu as terminé les trois situations d'entraînement. Tu peux rejouer le parcours et progresser.</p></section>
+<section class="panel"><h2>Règles principales</h2>
+<p>Les pions avancent en diagonale, mais peuvent <strong>capturer en avant comme en arrière</strong>. Les captures sont obligatoires et il faut choisir une rafle qui prend <strong>le plus de pièces</strong>.</p>
+<p>Une dame se déplace et prend à longue distance sur les diagonales. Un pion devient dame en terminant son coup sur la dernière rangée. En fin de partie, un joueur sans coup légal perd.</p>
+<p class="muted">Version pédagogique des dames internationales. L'arbitrage complet des nulles et certaines situations de fin de partie de compétition ne sont pas encore implémentés. Le moteur ne prétend pas jouer au niveau d'un champion.</p>
+<p class="chip">Gratuit · Local · Sans publicité</p></section></aside></div>
+</div>
+<script type="module" src="./dames-francaises.js?v=1"></script>
+</body></html>
