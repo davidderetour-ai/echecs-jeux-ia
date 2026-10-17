@@ -5,13 +5,13 @@ import Network
 import Darwin
 import Foundation
 
-// Alicia Fusion 0.9.4, compatible avec macOS Big Sur : conteneur natif WebKit du code de l'interface Safari.
+// Alicia Fusion 0.9.6, compatible avec macOS Big Sur : conteneur natif WebKit du code de l'interface Safari.
 // Le moteur original JavaScript est local, autonome et gratuit, aucun fournisseur externe.
 // Serveur local strictement lie a 127.0.0.1, sans exposition au reseau.
 @main
 struct AliciaMacFullApp: App {
     var body: some Scene {
-        WindowGroup("Alicia Fusion 0.9.4") {
+        WindowGroup("Alicia Fusion 0.9.6") {
             AliciaFullView()
                 .frame(minWidth: 900, minHeight: 680)
         }
@@ -295,7 +295,7 @@ struct AliciaFullView: View {
             } else {
                 VStack(spacing: 16) {
                     Image(systemName: "sparkles").font(.largeTitle)
-                    Text("Alicia Fusion 0.9.4 prépare son interface…")
+                    Text("Alicia Fusion 0.9.6 prépare son interface…")
                     if let error = server.errorText {
                         Text(error).foregroundColor(.orange)
                     } else {
