@@ -125,7 +125,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
     private var startupTimeout: DispatchWorkItem?
     private var expectedLocalPage: URL?
     private var diagnosticRequested = false
-    private let displayVersion = "3.9.1"
+    private let displayVersion = "3.9.2"
 
     override func viewDidLoad() {
         super.viewDidLoad()
