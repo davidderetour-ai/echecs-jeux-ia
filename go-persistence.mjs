@@ -17,7 +17,7 @@ export function validGoState(state,size){
  return !!state&&state.schema===1&&state.size===size&&boardOK(state.board,size)&&
   (state.turn===1||state.turn===2)&&capturesOK(state.captures)&&
   Number.isInteger(state.passes)&&state.passes>=0&&state.passes<=2&&
-  typeof state.ended==="boolean"&&["bot","local"].includes(state.mode)&&
+  typeof state.ended==="boolean"&&["bot","local","duel"].includes(state.mode)&&
   validHistory(state.history,size);
 }
 export function readGoSave(size,storage=null){
