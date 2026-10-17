@@ -37,8 +37,9 @@ jobs:
           node --check dames-francaises-engine.mjs
           node --check dames-francaises.js
           node --check go.js
+          node --check go-persistence.mjs
           node --check shogi-app.js
           node --check peace.js
           node --check assistant-ia/alicia-play-ui.mjs
       - name: Vérifier les règles et l'accès aux jeux
-        run: node --test tests/dames-francaises.test.mjs
+        run: node --test tests/*.test.mjs
