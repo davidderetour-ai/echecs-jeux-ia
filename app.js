@@ -213,10 +213,56 @@ function renderAliciaLauncher(){
  ${[['opponent','♟ Adversaire'],['partner','🤝 Partenaire'],['training','🎓 Entraînement']].map(([r,label])=>`<button type="button" class="btn sm ${aliciaRole===r?'teal':'outline'}" data-alicia-role="${r}" aria-pressed="${aliciaRole===r}">${label}</button>`).join('')}</div>
  <div class="grid-cards">${ALICIA_GAMES.map(g=>`<button type="button" class="gamecard" data-alicia-game="${g.id}" aria-label="Jouer avec Alicia à ${g.label}"><span class="emoji">${g.type==='opponent'?'♟️':'🎓'}</span><strong>${g.label}</strong><small>${g.type==='coach'?'Conseils et exercices':aliciaRole==='training'?'Exercices guidés':aliciaRole==='partner'?'Conseils pendant la partie':'Contre Alicia · IA locale'}</small></button>`).join('')}</div></section>`;
 }
-function renderHome(){return `${renderAliciaLauncher()}<section class="hero"><div class="hero-copy"><div class="tag">Apprendre • Jouer • Progresser</div><h1>Joue aux <span style="color:#ffd66b">échecs à 4</span> pour de vrai, avec ton IA.</h1><p>Un véritable échiquier tactile : déplace les pièces, joue contre 3 IA ou avec tes proches. Les autres jeux, le Shogi et tes exercices restent disponibles.</p><div class="btn-row"><button data-action="start-four" class="btn teal">♟ Jouer à 4</button><button data-tab="train" class="btn outline">🎓 Mes exercices</button></div><div class="feature-line"><span>✓ IA sans internet</span><span>✓ Jeux à 2 et 4 joueurs</span><span>✓ Progrès sauvegardés</span></div></div><div class="hero-program">${previewFourBoard()}</div></section>
-<div class="section-head"><h2>Choisis ton jeu</h2><span class="pill green">10 jeux numériques</span></div>
-<div class="grid-cards"><button class="gamecard" data-tab="shogi"><span class="emoji">🏯</span><strong>Shogi japonais</strong><small>Jeu complet, parcours guidé, mat, promotion, pièces capturées et conseils.</small></button><button class="gamecard" data-open-game="chess4"><span class="emoji">♟️</span><strong>Échecs à 4 joueurs</strong><small>Modes Chess.com et House of Chess ; seul ou en équipes.</small></button>${M800.map(g=>`<button class="gamecard" data-open-game="${g.id}"><span class="emoji">${g.emoji}</span><strong>${g.name}</strong><small>${g.sub}</small></button>`).join('')}</div>
-<div class="section-head"><h2>Les nouveautés V2.9</h2></div><div class="grid-cards"><button class="gamecard" data-tab="junior"><span class="emoji">📗</span><strong>Atelier Junior jouable</strong><small>Défis inspirés des thèmes des magazines FFE, positions originales.</small></button><button class="gamecard" data-tab="atelier"><span class="emoji">🛠️</span><strong>Assistante d’amélioration</strong><small>Exprime tes idées et diagnostique les problèmes sans effacer les parties.</small></button></div><div class="section-head"><h2>Encore deux jeux</h2><button data-tab="extras" class="btn outline sm">Tous les nouveaux jeux →</button></div><div class="grid-cards">${EXTRA_GAMES.map(x=>`<button class="gamecard" data-extra-start="${x.id}"><span class="emoji">${x.emoji}</span><strong>${x.name}</strong><small>${x.sub}</small></button>`).join('')}</div><div class="section-head"><h2>Ton école d'échecs</h2></div><div class="grid-cards"><button class="gamecard" data-tab="train"><span class="emoji">🎯</span><strong>Défis sur échiquier</strong><small>Déplace la bonne pièce pour apprendre et réussir des exercices.</small></button><button class="gamecard" data-tab="train"><span class="emoji">🧠</span><strong>Quiz et corrections</strong><small>Le bon choix expliqué avec des mots simples.</small></button><button class="gamecard" data-tab="rules"><span class="emoji">📚</span><strong>Règles complètes</strong><small>Échecs à 4, cas avancés, barèmes et différences.</small></button><button class="gamecard" data-tab="settings"><span class="emoji">🌐</span><strong>IA hors ligne / en ligne</strong><small>Choisis ton niveau et ton mode de calcul.</small></button></div>`;}
+function renderHome(){
+ const mainGames=[
+  ["chess2","♟️","Échecs à 2","Classiques · contre Alicia"],
+  ["chess4","♟️","Échecs à 4","Quatre couleurs · seul ou en équipes"],
+  ["dames10","⚪","Dames françaises","Plateau 10 × 10"],
+  ["go9","⚫","Jeu de Go","Plateaux 9, 13 et 19 lignes"],
+  ["shogi","🏯","Shogi","Échecs japonais"],
+  ["peace","🧩","100 défis","Entraînement et logique"]
+ ];
+ const mainIds=new Set(mainGames.map(g=>g[0]));
+ const roleHelp=aliciaRole==='opponent'?"L’IA joue contre toi quand ce jeu le permet."
+   :aliciaRole==='partner'?"Alicia joue avec toi ou propose des conseils selon le jeu."
+   :"Tu apprends avec des exercices et des conseils.";
+ const savedTitle=game?(kind()==='chess4'?'Échecs à 4':kind()==='chess2'?'Échecs à 2':M800.find(g=>g.id===kind())?.name||'partie'):'';
+ return `<section class="easy-home" aria-label="Accueil simplifié des jeux">
+  <div class="easy-intro"><div class="easy-tag">🎮 Mes jeux · gratuit · hors ligne</div>
+   <h1>À quoi veux-tu jouer ?</h1>
+   <p>Choisis un jeu et commence. Les autres réglages sont facultatifs.</p>
+  </div>
+  ${game&&!game.over?`<button type="button" class="easy-resume" data-tab="play">↩ Reprendre ma partie <strong>${E(savedTitle)}</strong><span>Sans recommencer</span></button>`:''}
+  <section class="easy-role" aria-label="Comment jouer avec Alicia"><h2>Avec Alicia</h2>
+   <div class="easy-role-buttons" role="group" aria-label="Choisir le rôle d'Alicia">
+    ${[['opponent','♟ Adversaire'],['partner','🤝 Partenaire'],['training','🎓 Apprendre']].map(([r,label])=>`<button type="button" class="${aliciaRole===r?'is-selected':''}" data-alicia-role="${r}" aria-pressed="${aliciaRole===r}">${label}</button>`).join('')}
+   </div><p class="easy-role-help">${roleHelp}</p>
+  </section>
+  <section aria-label="Accès rapide aux jeux">
+   <div class="easy-heading"><h2>Mes jeux</h2><span>Un toucher pour ouvrir</span></div>
+   <div class="easy-games">
+   ${mainGames.map(([id,emoji,name,sub])=>`<button type="button" class="easy-game" data-alicia-game="${id}" aria-label="Ouvrir ${name}"><span class="easy-emoji" aria-hidden="true">${emoji}</span><span class="easy-copy"><strong>${name}</strong><small>${sub}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
+   </div>
+  </section>
+  <section class="easy-learning" aria-label="Apprendre et jouer avec des amis">
+   <button type="button" data-tab="train">🎓 <strong>Mes exercices</strong><span>Progresser à mon rythme →</span></button>
+   <button type="button" data-tab="friends">👥 <strong>Jouer avec un ami</strong><span>À proximité ou en ligne →</span></button>
+  </section>
+  <details class="easy-more" id="all-games"><summary>🎲 Tous les autres jeux <span>Voir la liste ▾</span></summary>
+    <div class="easy-games easy-games-extra">
+    ${ALICIA_GAMES.filter(g=>!mainIds.has(g.id)).map(g=>`<button type="button" class="easy-game" data-alicia-game="${g.id}"><span class="easy-emoji" aria-hidden="true">${g.type==='coach'?'🧠':'🎲'}</span><span class="easy-copy"><strong>${E(g.label)}</strong><small>${g.type==='coach'?'Conseils et défis':'Jeu avec IA locale'}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
+    </div>
+    <div class="easy-tools">
+      <button type="button" data-tab="extras">🎲 Jeux bonus</button>
+      <button type="button" data-tab="junior">📗 Échecs Junior</button>
+      <button type="button" data-tab="rules">📖 Les règles</button>
+      <button type="button" data-tab="atelier">🛠️ Assistante</button>
+      <button type="button" data-tab="settings">⚙ Réglages</button>
+    </div>
+  </details>
+ </section>`;
+}
+
 function gameRotation(g){return resolveRotation(g,rotationMode,boardRotation,controllers);}
 function boardsCaption(g,rotation){
  const positions=['en haut','à droite','en bas','à gauche'];
