@@ -53,7 +53,7 @@ function setRole(newRole){
  if(newRole==="training"){game=makeLesson(0);setMessage(lessons[0].desc);}
  else setMessage(newRole==="partner"?"Alicia est ta partenaire : ses conseils sont disponibles pendant ta partie contre le moteur local.":"Défie Alicia ! Tu joues les Blancs, elle joue les Noirs.");
  history.replaceState(null,"",location.pathname+"?alicia=dames10&role="+newRole);
- persist();render();if(game.turn==="black")scheduleBot();
+ persist();render();if(game.turn==="black"||duelActive)scheduleBot();
 }
 function setLesson(i){
  study=Math.max(0,Math.min(lessons.length-1,i));game=makeLesson(study);chosen=null;options=[];
@@ -141,10 +141,14 @@ function render(){
  $("undo").disabled=activeRole==="training"||!game.history.length;
  $("next-training").hidden=activeRole!=="training";
 }
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&duelActive&&!busy&&!game.over)scheduleBot();});
 $("board").addEventListener("click",e=>{const b=e.target.closest("[data-r][data-c]");if(b)select(+b.dataset.r,+b.dataset.c);});
 $("roles").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(b)setRole(b.dataset.role);});
 $("paths").addEventListener("click",e=>{const b=e.target.closest("[data-path]");if(b&&options[+b.dataset.path])play(options[+b.dataset.path]);});
-$("new").addEventListener("click",()=>{if(!confirm("Commencer une nouvelle partie ? La dernière position non sauvegardée sera remplacée."))return;setRole(activeRole);});
+$("new").addEventListener("click",()=>{if(!confirm("Commencer une nouvelle partie ? La dernière position non sauvegardée sera remplacée."))return;
+ if(duelActive){botTicket++;busy=false;game=newFrenchDraughts();persist();render();scheduleBot();return;}
+ setRole(activeRole);
+});
 $("undo").addEventListener("click",()=>{
  botTicket++;busy=false;const prev=undoFrench(game);
  if(!prev)return;game=prev;
@@ -162,4 +166,4 @@ $("training-done").hidden=true;
 if(activeRole==="training")setMessage(lessons[study].desc);
 else setMessage(activeRole==="partner"?"Alicia est ton coach pendant cette partie.":"Bienvenue ! Défie Alicia gratuitement, même sans Internet après installation.");
 render();
-if(game.turn==="black")scheduleBot();
+if(game.turn==="black"||duelActive)scheduleBot();
