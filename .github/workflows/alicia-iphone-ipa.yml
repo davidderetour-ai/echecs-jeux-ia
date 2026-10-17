@@ -42,9 +42,9 @@ jobs:
           from pathlib import Path
           root=Path("native/alicia_flutter/assets/alicia_web")
           release=json.loads((root/"fusion-release.json").read_text())
-          assert release["version"]=="0.9.2", release["version"]
-          assert all((root/p).exists() for p in ("index.html","alicia-avatar3d.js","alicia-model-gallery.js","models/alicia_realiste_rocketbox.glb","vendor/three.r147.min.js"))
-          print("Alicia Fusion 0.9.2 : personnages réaliste/stylisé, entier/portrait et anciens portraits embarqués")
+          assert release["version"]=="0.9.3", release["version"]
+          assert all((root/p).exists() for p in ("index.html","alicia-avatar3d.js","alicia-model-gallery.js","course-learning.mjs","models/alicia_realiste_rocketbox.glb","vendor/three.r147.min.js"))
+          print("Alicia Fusion 0.9.3 : personnages réaliste/stylisé, entier/portrait et anciens portraits embarqués")
           PY
 
       - name: Générer uniquement les fichiers iOS manquants
@@ -87,7 +87,7 @@ jobs:
       - name: Publier le fichier IPA dans les artefacts du workflow
         uses: actions/upload-artifact@v4
         with:
-          name: Alicia-iPhone-IPA-Fusion-0.9.2
+          name: Alicia-iPhone-IPA-Fusion-0.9.3
           path: native/alicia_flutter/dist/Alicia-native-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
