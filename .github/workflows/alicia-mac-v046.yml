@@ -95,7 +95,7 @@ jobs:
           assert 'connection.value="original"' in js
           js=js.replace('if("serviceWorker" in navigator)window.addEventListener(', 'if(false&&"serviceWorker" in navigator)window.addEventListener(',1)
           app.write_text(js,encoding='utf-8')
-          for required in ('original-engine.js','original-controls.js','original-controls.css','native-memory-bridge.js','cortect-ui.js','alicia-academy.mjs','alicia-professeur-ui.js','alicia-professeur.css','web-learning-core.mjs','web-learning-ui.js','web-learning.css','image3d-ui.js','three-studio.js','three-studio.css','alicia-avatar3d.js','alicia-model-gallery.js','course-learning.mjs','fusion-ui.css','alicia-reference-theme.css','alicia-reference-ui.js','vendor/three.r147.min.js','vendor/OrbitControls.r147.js','vendor/GLTFLoader.r147.js','models/alicia_realiste_rocketbox.glb','models/alicia_realiste_manifest.json','models/ROCKETBOX-MIT-LICENSE.md','vendor/THREE-LICENSE.txt','python-vscode-ui.js','cortect-rag-core.mjs','cortect-agent-core.mjs','portrait-front.webp','portrait-back.webp'):
+          for required in ('original-engine.js','original-controls.js','original-controls.css','native-memory-bridge.js','cortect-ui.js','alicia-academy.mjs','alicia-professeur-ui.js','alicia-professeur.css','web-learning-core.mjs','web-learning-ui.js','web-learning.css','image3d-ui.js','three-studio.js','three-studio.css','alicia-avatar3d.js','alicia-model-gallery.js','course-learning.mjs','understand-requests.mjs','fusion-ui.css','alicia-reference-theme.css','alicia-reference-ui.js','vendor/three.r147.min.js','vendor/OrbitControls.r147.js','vendor/GLTFLoader.r147.js','models/alicia_realiste_rocketbox.glb','models/alicia_realiste_manifest.json','models/ROCKETBOX-MIT-LICENSE.md','vendor/THREE-LICENSE.txt','python-vscode-ui.js','cortect-rag-core.mjs','cortect-agent-core.mjs','portrait-front.webp','portrait-back.webp'):
               assert (root/required).is_file(),required
           print('Alicia Mac Original 0.9.3 : moteur inclus, aucune requête IA externe ni service payant.')
           PY
@@ -140,6 +140,7 @@ jobs:
           node --check assistant-ia/alicia-avatar3d.js
           node --check assistant-ia/alicia-model-gallery.js
           node --check assistant-ia/course-learning.mjs
+          node --check assistant-ia/understand-requests.mjs
           node --check assistant-ia/vendor/GLTFLoader.r147.js
           node --check assistant-ia/alicia-reference-ui.js
           node --check assistant-ia/original-engine.js
