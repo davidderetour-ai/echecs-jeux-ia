@@ -125,7 +125,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
     private var startupTimeout: DispatchWorkItem?
     private var expectedLocalPage: URL?
     private var diagnosticRequested = false
-    private let displayVersion = "3.9.0"
+    private let displayVersion = "3.9.1"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,6 +140,8 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         let title = UILabel()
         title.text = "Échecs & Jeux IA · v" + displayVersion
         title.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        title.adjustsFontSizeToFitWidth = true
+        title.minimumScaleFactor = 0.82
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
         nativeBar.addSubview(title)
@@ -151,10 +153,8 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         controls.translatesAutoresizingMaskIntoConstraints = false
         nativeBar.addSubview(controls)
         for (name, action) in [
-            ("Accueil", #selector(nativeHome)),
-            ("Go", #selector(nativeGo)),
-            ("Dames", #selector(nativeDames)),
-            ("Diagnostic", #selector(nativeDiagnostic))
+            ("☰ Jeux", #selector(nativeGamesMenu)),
+            ("Aide", #selector(nativeDiagnostic))
         ] {
             let button = UIButton(type: .system)
             button.setTitle(name, for: .normal)
@@ -169,13 +169,14 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
             nativeBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             nativeBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             nativeBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            nativeBar.heightAnchor.constraint(equalToConstant: 80),
-            title.topAnchor.constraint(equalTo: nativeBar.topAnchor, constant: 5),
-            title.leadingAnchor.constraint(equalTo: nativeBar.leadingAnchor, constant: 12),
-            controls.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
-            controls.leadingAnchor.constraint(equalTo: nativeBar.leadingAnchor, constant: 8),
+            nativeBar.heightAnchor.constraint(equalToConstant: 54),
+            title.centerYAnchor.constraint(equalTo: nativeBar.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: nativeBar.leadingAnchor, constant: 10),
+            title.trailingAnchor.constraint(lessThanOrEqualTo: controls.leadingAnchor, constant: -8),
+            controls.centerYAnchor.constraint(equalTo: nativeBar.centerYAnchor),
             controls.trailingAnchor.constraint(equalTo: nativeBar.trailingAnchor, constant: -8),
-            controls.heightAnchor.constraint(equalToConstant: 31)
+            controls.widthAnchor.constraint(equalToConstant: 145),
+            controls.heightAnchor.constraint(equalToConstant: 40)
         ])
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default() // stockage propre a l'app iOS ; aucune purge
@@ -233,6 +234,20 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         NSLog("[Échecs iOS] %@", info)
     }
 
+    @objc private func nativeGamesMenu() {
+        let sheet = UIAlertController(title: "Choisis ton jeu",
+          message: "Accès de secours, même si le menu est vide.",
+          preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "♟ Tous les jeux", style: .default) { [weak self] _ in self?.nativeHome() })
+        sheet.addAction(UIAlertAction(title: "⚫ Jeu de Go", style: .default) { [weak self] _ in self?.nativeGo() })
+        sheet.addAction(UIAlertAction(title: "⚪ Dames françaises", style: .default) { [weak self] _ in self?.nativeDames() })
+        sheet.addAction(UIAlertAction(title: "Annuler", style: .cancel))
+        if let pop = sheet.popoverPresentationController {
+            pop.sourceView = view
+            pop.sourceRect = CGRect(x: view.bounds.midX, y: view.safeAreaInsets.top + 54, width: 1, height: 1)
+        }
+        present(sheet, animated: true)
+    }
     @objc private func nativeHome() { navigate("index.html") }
     @objc private func nativeGo() { navigate("go.html") }
     @objc private func nativeDames() { navigate("dames-francaises.html") }

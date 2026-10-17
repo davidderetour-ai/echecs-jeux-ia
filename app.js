@@ -71,9 +71,26 @@ function kind(){return game?.kind==='chess'?(game.type==='chess4'?'chess4':'ches
 function isHuman(){if(nearbyLive){if(!game||game.over||game.kind!=='chess')return false;return game.colors[game.turn]===(nearbyRole==='host'?(game.type==='chess4'?'red':'white'):(game.type==='chess4'?'blue':'black'));}if(roomLive)return !!(game&&!game.over&&roomData?.started&&game.colors[game.turn]===roomData.seat);if(!game||game.over)return false;const c=game.kind==='chess'?game.colors[game.turn]:game.turn===0?'A':'B';return controllers[c]==='human';}
 function cancelBot(){if(pendingBot){clearTimeout(pendingBot);pendingBot=null;}botBusy=false;}
 function goto(t){document.querySelector('.nav-more')?.removeAttribute('open');if(immersiveGame && !['play','extras'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
+// Nouveau jeu : copie de sécurité avant de remplacer la partie courante.
+function protectCurrentGame(){
+ if(!game||game.over||roomLive||nearbyLive)return true;
+ if(!confirm("Tu as une partie en cours. Commencer une autre partie et garder celle-ci dans tes sauvegardes ?"))return false;
+ if(!Array.isArray(saveSlots)||saveSlots.length>=24){toast("Sauvegardes pleines. Exporte-les avant de changer de partie.");return false;}
+ try{
+  const snap=JSON.parse(JSON.stringify(game));
+  if(snap.history?.length>16)snap.history=snap.history.slice(-16);
+  const slots=[{id:"auto-"+Date.now(),name:"Partie conservée · "+(kind()==="chess4"?"Échecs à 4":kind()==="chess2"?"Échecs à 2":"Autre jeu"),
+   when:new Date().toISOString(),game:snap},...saveSlots];
+  localStorage.setItem("v2-saves",JSON.stringify(slots));
+  saveSlots=slots;
+  return true;
+ }catch(e){toast("Sauvegarde impossible : la partie en cours reste intacte.");return false;}
+}
 function playWithAlicia(id,role=aliciaRole){
  const spec=getAliciaGame(id);
  if(!spec)return toast('Ce jeu n’est pas reconnu.');
+ const replacesGame=spec.path==='index.html'&&id!=='shogi'&&id!=='tictactoe'&&id!=='memory';
+ if(replacesGame&&!protectCurrentGame())return;
  if(!['opponent','partner','training'].includes(role))role='opponent';
  aliciaRole=role;
  const chosenRole=spec.type==='coach'&&role==='opponent'?'partner':role;
@@ -104,11 +121,11 @@ function playWithAlicia(id,role=aliciaRole){
   if(['chesscom-ffa','house-a','house-b','house-teams','chesscom-teams'].includes(previous))fourMode=previous;
  }
  controllers={...controllers,white:'human',black:'bot',red:'human',blue:'bot',yellow:'bot',green:'bot',A:'human',B:'bot'};
- save();start(id);
+ save();start(id,true);
  miniInfo=chosenRole==='training'?'🎓 Entraînement avec Alicia : réussis des coups autorisés, demande un indice, puis étudie sa réponse.':chosenRole==='partner'?(id==='chess4'?'🤝 Alicia joue Jaune dans ton équipe Rouge + Jaune contre Bleu + Vert.':'🤝 Alicia t’aide à réfléchir et donne des conseils pendant la partie.'):'♟ Alicia joue contre toi sans serveur ni abonnement.';
  render();
 }
-function start(id){gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
+function start(id,previousProtected=false){if(!previousProtected&&!protectCurrentGame())return;gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
 function render(){document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  if(tab==='home')root.innerHTML=renderHome();
  if(tab==='play')root.innerHTML=renderPlay();
@@ -671,7 +688,7 @@ function manualSave(){
  const name=prompt('Nom de la sauvegarde :', 'Ma partie '+new Date().toLocaleDateString('fr-FR'));
  if(name===null)return;
  const savedGame=JSON.parse(JSON.stringify(game));if(savedGame.history?.length>8)savedGame.history=savedGame.history.slice(-8);saveSlots.unshift({id:String(Date.now()),name:String(name).trim().slice(0,45)||'Partie',when:new Date().toISOString(),game:savedGame});
- saveSlots=saveSlots.slice(0,8);save();toast('Partie sauvegardée !');
+ saveSlots=saveSlots.slice(0,24);save();toast('Partie sauvegardée !');
 }
 function loadSlot(id){const entry=saveSlots.find(x=>x.id===id);if(!entry)return toast('Sauvegarde introuvable.');
  if(!confirm('Remplacer la partie actuelle par « '+entry.name+' » ?'))return;
@@ -899,7 +916,7 @@ document.addEventListener('click',ev=>{
  el=ev.target.closest('[data-alicia-role]');if(el){
   aliciaRole=el.dataset.aliciaRole;store.set('alicia-game-role',aliciaRole);render();return;
  }
- el=ev.target.closest('[data-alicia-game]');if(el){playWithAlicia(el.dataset.aliciaGame,aliciaRole);return;}
+ el=ev.target.closest('[data-alicia-game]');if(el){const chosen=el.dataset.aliciaGame;if(game&&!game.over&&!roomLive&&!nearbyLive&&kind()===chosen){goto('play');toast('Partie reprise, sans recommencer.');return;}playWithAlicia(chosen,aliciaRole);return;}
  el=ev.target.closest('[data-action]');if(el){handleAction(el.dataset.action);return;}
  el=ev.target.closest('[data-train]');if(el){trainTab=el.dataset.train;if(trainTab==='path'&&pathActive){const step=pathModule(pathActive)?.steps[pathLevel];if(step?.type==='board'){practiceIndex=step.index;loadPractice();}}else if(trainTab==='moves'){loadPractice();}render();return;}
  el=ev.target.closest('[data-rule]');if(el){ruleTab=el.dataset.rule;render();return;}
