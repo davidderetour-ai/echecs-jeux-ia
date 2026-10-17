@@ -545,3 +545,15 @@ body.game-immersive[data-game-view="extras"] .extra-grid{max-height:none;}
 }
 .native-ios .header{display:none}
 .native-ios .topnav{margin-top:7px}
+
+/* Actions secondaires du plateau repliées pour éviter les erreurs de sélection. */
+.game-switcher{margin:5px 0 13px;border:1px solid #d8e3ed;border-radius:12px;background:#f9fbfe;padding:5px 12px}
+.game-switcher>summary{cursor:pointer;min-height:45px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2b5365}
+.game-switcher>summary small{font-size:11px;font-weight:500;color:#6c7b8c;margin-left:auto}
+.game-switcher .game-tabs{margin:8px 0 5px}
+@media(max-width:650px){
+ .game-toolbar{display:flex;gap:7px;flex-wrap:wrap}
+ .game-toolbar button{min-height:43px}
+ .board-card .btn-row button{min-height:43px;flex:1 1 auto}
+ .game-switcher>summary{min-height:48px}
+}
