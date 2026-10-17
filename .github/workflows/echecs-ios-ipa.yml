@@ -2,6 +2,7 @@ name: Échecs & Jeux IA — Compiler IPA iPhone native gratuite
 on:
   push:
     branches:
+      - main
       - echecs-jeux-ios-natif-iphone-20261017
     paths:
       - "native/echecs_ios/**"
