@@ -3,9 +3,9 @@ const PREFIX="alicia-go-save-v1-";
 const SIZES=new Set([9,13,19]);
 const boardOK=(board,n)=>Array.isArray(board)&&board.length===n&&board.every(row=>Array.isArray(row)&&row.length===n&&row.every(v=>v===0||v===1||v===2));
 const capturesOK=a=>Array.isArray(a)&&a.length===3&&a.every(x=>Number.isSafeInteger(x)&&x>=0);
-export function goStorageKey(size){
+export function goStorageKey(size,duel=false){
  if(!SIZES.has(size))throw new RangeError("Taille de Go non prise en charge");
- return PREFIX+size;
+ return PREFIX+size+(duel?'-duel':'');
 }
 function validHistory(history,n){
  return Array.isArray(history)&&history.length<=120&&history.every(h=>
@@ -20,9 +20,9 @@ export function validGoState(state,size){
   typeof state.ended==="boolean"&&["bot","local","duel"].includes(state.mode)&&
   validHistory(state.history,size);
 }
-export function readGoSave(size,storage=null){
+export function readGoSave(size,storage=null,duel=false){
  try{
-  const raw=(storage??globalThis.localStorage)?.getItem(goStorageKey(size));
+  const raw=(storage??globalThis.localStorage)?.getItem(goStorageKey(size,duel));
   if(!raw||raw.length>250000)return null;
   const value=JSON.parse(raw);
   return validGoState(value,size)?value:null;
@@ -32,7 +32,7 @@ export function writeGoSave(size,state,storage=null){
  try{
   const value={...state,schema:1,size,history:(state?.history||[]).slice(-120)};
   if(!validGoState(value,size))return false;
-  (storage??globalThis.localStorage)?.setItem(goStorageKey(size),JSON.stringify(value));
+  (storage??globalThis.localStorage)?.setItem(goStorageKey(size,value.mode==='duel'),JSON.stringify(value));
   return true;
  }catch{return false;}
 }
