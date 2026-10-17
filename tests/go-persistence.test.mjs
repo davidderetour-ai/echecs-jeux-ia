@@ -46,7 +46,7 @@ test("Go : sauvegarde corrompue ou taille invalide rejetée sans crash",()=>{
 test("Go : chargement de la partie avant toute création, cache hors ligne inclus",()=>{
  const app=source("go.js"),serviceWorker=source("sw.js"),page=source("go.html");
  assert.match(app,/restoreOrFresh\(\)/);
- assert.match(app,/readGoSave\(size\)/);
+ assert.match(app,/readGoSave\(size,null,\$\([\x27\x22]gomode[\x27\x22]\)\.value===\x27duel\x27\)/);
  assert.match(app,/writeGoSave\(n,/);
  assert.match(app,/\$\(['\"]size['\"]\)\.onchange=restoreOrFresh/);
  assert.match(serviceWorker,/go-persistence\.mjs/);
