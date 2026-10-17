@@ -20,7 +20,7 @@ export function linkForGame(id,role="opponent"){
 }
 export function understandPlayRequest(message){
  const n=String(message||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
- if(!/\b(?:jouer|jouons|partie|defi|affronter|adversaire|entrainement|entraine|entrainer|partenaire|conseiller)\b/.test(n))return null;
+ if(!/\b(?:joue|jouer|jouons|partie|defi|affronter|adversaire|entrainement|entraine|entrainer|partenaire|conseiller)\b/.test(n))return null;
  if(!/\b(?:alicia|echecs|jeu|jeux|shogi|go|morpion|dames|reversi|nim|paix|paires|quatre|puissance|renard)\b/.test(n))return null;
  const rules=[
   [/\b(?:quatre|4 joueurs|4 joueur)\b/,"chess4"],
