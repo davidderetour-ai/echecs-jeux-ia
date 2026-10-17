@@ -10,7 +10,7 @@ test("Les réponses ne sont pas bloquées par les outils et les animations facul
   assert.match(app,/try\{window\.AliciaAvatar\?\.onAssistantMessage/);
   assert.match(app,/messages\.push\(\{role:"assistant",content:data\.answer\}\)/);
   assert.match(app,/Je n’ai pas pu répondre/);
-  assert.match(app,/try\{plugin=window\.AliciaCourseLearning\?\.answer/);
+  assert.match(app,/try\{plugin=window\.AliciaRequestUnderstanding\?\.respond/);\n  assert.match(app,/window\.AliciaCourseLearning\?\.answer/);
   assert.match(app,/window\.AliciaLocalTools\?\.answer/);
 });
 test("Moteur 3D : une erreur WebGL ne cache pas le portrait de secours",()=>{
