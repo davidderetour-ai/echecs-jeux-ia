@@ -5,13 +5,13 @@ import Network
 import Darwin
 import Foundation
 
-// Alicia Fusion 0.9.7, compatible avec macOS Big Sur : conteneur natif WebKit du code de l'interface Safari.
+// Alicia Fusion 0.9.8, compatible avec macOS Big Sur : conteneur natif WebKit du code de l'interface Safari.
 // Le moteur original JavaScript est local, autonome et gratuit, aucun fournisseur externe.
 // Serveur local strictement lie a 127.0.0.1, sans exposition au reseau.
 @main
 struct AliciaMacFullApp: App {
     var body: some Scene {
-        WindowGroup("Alicia Fusion 0.9.7") {
+        WindowGroup("Alicia Fusion 0.9.8") {
             AliciaFullView()
                 .frame(minWidth: 900, minHeight: 680)
         }
@@ -295,7 +295,7 @@ struct AliciaFullView: View {
             } else {
                 VStack(spacing: 16) {
                     Image(systemName: "sparkles").font(.largeTitle)
-                    Text("Alicia Fusion 0.9.7 prépare son interface…")
+                    Text("Alicia Fusion 0.9.8 prépare son interface…")
                     if let error = server.errorText {
                         Text(error).foregroundColor(.orange)
                     } else {
@@ -328,13 +328,11 @@ struct AliciaWebView: NSViewRepresentable {
         browser.navigationDelegate = context.coordinator
         browser.allowsBackForwardNavigationGestures = true
         context.coordinator.offlineURL = url
-        // Sur Mac, utiliser la même interface Web qu'iPhone lorsqu'Internet est disponible.
-        // Hors connexion, revenir aux ressources embarquées pour macOS Big Sur.
-        if let shared = URL(string: "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/") {
-            browser.load(URLRequest(url: shared, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 12))
-        } else {
-            browser.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
-        }
+        // Toujours ouvrir la version Mac embarquée. En ligne, le site public
+        // chargeait une autre version et contournait le pont mémoire native :
+        // les commandes apprises et les cours pouvaient alors sembler perdus.
+        // La voix choisie reste gérée par l'interface, sans réglage système.
+        browser.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
         return browser
     }
 

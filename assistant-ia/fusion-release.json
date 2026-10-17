@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -37,8 +37,9 @@
     "jeuDamesFrancaises10x10",
     "troisRolesJeux",
     "jeuxGratuitsOffline",
-    "lienTousJeux"
+    "lienTousJeux",
+    "commandeApprendPython"
   ],
   "nativeInstallation": "manual",
-  "note": "Alicia propose adversaire, partenaire et exercices sur tous les jeux disponibles. Dames françaises internationales 10x10 ajoutées. IA locale gratuite. Le lancement hors ligne nécessite le cache préalable du jeu. Mise à jour native manuelle ; sauvegardes non synchronisées."
+  "note": "Alicia propose adversaire, partenaire et exercices sur tous les jeux disponibles. Dames françaises internationales 10x10 ajoutées. IA locale gratuite. Le lancement hors ligne nécessite le cache préalable du jeu. Mise à jour native manuelle ; sauvegardes non synchronisées. Correctif Mac : mode natif intégré prioritaire pour les cours et la mémoire."
 }

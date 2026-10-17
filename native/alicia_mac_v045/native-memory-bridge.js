@@ -37,7 +37,14 @@
  window.AliciaNativeMemory=bridge;
  bridge.ready=(async()=>{
    try{
-     const response=await fetch(endpoint,{method:"GET",cache:"no-store",credentials:"omit"});
+     // Ne pas bloquer la conversation pour toujours si la lecture locale est indisponible.
+     // L'ancien moteur reste en mémoire et aucune suppression n'est faite sur disque.
+     const abort=new AbortController();
+     const deadline=setTimeout(()=>abort.abort(),8000);
+     let response;
+     try{
+       response=await fetch(endpoint,{method:"GET",cache:"no-store",credentials:"omit",signal:abort.signal});
+     }finally{clearTimeout(deadline);}
      if(response.status===404){
        if(engine.inspect().examples>0){bridge.save(engine.nativeSnapshot());return bridge.flush();}
        state("Mémoire native prête. Nouveaux apprentissages sauvegardés sur le Mac.",false);

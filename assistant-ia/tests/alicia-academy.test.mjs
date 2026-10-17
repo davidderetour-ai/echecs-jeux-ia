@@ -62,7 +62,7 @@ test("Académie reliée à la conversation et disponible hors ligne",()=>{
  assert.match(engine,/teacherProgress/);
  assert.match(engine,/teacherProgress:data\.teacherProgress/);
  assert.match(engine,/listLessonProgress:listLessonProgress/);
- assert.match(html,/0\.9\.7/);
+ assert.match(html,/0\.9\.8/);
 });
 test("Avatar cadré : vrai GLB et contrôles restent présents",()=>{
  const avatar=read("alicia-avatar3d.js"),theme=read("alicia-reference-theme.css");

@@ -56,3 +56,17 @@ test("Mode demandé et bibliothèques branchées, sans toucher à la voix sélec
  assert.match(sw,/\.\/understand-requests\.mjs/);
  assert.doesNotMatch(mod,/speechSynthesis|AliciaAvatar\.speak|voice\.value\s*=/);
 });
+
+test("Alicia comprend « apprend python » et donne une leçon intégrée sans installer de logiciel",()=>{
+ for(const phrase of ["apprend python","Apprends Python","étudie python","explique-moi Python"]){
+  assert.equal(r.classify(phrase).intent,"study-python",phrase);
+  const result=r.respond(phrase);
+  assert.match(result.answer,/cours Python/);
+  assert.match(result.answer,/Première leçon/);
+  assert.match(result.answer,/print\(\)/);
+  assert.match(result.answer,/pas un entraînement/);
+ }
+ assert.equal(r.classify("explique input en Python").intent,null);
+ assert.equal(JSON.parse(memory.get("alicia-cours-index-v1")).enabled,true);
+ assert.equal(r.respond("installe Python"),null);
+});

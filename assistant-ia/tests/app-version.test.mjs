@@ -6,12 +6,12 @@ const css=readFileSync(new URL("../styles.css",import.meta.url),"utf8");
 const sw=readFileSync(new URL("../sw.js",import.meta.url),"utf8");
 
 test("Alicia affiche sa version lisible sous son nom",()=>{
- assert.match(html,/<small class="app-version-label" id="app-version-label">Version 0\.9\.7<\/small>/);
+ assert.match(html,/<small class="app-version-label" id="app-version-label">Version 0\.9\.8<\/small>/);
  assert.match(css,/\.brand \.app-version-label/);
 });
 test("La rubrique À propos explique version et mise à jour",()=>{
  assert.match(html,/<details class="version-details" id="app-version-details">/);
- assert.match(html,/Version de l’application : 0\.9\.7/);
+ assert.match(html,/Version de l’application : 0\.9\.8/);
  assert.match(html,/numéro interne du cache/);
 });
 test("Le cache ne supprime pas les sauvegardes/caches des jeux",()=>{

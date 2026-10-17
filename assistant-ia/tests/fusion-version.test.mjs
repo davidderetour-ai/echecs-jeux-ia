@@ -10,7 +10,7 @@ test("Alicia Fusion : numéro de version commun et origine de confiance",()=>{
  const html=read("index.html");
  const sync=read("fusion-sync.js");
  assert.match(release.version,/^\d+\.\d+\.\d+$/);
- assert.equal(release.version,"0.9.7");
+ assert.equal(release.version,"0.9.8");
  assert.ok(html.includes('name="alicia-version" content="'+release.version+'"'));
  assert.match(sync,/alicia\.github\.io|davidderetour-ai\.github\.io/);
  assert.match(sync,/newer/);
