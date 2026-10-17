@@ -37,11 +37,11 @@ function classify(query,{useAliases=true}={}){
   const m=n.match(/\bmode\s+(code|programmation|reparation|creation|professeur)\b/)[1];
   return {intent:"mode-"+({programmation:"code",reparation:"repair",creation:"create",professeur:"teach"}[m]||m),confidence:.97};
  }
- if(/(?:apprends|apprend|etudie|memorise|analyse|integre|indexe|charge|lis)\b/.test(n)
+ if(/(?:apprends|apprend|etudie|etudies|etudier|memorise|analyse|integre|indexe|charge|lis)\b/.test(n)
     && /\b(?:cours|lecons|fiches|formations|connaissances)\b/.test(n)
     && /\b(?:tes|tous|toutes|installes?|integres?|disponibles?|deja|les|mes|sur ton appareil|du programme)\b/.test(n))
   return {intent:"study",confidence:.97};
- if(/\b(?:apprendre|etudier)\b.*\b(?:cours|lecons|fiches)\b/.test(n)
+ if(/\b(?:apprendre|etudier|etudies|etudie)\b.*\b(?:cours|lecons|fiches)\b/.test(n)
     && /\b(?:tu|toi|tes|a toi|alicia)\b/.test(n))return {intent:"study",confidence:.91};
  if(/\b(?:montre|affiche|liste|enumere|donne moi la liste|quels sont|qu as tu comme)\b.*\b(?:cours|lecons|fiches|matieres)\b/.test(n))
   return {intent:"list",confidence:.94};
@@ -49,7 +49,7 @@ function classify(query,{useAliases=true}={}){
   return {intent:"status",confidence:.94};
  if(/\b(?:teste|interroge|controle|verifie|evalue)\b.*\b(?:tes cours|tes connaissances|les cours|les fiches|ta bibliotheque)\b/.test(n))
   return {intent:"test",confidence:.92};
- if(/\b(?:comprends?|comprendre|compris|interpret|reformul)\b.*\b(?:mes demandes|ma demande|mes instructions|mes phrases|ce que je veux)\b/.test(n))
+ if(/\b(?:comprends?|comprennes|comprendre|compris|interpret|reformul)\b.*\b(?:mes demandes|ma demande|mes instructions|mes phrases|ce que je veux)\b/.test(n))
   return {intent:"help",confidence:.9};
  return {intent:null,confidence:0};
 }
