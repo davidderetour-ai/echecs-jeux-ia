@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -33,8 +33,12 @@
     "projetsGitHubPublics",
     "lienJeuEchecsIA",
     "propositionsValidationManuelle",
-    "evolutionModulesCoordonnee"
+    "evolutionModulesCoordonnee",
+    "jeuDamesFrancaises10x10",
+    "troisRolesJeux",
+    "jeuxGratuitsOffline",
+    "lienTousJeux"
   ],
   "nativeInstallation": "manual",
-  "note": "Le jeu Échecs & Jeux IA est référencé dans Alicia. GitHub public en lecture, propositions de modification après accord manuel. Entraînement et contrôles locaux, sans réplication de GPT-6 ni changement de code autonome."
+  "note": "Alicia propose adversaire, partenaire et exercices sur tous les jeux disponibles. Dames françaises internationales 10x10 ajoutées. IA locale gratuite. Le lancement hors ligne nécessite le cache préalable du jeu. Mise à jour native manuelle ; sauvegardes non synchronisées."
 }
