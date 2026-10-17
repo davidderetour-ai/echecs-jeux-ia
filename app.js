@@ -28,6 +28,9 @@ let fourMode=store.get('fourmode','chesscom-ffa');
 let level=store.get('level',2),aiMode=store.get('aimode','offline'),serverUrl=store.get('serverurl','');
 let controllers=store.get('players',{red:'human',blue:'bot',yellow:'bot',green:'bot',white:'human',black:'bot',A:'human',B:'bot'});
 let aliciaOpponent=store.get('alicia-game-opponent',false)===true;
+let aliciaRole=store.get('alicia-game-role','opponent');
+if(!['opponent','partner','training'].includes(aliciaRole))aliciaRole='opponent';
+let aliciaTrainingMoves=store.get('alicia-training-moves',0);
 let stats=store.get('stats',{lessons:0,quizzes:0,xp:0});
 let miniInfo='';let miniNimPile=null;let installEvent=null;let bonusAdvice='';
 let theme=store.get('v25-theme','3d'), highContrast=store.get('v25-contrast',false),saveSlots=store.get('v2-saves',[]);
@@ -63,27 +66,40 @@ const modes=[['chesscom-ffa','Chess.com — chacun pour soi (points)'],['chessco
 const E=(s)=>String(s).replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]));
 const champ=(c,active=false)=>`<span class="chip ${active?'active':''}"><i class="dot ${c}"></i>${labels[c]||c}</span>`;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3000);}
-function save(){if(game&&!roomLive&&!nearbyLive){const g=JSON.parse(JSON.stringify(game));if(g.history?.length>16)g.history=g.history.slice(-16);store.set('jeu-v1',g);}store.set('fourmode',fourMode);store.set('level',level);store.set('aimode',aiMode);store.set('serverurl',serverUrl);store.set('players',controllers);store.set('alicia-game-opponent',aliciaOpponent);store.set('stats',stats);store.set('v2-theme',theme);store.set('v25-theme',theme);store.set('v25-contrast',highContrast);store.set('v251-pieces',piecesLook);store.set('v252-rotation',boardRotation);store.set('v252-rotation-mode',rotationMode);store.set('v252-view',viewMode);store.set('v252-coordinates',showCoordinates);store.set('v26-real3d',real3D);store.set('v38-real3d',real3D);store.set('v2-extra',extraGame);store.set('v2-saves',saveSlots);store.set('v23-ai-style',aiStyle);store.set('v23-courses',courseProgress);store.set('v27-academy-progress',academyProgress);store.set('v24-feedback',feedbackHistory.slice(-60));store.set('v24-bigtext',bigText);store.set('v24-junior-done',juniorDone);}
+function save(){if(game&&!roomLive&&!nearbyLive){const g=JSON.parse(JSON.stringify(game));if(g.history?.length>16)g.history=g.history.slice(-16);store.set('jeu-v1',g);}store.set('fourmode',fourMode);store.set('level',level);store.set('aimode',aiMode);store.set('serverurl',serverUrl);store.set('players',controllers);store.set('alicia-game-opponent',aliciaOpponent);store.set('alicia-game-role',aliciaRole);store.set('alicia-training-moves',aliciaTrainingMoves);store.set('stats',stats);store.set('v2-theme',theme);store.set('v25-theme',theme);store.set('v25-contrast',highContrast);store.set('v251-pieces',piecesLook);store.set('v252-rotation',boardRotation);store.set('v252-rotation-mode',rotationMode);store.set('v252-view',viewMode);store.set('v252-coordinates',showCoordinates);store.set('v26-real3d',real3D);store.set('v38-real3d',real3D);store.set('v2-extra',extraGame);store.set('v2-saves',saveSlots);store.set('v23-ai-style',aiStyle);store.set('v23-courses',courseProgress);store.set('v27-academy-progress',academyProgress);store.set('v24-feedback',feedbackHistory.slice(-60));store.set('v24-bigtext',bigText);store.set('v24-junior-done',juniorDone);}
 function kind(){return game?.kind==='chess'?(game.type==='chess4'?'chess4':'chess2'):game?.id;}
 function isHuman(){if(nearbyLive){if(!game||game.over||game.kind!=='chess')return false;return game.colors[game.turn]===(nearbyRole==='host'?(game.type==='chess4'?'red':'white'):(game.type==='chess4'?'blue':'black'));}if(roomLive)return !!(game&&!game.over&&roomData?.started&&game.colors[game.turn]===roomData.seat);if(!game||game.over)return false;const c=game.kind==='chess'?game.colors[game.turn]:game.turn===0?'A':'B';return controllers[c]==='human';}
 function cancelBot(){if(pendingBot){clearTimeout(pendingBot);pendingBot=null;}botBusy=false;}
 function goto(t){if(immersiveGame && !['play','extras'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
-function playWithAlicia(id){
+function playWithAlicia(id,role=aliciaRole){
  const spec=getAliciaGame(id);
  if(!spec)return toast('Ce jeu n’est pas reconnu.');
- if(spec.path==='go.html'||spec.path==='peace.html'){
-  location.href=aliciaGameLink(id,{local:true}).replace(/^\//,'');
+ if(!['opponent','partner','training'].includes(role))role='opponent';
+ aliciaRole=role;
+ const chosenRole=spec.type==='coach'&&role==='opponent'?'partner':role;
+ aliciaRole=chosenRole;
+ if(['go.html','peace.html','dames-francaises.html'].includes(spec.path)){
+  store.set('alicia-game-role',chosenRole);
+  location.href=aliciaGameLink(id,{local:true,role:chosenRole}).replace(/^\//,'');
   return;
  }
- if(id==='shogi'){aliciaOpponent=true;store.set('alicia-game-opponent',true);goto('shogi');return;}
+ if(id==='shogi'){
+  aliciaOpponent=true;store.set('alicia-game-opponent',true);store.set('alicia-game-role',chosenRole);
+  window.dispatchEvent(new CustomEvent('alicia:shogi-role',{detail:{role:chosenRole}}));
+  goto('shogi');return;
+ }
  if(id==='tictactoe'||id==='memory'){
-  aliciaOpponent=true;store.set('alicia-game-opponent',true);
-  extraGame=newExtra(id);bonusAdvice=id==='memory'?'Alicia t’aide à retrouver les paires. Jouez ensemble : retourne deux cartes pour mémoriser leur place.':'Alicia joue les O avec son IA locale.';
+  aliciaOpponent=true;
+  extraGame=newExtra(id);
+  bonusAdvice=id==='memory'?'Alicia t’aide à retrouver les paires. Choisis deux cartes et compare leurs positions.':"Alicia joue les O. En partenaire, observe ses décisions pour apprendre.";
   save();goto('extras');return;
  }
  aliciaOpponent=true;
- aiMode='offline';controllers={...controllers,white:'human',black:'bot',red:'human',blue:'bot',yellow:'bot',green:'bot',A:'human',B:'bot'};
+ aiMode='offline';
+ controllers={...controllers,white:'human',black:'bot',red:'human',blue:'bot',yellow:'bot',green:'bot',A:'human',B:'bot'};
  save();start(id);
+ miniInfo=chosenRole==='training'?'🎓 Entraînement avec Alicia : réussis des coups autorisés, demande un indice, puis étudie sa réponse.':chosenRole==='partner'?'🤝 Alicia t’aide à réfléchir et donne des conseils pendant la partie.':'♟ Alicia joue contre toi sans serveur ni abonnement.';
+ render();
 }
 function start(id){gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
 function render(){document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
@@ -184,9 +200,11 @@ function previewFourBoard(){
 }
 function renderAliciaLauncher(){
  return `<section class="card alicia-play-launcher" aria-label="Jouer avec Alicia gratuitement">
- <h2>✦ Jouer avec Alicia — gratuit et hors ligne</h2>
- <p>Alicia utilise les IA locales des jeux pour jouer contre toi. Les jeux de réflexion solo proposent une aide, pas un adversaire fictif.</p>
- <div class="grid-cards">${ALICIA_GAMES.map(g=>`<button type="button" class="gamecard" data-alicia-game="${g.id}" aria-label="${g.type==='opponent'?'Jouer contre Alicia à':'Jouer avec le coach Alicia à'} ${g.label}"><span class="emoji">${g.type==='opponent'?'♟️':'🎓'}</span><strong>${g.label}</strong><small>${g.type==='opponent'?'Contre Alicia · IA gratuite':'Avec Alicia · conseils'}</small></button>`).join('')}</div></section>`;
+ <h2>✦ Alicia : adversaire, partenaire ou entraîneuse</h2>
+ <p>Choisis son rôle pour les jeux ci-dessous. Les moteurs locaux sont gratuits et sans frais par partie. Les défis solo utilisent une aide coopérative, pas un adversaire fictif.</p>
+ <div class="btn-row" role="group" aria-label="Choisir le rôle d'Alicia">
+ ${[['opponent','♟ Adversaire'],['partner','🤝 Partenaire'],['training','🎓 Entraînement']].map(([r,label])=>`<button type="button" class="btn sm ${aliciaRole===r?'teal':'outline'}" data-alicia-role="${r}" aria-pressed="${aliciaRole===r}">${label}</button>`).join('')}</div>
+ <div class="grid-cards">${ALICIA_GAMES.map(g=>`<button type="button" class="gamecard" data-alicia-game="${g.id}" aria-label="Jouer avec Alicia à ${g.label}"><span class="emoji">${g.type==='opponent'?'♟️':'🎓'}</span><strong>${g.label}</strong><small>${g.type==='coach'?'Conseils et exercices':aliciaRole==='training'?'Exercices guidés':aliciaRole==='partner'?'Conseils pendant la partie':'Contre Alicia · IA locale'}</small></button>`).join('')}</div></section>`;
 }
 function renderHome(){return `${renderAliciaLauncher()}<section class="hero"><div class="hero-copy"><div class="tag">Apprendre • Jouer • Progresser</div><h1>Joue aux <span style="color:#ffd66b">échecs à 4</span> pour de vrai, avec ton IA.</h1><p>Un véritable échiquier tactile : déplace les pièces, joue contre 3 IA ou avec tes proches. Les autres jeux, le Shogi et tes exercices restent disponibles.</p><div class="btn-row"><button data-action="start-four" class="btn teal">♟ Jouer à 4</button><button data-tab="train" class="btn outline">🎓 Mes exercices</button></div><div class="feature-line"><span>✓ IA sans internet</span><span>✓ Jeux à 2 et 4 joueurs</span><span>✓ Progrès sauvegardés</span></div></div><div class="hero-program">${previewFourBoard()}</div></section>
 <div class="section-head"><h2>Choisis ton jeu</h2><span class="pill green">10 jeux numériques</span></div>
@@ -275,7 +293,11 @@ function boardSelectionClick(r,c,ctx){
   if(!m){toast('Déplacement impossible.');return;}
   game=playMini(game,m);
  }
- selected=null;save();if(nearbyLive&&nearbyRole==='host')nearby.send({type:'state',game});render();queueBot();
+ selected=null;
+ if(aliciaOpponent&&aliciaRole==='training'&&!roomLive&&!nearbyLive){
+  aliciaTrainingMoves++;miniInfo='🎓 Bien joué : coup autorisé ! '+(game.kind==='chess'?'Observe comment Alicia protège ses pièces.':'Prends le temps d’anticiper son prochain tour.')+' Exercices réalisés : '+aliciaTrainingMoves+'.';
+ }
+ save();if(nearbyLive&&nearbyRole==='host')nearby.send({type:'state',game});render();queueBot();
 }
 function moveMini(m){if(!isHuman())return;const next=playMini(game,m);if(!next){toast('Coup non autorisé.');return;}game=next;selected=null;save();render();queueBot();}
 function setController(c,v){if(roomLive)return toast('Les couleurs sont attribuées par le salon privé.');controllers[c]=v;if(v==='human'&&aliciaOpponent&&c!=='white'&&c!=='red'&&c!=='A')aliciaOpponent=false;save();render();queueBot();}
@@ -291,7 +313,7 @@ function renderPlay(){
  return `<div class="section-head"><div><div class="tag">Terrain de jeu</div><h2>${title}</h2></div><span class="pill ${game.over?'':'green'}">${game.over?'Partie terminée':nearbyLive?'À proximité':roomLive?'Salon privé':aiMode==='offline'?'IA locale':'IA serveur'}</span></div>
  ${nearbyLive?`<div class="note room-banner"><b>📶 Proximité</b> · ${nearbyRole==='host'?'Hôte':'Invité'} · ${E(nearbyStatus)} <button class="btn sm" data-tab="friends">Connexion</button></div>`:''}${roomLive?`<div class="note room-banner"><b>🌐 Salon ${E(roomData?.code||'')}</b> · Tu joues ${labels[roomData?.seat]||''} · ${roomData?.started?'La partie a commencé':'En attente des autres joueurs'} <button class="btn sm" data-tab="friends">Voir le salon</button></div>`:''}<div class="game-tabs">${games.map(x=>`<button data-open-game="${x.id}" class="${x.id===id?'active':''}">${x.name}</button>`).join('')}</div>
  ${isChess&&game.type!=='chess4'?window.GameClocks?.markup('chess2')||'':''}<div class="play-layout"><div class="card board-card"><div class="board-status ${isChess?`turn-${current}`:''}" aria-live="polite">${turnMessage}</div>${isChess?`<p class="board-howto">👆 <strong>Pour jouer :</strong> touche une pièce de ta couleur, puis une case verte. ${real3D?'Si la vue 3D est difficile à utiliser, appuie sur « Vue 2D tactile ».':'La vue 2D fonctionne directement au doigt, même hors connexion.'}</p>`:''}<div class="scene-toolbar game-toolbar"><span>🎨 ${E(themeLabel(theme))}</span><button class="btn sm immersive-toggle" data-action="toggle-immersive" aria-pressed="${immersiveGame}">${immersiveGame?'⤢ Réduire':'⛶ Plein écran'}</button><button class="btn sm teal" data-action="toggle-game-options" aria-expanded="${gameOptionsOpen}" aria-controls="game-options">⚙ Options ${gameOptionsOpen?'▴':'▾'}</button><button class="btn sm ${real3D?'teal':'outline'}" data-action="toggle-real3d">${real3D?'▦ Vue 2D tactile':'◈ Vue 3D 360°'}</button><button class="btn sm outline" data-action="rotate-board" aria-label="Tourner le plateau">↻ Tourner</button></div><div id="game-options">${renderGameOptions(isChess)}</div>${game.id==='nim'?nim3DHolder()+renderNim():game.type==='chess4'?`<div class="chess4-clock-stage">${boardHTML(game)}${window.GameClocks?.markup('chess4')||''}</div>`:boardHTML(game)}<div class="board-tip">${rotationMode==='manual'?'Vue réglable librement':rotationMode==='turn'?'Orientation suivant le tour':rotationMode==='camp'?'Ton camp en bas':'Blancs ou rouges en bas'} · ${showCoordinates?'Lettres et chiffres visibles':'Coordonnées masquées'} · ${viewMode==='flat'?'2D':viewMode==='depth'?'3D inclinée':'3D immersive'}</div><div class="btn-row" style="margin-top:14px"><button class="btn sm" data-action="undo">↶ Annuler</button><button class="btn sm" data-action="hint">💡 Conseil IA</button><button class="btn sm" data-action="coach">🎓 Professeur</button><button class="btn sm" data-action="speak-coach">🔊 Écouter</button><button class="btn sm" data-action="save-game">💾 Sauver</button><button class="btn sm" data-action="zoom">${zoom?'⊖ Réduire':'⊕ Agrandir'}</button>${game.id==='saut'&&game.chain?'<button data-action="end-chain" class="btn teal sm">Finir mon tour</button>':''}<button class="btn sm" data-action="new-game">⟳ Nouvelle partie</button></div>${miniInfo?`<div class="explain">${E(miniInfo)}</div>`:''}</div>
- <aside class="play-side"><div class="card"><h3>Joueurs</h3><button class="btn teal sm" data-action="play-alicia">✦ Jouer contre Alicia (gratuit)</button><p class="subtle">${aliciaOpponent?'✦ Alicia joue les couleurs IA avec ton moteur local.':'Choisis Alicia comme adversaire hors ligne.'}</p>${isChess?`<div class="player-list">${game.colors.map(controlPlayer).join('')}</div>`:`<div class="player-list">${['A','B'].map((c,i)=>`<div class="player-row">${champ(i===0?'red':'blue',game.turn===i)}<select data-player="${c}"><option value="human" ${controllers[c]==='human'?'selected':''}>👤 Humain</option><option value="bot" ${controllers[c]==='bot'?'selected':''}>${aliciaOpponent?'✦ Alicia':'🤖 IA locale'}</option></select></div>`).join('')}</div>`}<p class="subtle">Tu peux remplacer l’IA par un humain, même en cours de partie.</p><hr><h3>Options IA</h3><div class="control-group"><label>Puissance</label><select data-select="level">${[[1,'1 · Découverte'],[2,'2 · Facile'],[3,'3 · Intermédiaire'],[4,'4 · Stratégie'],[5,'5 · Analyse tactique'],[6,'6 · Expert local (plus lent)']].map(([v,s])=>`<option value="${v}" ${+level===v?'selected':''}>${s}</option>`).join('')}</select></div><div class="control-group"><label>Personnalité de l’IA</label><select data-select="ai-style">${AI_STYLES.map(([v,t])=>`<option value="${v}" ${aiStyle===v?'selected':''}>${t}</option>`).join('')}</select></div><div class="control-group"><label>Calcul des coups</label><select data-select="ai-mode"><option value="offline" ${aiMode==='offline'?'selected':''}>📴 Sans réseau — sur cet appareil</option><option value="online" ${aiMode==='online'?'selected':''}>🌐 Avec réseau — serveur IA</option></select></div>${nearbyLive?'<p class="note">En mode proximité, seuls les participants désignés peuvent déplacer leurs pièces. Les coups sont validés par l’hôte.</p>':''}${roomLive?'<p class="note">En salon, les coups sont validés par le serveur. L’IA locale ne joue pas à la place de tes amis.</p>':''}${aiMode==='online'?`<p class="note">L’IA en ligne nécessite une adresse de serveur configurée dans Réglages. Sans serveur, l’application se rabat sur l’IA locale.</p>`:''}</div>
+ <aside class="play-side"><div class="card"><h3>Joueurs</h3><button class="btn teal sm" data-action="play-alicia">✦ Jouer avec Alicia (gratuit)</button>${aliciaRole!=='opponent'?'<button class="btn sm outline" data-action="alicia-hint">🤝 Demander conseil</button>':''}<p class="subtle">${aliciaOpponent?'✦ Alicia joue les couleurs IA avec ton moteur local.':'Choisis Alicia comme adversaire hors ligne.'}</p>${isChess?`<div class="player-list">${game.colors.map(controlPlayer).join('')}</div>`:`<div class="player-list">${['A','B'].map((c,i)=>`<div class="player-row">${champ(i===0?'red':'blue',game.turn===i)}<select data-player="${c}"><option value="human" ${controllers[c]==='human'?'selected':''}>👤 Humain</option><option value="bot" ${controllers[c]==='bot'?'selected':''}>${aliciaOpponent?'✦ Alicia':'🤖 IA locale'}</option></select></div>`).join('')}</div>`}<p class="subtle">Tu peux remplacer l’IA par un humain, même en cours de partie.</p><hr><h3>Options IA</h3><div class="control-group"><label>Puissance</label><select data-select="level">${[[1,'1 · Découverte'],[2,'2 · Facile'],[3,'3 · Intermédiaire'],[4,'4 · Stratégie'],[5,'5 · Analyse tactique'],[6,'6 · Expert local (plus lent)']].map(([v,s])=>`<option value="${v}" ${+level===v?'selected':''}>${s}</option>`).join('')}</select></div><div class="control-group"><label>Personnalité de l’IA</label><select data-select="ai-style">${AI_STYLES.map(([v,t])=>`<option value="${v}" ${aiStyle===v?'selected':''}>${t}</option>`).join('')}</select></div><div class="control-group"><label>Calcul des coups</label><select data-select="ai-mode"><option value="offline" ${aiMode==='offline'?'selected':''}>📴 Sans réseau — sur cet appareil</option><option value="online" ${aiMode==='online'?'selected':''}>🌐 Avec réseau — serveur IA</option></select></div>${nearbyLive?'<p class="note">En mode proximité, seuls les participants désignés peuvent déplacer leurs pièces. Les coups sont validés par l’hôte.</p>':''}${roomLive?'<p class="note">En salon, les coups sont validés par le serveur. L’IA locale ne joue pas à la place de tes amis.</p>':''}${aiMode==='online'?`<p class="note">L’IA en ligne nécessite une adresse de serveur configurée dans Réglages. Sans serveur, l’application se rabat sur l’IA locale.</p>`:''}</div>
  <div class="card"><h3>${id==='chess4'?'Règlement à 4':'Règles et aide'}</h3>${id==='chess4'?`<div class="control-group"><label>Choisir un règlement</label><select data-select="fourmode">${modes.map(([k,v])=>`<option value="${k}" ${fourMode===k?'selected':''}>${v}</option>`).join('')}</select></div>${game.mode==='house-a'?`<div class="control-group"><label>Pièces éliminées</label><select data-select="dead"><option value="frozen" ${game.options.dead==='frozen'?'selected':''}>Obstacles immobiles</option><option value="remove" ${game.options.dead==='remove'?'selected':''}>Retirées du plateau</option><option value="transfer" ${game.options.dead==='transfer'?'selected':''}>Données au joueur vainqueur</option></select></div>`:''}`:game.id==='nim'||game.id==='north'?`<div class="control-group"><label>Qui gagne au dernier coup ?</label><select data-select="last-rule"><option value="normal" ${game.rule==='normal'?'selected':''}>DG — le dernier gagne</option><option value="last-loses" ${game.rule==='last-loses'?'selected':''}>DP — le dernier perd</option></select></div>`:''}
  ${id==='chess4'?`<p class="subtle">La promotion, les prises et les points principaux sont présents. Certains cas très rares du règlement officiel restent simplifiés.</p><button class="btn outline sm" data-tab="rules">Voir les différences →</button>`:id==='chess2'?`<p>Protège ton roi. Le mat gagne, le pat donne une nulle.</p>`:`<p class="subtle">${MINI_RULES[id]||''}</p>`}</div>
  ${isChess&&game.type==='chess4'?`<div class="card"><h3>🏆 Tableau des points</h3><div class="scorelist">${game.colors.map(c=>`<div class="score">${champ(c)} : ${game.scores[c]} pts ${!game.active[c]?'(éliminé)':''}</div>`).join('')}</div><p class="subtle">Les points sont utiles principalement en chacun pour soi avec score.</p></div>`:''}
@@ -426,6 +448,7 @@ function renderSettings(){return `<div class="section-head"><div><div class="tag
 function handleAction(action){
  if(action==='start-four'){start('chess4');return;}
   if(action==='play-alicia'){playWithAlicia(game?.type==='chess4'?'chess4':game?.id||'chess2');return;}
+ if(action==='alicia-hint'){const a=coachAdvice(game,level);miniInfo=a.text;render();return;}
  if(action==='toggle-network'){aiMode=aiMode==='offline'?'online':'offline';save();render();toast(aiMode==='online'?(serverUrl?'Mode réseau sélectionné.':'Mode réseau sélectionné : serveur non configuré, l’IA restera locale.'):'Mode hors ligne : IA locale activée.');return;}
  if(action==='atelier-analyse'){const input=document.getElementById('atelier-comment');const raw=input?.value||'';try{const result=analyseComment(raw);atelierCurrent={...result,date:new Date().toISOString(),status:'à examiner'};feedbackHistory.push(atelierCurrent);feedbackHistory=feedbackHistory.slice(-60);save();render();}catch(e){toast(e.message);}return;}
  if(action==='toggle-immersive'){toggleImmersive();return;}
@@ -820,7 +843,10 @@ document.addEventListener('click',ev=>{
  el=ev.target.closest('[data-save-delete]');if(el){deleteSlot(el.dataset.saveDelete);return;}
  el=ev.target.closest('[data-theme-choice]');if(el){if(isTheme(el.dataset.themeChoice)){theme=el.dataset.themeChoice;save();render();toast('Design activé : '+themeLabel(theme));}return;}
  el=ev.target.closest('[data-pieces-choice]');if(el){if(['sculpted','flat','round'].includes(el.dataset.piecesChoice)){piecesLook=el.dataset.piecesChoice;save();render();toast('Style des pièces changé.');}return;}
- el=ev.target.closest('[data-alicia-game]');if(el){playWithAlicia(el.dataset.aliciaGame);return;}
+ el=ev.target.closest('[data-alicia-role]');if(el){
+  aliciaRole=el.dataset.aliciaRole;store.set('alicia-game-role',aliciaRole);render();return;
+ }
+ el=ev.target.closest('[data-alicia-game]');if(el){playWithAlicia(el.dataset.aliciaGame,aliciaRole);return;}
  el=ev.target.closest('[data-action]');if(el){handleAction(el.dataset.action);return;}
  el=ev.target.closest('[data-train]');if(el){trainTab=el.dataset.train;if(trainTab==='path'&&pathActive){const step=pathModule(pathActive)?.steps[pathLevel];if(step?.type==='board'){practiceIndex=step.index;loadPractice();}}else if(trainTab==='moves'){loadPractice();}render();return;}
  el=ev.target.closest('[data-rule]');if(el){ruleTab=el.dataset.rule;render();return;}
@@ -859,6 +885,7 @@ if('serviceWorker' in navigator&&('https:'===location.protocol||location.hostnam
 }
 
 const requestedGame=new URLSearchParams(location.search).get('alicia');
-if(requestedGame&&getAliciaGame(requestedGame))playWithAlicia(requestedGame);
+if(requestedGame&&getAliciaGame(requestedGame))
+ playWithAlicia(requestedGame,new URLSearchParams(location.search).get('role')||'opponent');
 else render();
 window.__appReady=true;
