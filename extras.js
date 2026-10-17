@@ -15,9 +15,11 @@ export function ticBot(board,level=2){const blank=board.flatMap((x,i)=>x?[]:[i])
  for(const p of ['O','X'])for(const x of blank){let a=[...board];a[x]=p;if(winner(a)===p)return x;}
  if(board[4]==='')return 4;
  const corners=blank.filter(i=>[0,2,6,8].includes(i));return (corners.length?corners:blank)[Math.floor(Math.random()*(corners.length?corners:blank).length)];}
-export function stepExtra(g,index,level=2){const n=structuredClone(g);if(g.id==='tictactoe'){
+export function stepExtra(g,index,level=2,vsHuman=false){const n=structuredClone(g);if(g.id==='tictactoe'){
  if(n.over||index<0||index>8||n.board[index])return null;
- n.board[index]='X';n.moves++;n.over=winner(n.board);if(!n.over){const b=ticBot(n.board,level);if(b!==null){n.board[b]='O';n.moves++;n.over=winner(n.board);}}return n;
+ n.board[index]=vsHuman?(n.turn||'X'):'X';n.moves++;n.over=winner(n.board);
+ if(vsHuman){n.turn=n.turn==='O'?'X':'O';return n;}
+ if(!n.over){const b=ticBot(n.board,level);if(b!==null){n.board[b]='O';n.moves++;n.over=winner(n.board);}}return n;
 }
  if(n.over||index<0||index>15||n.found.includes(index)||n.open.includes(index)||n.open.length>=2)return null;
  n.open.push(index);if(n.open.length===2){n.turns++;if(n.cards[n.open[0]]===n.cards[n.open[1]]){n.found.push(...n.open);n.open=[];n.over=n.found.length===16;}}
