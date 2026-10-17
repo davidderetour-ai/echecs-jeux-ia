@@ -55,6 +55,7 @@ function init(){
   const x=AliciaTraining.learn(text,chosen.value);
   if(!x.ok){result.textContent=x.reason;return;}
   phrase.value="";
+  document.dispatchEvent(new Event("alicia:learning-updated"));
   report(AliciaTraining.progress());
   result.textContent+=" "+(x.persisted?"Formulation enregistrée.":"Formulation apprise, sauvegarde non confirmée.");
  });
