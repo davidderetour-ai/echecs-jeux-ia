@@ -19,7 +19,7 @@ if(q.get('launch')==='1'){
      const size=document.getElementById('size'),mode=document.getElementById('gomode');
      const target=Number(q.get('goban'));
      if([9,13,19].includes(target)&&Number(size?.value)!==target){size.value=String(target);size.dispatchEvent(new Event('change',{bubbles:true}));}
-     const desired=q.get('mode')==='local'?'local':'bot';
+     const desired=q.get('mode')==='local'?'local':q.get('mode')==='duel'?'duel':'bot';
      if(mode&&mode.value!==desired){mode.value=desired;mode.dispatchEvent(new Event('change',{bubbles:true}));}
      if(q.get('role')==='training'||q.get('role')==='partner'){
        const help=document.getElementById('goadvice');if(help)help.checked=true;
