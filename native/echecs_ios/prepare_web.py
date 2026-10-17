@@ -31,5 +31,14 @@ for name in required:
         raise RuntimeError(f"Fichier obligatoire absent dans l'IPA: {name}")
 if (destination / "assistant-ia").exists():
     raise RuntimeError("Alicia ne doit pas être remplacée par l'application jeux")
+# Le bouton « Retour à Alicia » mène à son application indépendante, et non à un
+# faux répertoire sur le serveur local des jeux.
+for page in destination.glob("*.html"):
+    data = page.read_text(encoding="utf-8")
+    updated = data.replace('href="./assistant-ia/"',
+        'href="https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/"')
+    if updated != data:
+        page.write_text(updated, encoding="utf-8")
+
 files = [p for p in destination.rglob("*") if p.is_file()]
 print(f"OK : {len(files)} ressources incluses dans le paquet hors ligne.")
