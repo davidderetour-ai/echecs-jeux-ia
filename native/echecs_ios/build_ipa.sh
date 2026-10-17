@@ -54,7 +54,7 @@ xcrun --sdk iphoneos swiftc \
 chmod 755 "$APP/EchecsJeuxIA"
 file "$APP/EchecsJeuxIA"
 # AltStore assure la signature gratuite lors de l'installation ; IPA ici volontairement non signée.
-(cd "$OUT" && zip -qry Echecs-Jeux-IA-iPhone-unsigned.ipa Payload)
-test -s "$OUT/Echecs-Jeux-IA-iPhone-unsigned.ipa"
-unzip -l "$OUT/Echecs-Jeux-IA-iPhone-unsigned.ipa" | grep -q 'Payload/EchecsJeuxIA.app/GameWeb/index.html'
+(cd "$OUT" && zip -qry Echecs-Jeux-IA-v3.9.0.ipa Payload)
+test -s "$OUT/Echecs-Jeux-IA-v3.9.0.ipa"
+unzip -l "$OUT/Echecs-Jeux-IA-v3.9.0.ipa" | grep -q 'Payload/EchecsJeuxIA.app/GameWeb/index.html'
 echo "OK : IPA native créée. Installation physique et renouvellement AltStore non testés."
