@@ -4,6 +4,7 @@
  * via le client Mac sécurisé github-portfolio.mjs (pas de modification automatique).
  */
 export const OWNER="davidderetour-ai";
+export const MAIN_GAME={name:"Échecs & Jeux IA",repository:"echecs-jeux-ia",website:"https://davidderetour-ai.github.io/echecs-jeux-ia/index.html",source:"https://github.com/davidderetour-ai/echecs-jeux-ia",entry:"index.html"};
 const API="https://api.github.com",MAX_PAGES=5;
 const SAFE_NAME=/^[A-Za-z0-9_.-]{1,100}$/;
 const SECRET=/(?:gh[pousr]_[A-Za-z0-9_]{25,}|github_pat_[A-Za-z0-9_]{25,}|sk-[A-Za-z0-9_-]{20,}|password\s*[:=]|mot de passe\s*[:=]|bearer\s+[A-Za-z0-9_.-]{12,})/i;
