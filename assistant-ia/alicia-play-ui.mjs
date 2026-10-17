@@ -56,13 +56,13 @@ function init(){
  root.append(choice);
  const grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin:10px 0";
  for(const [id,name,type] of GAMES){
-  const a=document.createElement("a");a.href=linkForGame(id,type==="coach"?"partner":role);a.target="_blank";a.rel="noopener noreferrer";
+  const a=document.createElement("a");a.href=linkForGame(id,type==="coach"?"partner":role);a.target="_self";a.rel="noopener noreferrer";
   a.style.cssText="padding:11px;min-height:58px;border-radius:10px;border:1px solid #6777ba;color:inherit;text-decoration:none";
   a.textContent=(type==="coach"?"🎓 ":"♟ ")+name+" →";a.dataset.aliciaGame=id;
   grid.append(a);
  }
  root.append(grid);
- const foot=document.createElement("p");foot.textContent="Le jeu s'ouvre depuis Alicia mais conserve sa propre sauvegarde. Le dialogue d'Alicia et le moteur du jeu ne partagent pas automatiquement leurs mémoires.";
+ const foot=document.createElement("p");foot.textContent="Le jeu s'ouvre depuis Alicia dans la même fenêtre pour être compatible iPhone et Mac. Les parties gardent leurs propres sauvegardes sur l'appareil ; les conversations et les résultats des moteurs de jeu ne se synchronisent pas automatiquement.";
  foot.style.cssText="font-size:12px;opacity:.85";root.append(foot);
  const target=$("github-health")||$("chat-form");
  if(target)target.before(root);else document.querySelector(".shell")?.append(root);
