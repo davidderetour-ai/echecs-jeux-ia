@@ -249,19 +249,45 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         web.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
     }
 
+    // Chaque jeu a son propre HTML : seul l'accueil possède .header et #content.
+    // Le Go utilise #size et #cv, les dames #roles et #board, etc.
+    // Cette expression permet de vérifier la vraie page, et non d'afficher un
+    // avertissement "HTML incomplet" devant un plateau pourtant fonctionnel.
+    private let pageStatusJavaScript = """
+    (function(){
+      const path = location.pathname.toLowerCase();
+      const go = path.endsWith('/go.html');
+      const dames = path.endsWith('/dames-francaises.html');
+      const paix = path.endsWith('/peace.html');
+      const visible = document.body && document.body.innerText.trim().length > 120;
+      const valid = go ? !!(document.getElementById('size') && document.getElementById('cv'))
+        : dames ? !!(document.getElementById('roles') && document.getElementById('board'))
+        : paix ? !!visible
+        : !!(document.querySelector('.header') && document.getElementById('content'));
+      return JSON.stringify({
+        page:path,
+        valide:valid,
+        jeu:go?'go':dames?'dames':paix?'defis':'accueil',
+        applicationPrete:(go||dames||paix) ? valid : window.__appReady === true,
+        texte:document.body ? document.body.innerText.length : 0,
+        erreur:window.__startupError||'',
+        reseau:navigator.onLine
+      });
+    })()
+    """
+
     @objc private func nativeDiagnostic() {
+        if diagnosticRequested && !message.isHidden {
+            diagnosticRequested = false
+            message.isHidden = true
+            return
+        }
         diagnosticRequested = true
-        let source = """
-          JSON.stringify({page:location.pathname,pret:window.__appReady===true,
-          texte:document.body ? document.body.innerText.length : 0,
-          menu:!!document.getElementById('content'),
-          reseau:navigator.onLine})
-        """
-        web.evaluateJavaScript(source) { [weak self] value, error in
-            guard let self = self else { return }
+        web.evaluateJavaScript(pageStatusJavaScript) { [weak self] value, error in
+            guard let self = self, self.diagnosticRequested else { return }
             let detail = (value as? String) ?? error?.localizedDescription ?? "Pas de résultat WebKit"
             self.showStatus("Diagnostic local (aucun envoi Internet) :\n" + detail +
-              "\n\nSi l'écran reste vide, prends une capture de ce message.")
+              "\n\nTouche encore Diagnostic pour fermer ce message.")
         }
     }
 
@@ -299,15 +325,21 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
             showStatus("Une page externe ou inconnue a été chargée.")
             return
         }
-        webView.evaluateJavaScript("document.querySelector('.header') !== null && document.querySelector('#content') !== null") { [weak self] result, error in
-            guard let self = self else { return }
-            if error == nil, result as? Bool == true {
+        webView.evaluateJavaScript(pageStatusJavaScript) { [weak self, weak webView] result, error in
+            guard let self = self, let webView = webView,
+                  webView.url?.path == url.path else { return }
+            let raw = (result as? String) ?? ""
+            let info = raw.data(using: .utf8).flatMap {
+                (try? JSONSerialization.jsonObject(with: $0)) as? [String: Any]
+            }
+            if error == nil, info?["valide"] as? Bool == true {
                 self.startupTimeout?.cancel()
                 if !self.diagnosticRequested {
                     self.message.isHidden = true
                 }
             } else {
-                self.showStatus("La page locale a été reçue mais le menu des jeux est absent. " + (error?.localizedDescription ?? "HTML incomplet"))
+                self.showStatus("Le contenu de ce jeu n'est pas prêt : " +
+                    (error?.localizedDescription ?? raw))
             }
         }
     }
