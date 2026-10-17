@@ -263,7 +263,7 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   bool showingBundled = false;
   StreamSubscription<List<ConnectivityResult>>? fusionNetwork;
   static final Uri site = Uri.parse(
-    'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=091');
+    'https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/?v=092');
 
   @override
   void initState() {
@@ -349,7 +349,7 @@ class _AliciaFusionScreenState extends State<AliciaFusionScreen> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       backgroundColor: const Color(0xff080d24),
-      title: const Text('ALICIA Fusion · 0.9.1', style: TextStyle(
+      title: const Text('ALICIA Fusion · 0.9.2', style: TextStyle(
         color: Color(0xffd8eaff), fontWeight: FontWeight.bold, fontSize: 17)),
       actions: [
         IconButton(
