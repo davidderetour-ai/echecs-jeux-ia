@@ -10,8 +10,12 @@ let role=roles.includes(params.get("role"))?params.get("role"):"opponent";
 const initialState=()=>({game:newFrenchDraughts(),level:3,role:"opponent",score:0,study:0});
 let loaded=initialState();
 try{const v=JSON.parse(localStorage.getItem(STORE)||"null");if(v?.game?.kind==="french-draughts"&&v.game.board?.length===10){loaded={...loaded,...v};}}catch{}
-let game=loaded.game,level=Number(loaded.level)||3,score=Number(loaded.score)||0,study=0,chosen=null,coach="",busy=false,options=[];
-if(params.has("role")){game=newFrenchDraughts();study=0;}
+const savedRole=roles.includes(loaded.role)?loaded.role:"opponent";
+if(!params.has("role"))role=savedRole;
+let game=loaded.game,level=Number(loaded.level)||3,score=Number(loaded.score)||0,
+ study=Number.isInteger(loaded.study)?Math.max(0,Math.min(2,loaded.study)):0,
+ chosen=null,coach="",busy=false,options=[];
+if(params.has("role")&&role!==savedRole){game=newFrenchDraughts();study=0;}
 let activeRole=role;
 const lessons=[
  {name:"Prise obligatoire",desc:"Tu joues les Blancs : capture les deux pions noirs en une rafle.",board:[
@@ -28,9 +32,9 @@ function makeLesson(i){
  g.turn="white";g.ply=0;g.over=null;g.history=[];g.lastMove=null;
  return g;
 }
-if(activeRole==="training"){game=makeLesson(0);}
+if(activeRole==="training"&&savedRole!=="training"){game=makeLesson(0);study=0;}
 function persist(){
- try{localStorage.setItem(STORE,JSON.stringify({game,level,role:activeRole,score,study:0}));}catch{}
+ try{localStorage.setItem(STORE,JSON.stringify({game,level,role:activeRole,score,study:study}));}catch{}
  try{localStorage.setItem(PROGRESS,String(score));}catch{}
 }
 function setMessage(s){$("message").textContent=s;}
