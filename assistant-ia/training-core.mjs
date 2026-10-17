@@ -100,14 +100,14 @@ function fit(rows){
  return {vocab,count,total,prior,rows:rows.length};
 }
 let classifier=fit(trainingSamples());
-function predict(query){
- const f=features(query),known=f.filter(w=>classifier.vocab.has(w));
+function predictWith(model,query){
+ const f=features(query),known=f.filter(w=>model.vocab.has(w));
  if(!known.length)return {intent:null,confidence:0,margin:0,reason:"aucun mot appris"};
  const labels=INTENTS.map(label=>{
-  const prior=(classifier.prior[label]+1)/(classifier.rows+INTENTS.length);
-  const denom=classifier.total[label]+classifier.vocab.size;
+  const prior=(model.prior[label]+1)/(model.rows+INTENTS.length);
+  const denom=model.total[label]+model.vocab.size;
   let score=Math.log(prior);
-  for(const word of known)score+=Math.log(((classifier.count[label].get(word)||0)+1)/denom);
+  for(const word of known)score+=Math.log(((model.count[label].get(word)||0)+1)/denom);
   return {intent:label,score};
  }).sort((a,b)=>b.score-a.score);
  const largest=labels[0].score,sum=labels.reduce((acc,l)=>acc+Math.exp(l.score-largest),0);
@@ -115,13 +115,14 @@ function predict(query){
  return {intent:labels[0].intent,confidence,margin:confidence-second,
   matched:known.length,words:f.length,reason:"modèle supervisé"};
 }
-function evaluate(){
+function predict(query){return predictWith(classifier,query);}
+function evaluate(candidate=classifier){
  const hold=trainingSamples(true);
  let correct=0;
  const byIntent={};
  for(const label of INTENTS)byIntent[label]={correct:0,total:0};
  for(const sample of hold){
-  const p=predict(sample.text),good=p.intent===sample.label;
+  const p=predictWith(candidate,sample.text),good=p.intent===sample.label;
   byIntent[sample.label].total++;
   if(good){correct++;byIntent[sample.label].correct++;}
  }
@@ -140,14 +141,18 @@ function curriculum(){
   problems:check.failures.concat(errors).slice(0,20)};
 }
 function train(){
- classifier=fit(trainingSamples());
- const course=AliciaCourseLearning.activate(),evaluation=evaluate(),audit=curriculum();
+ const previous=evaluate(classifier);
+ const candidate=fit(trainingSamples());
+ const next=evaluate(candidate);
+ const accepted=next.correct>=previous.correct;
+ if(accepted)classifier=candidate;
+ const course=AliciaCourseLearning.activate(),evaluation=accepted?next:previous,audit=curriculum();
  state.enabled=true;
  const persisted=save(state);
  lastReport={trainedExamples:classifier.rows,heldOut:evaluation.total,correct:evaluation.correct,
   accuracy:evaluation.accuracy,courseCount:audit.available,courseTestsPassed:audit.passed,
   courseTestsTotal:audit.checked,problems:audit.problems,personalExamples:state.corrections.length,persisted,
-  kind:"apprentissage supervisé d'intentions (non LLM)"};
+  accepted,kind:"apprentissage supervisé d'intentions (non LLM)"};
  return lastReport;
 }
 function progress(){
@@ -163,12 +168,32 @@ function learn(phrase,intent){
  const text=normalize(phrase),known=AliciaRequestUnderstanding.classify(phrase,{useAliases:false});
  if(known.reason==="action sur fichiers non autorisée"||/\b(?:supprime|efface|installe|telecharge|desinstalle)\b/.test(text))
   return {ok:false,reason:"Une phrase modifiant les fichiers n'est pas entraînée comme commande"};
- state.corrections=state.corrections.filter(x=>normalize(x.phrase)!==text);
- state.corrections.push({phrase:String(phrase).trim(),intent});
- state.corrections=state.corrections.slice(-MAX_EXAMPLES);
- classifier=fit(trainingSamples());
+ const current=state.corrections.slice();
+ const baseline=evaluate();
+ const proposed=current.filter(x=>normalize(x.phrase)!==text);
+ proposed.push({phrase:String(phrase).trim(),intent});
+ state.corrections=proposed.slice(-MAX_EXAMPLES);
+ const candidate=fit(trainingSamples());
+ const next=evaluate(candidate);
+ // La vérification se fait sur les phrases volontairement mises à l'écart.
+ if(next.correct<baseline.correct){
+   state.corrections=current;
+   return {ok:false,reason:"Cette correction diminue les tests de compréhension ("+baseline.correct+"/"+baseline.total+" vers "+next.correct+"/"+next.total+"). Elle n'a pas été enregistrée.",baseline:baseline.accuracy,candidate:next.accuracy};
+ }
+ classifier=candidate;
  const persisted=save(state);
- return {ok:true,persisted,intent,phrase,examples:classifier.rows,accuracy:evaluate().accuracy};
+ return {ok:true,persisted,intent,phrase,examples:classifier.rows,accuracy:next.accuracy,previousAccuracy:baseline.accuracy};
+}
+function evolve(){
+ // Recalcul à partir des seuls exemples prévus ou explicitement corrigés,
+ // jamais de messages interceptés ni de pages web non vérifiées.
+ const previous=evaluate(classifier),candidate=fit(trainingSamples()),newer=evaluate(candidate);
+ const accepted=newer.correct>=previous.correct;
+ if(accepted)classifier=candidate;
+ return {ok:accepted,accuracy:accepted?newer.accuracy:previous.accuracy,
+   previousAccuracy:previous.accuracy,candidateAccuracy:newer.accuracy,
+   examples:classifier.rows,personalExamples:state.corrections.length,
+   reason:accepted?"Modèle revérifié sur des phrases inédites":"Régression détectée, modèle conservé"};
 }
 const canon={
  study:"Apprends les cours installés",list:"montre moi les cours",status:"combien de cours connais tu",
@@ -218,7 +243,9 @@ function command(query){
  }
  return null;
 }
-export const AliciaTraining={train,progress,predict,evaluate,learn,predictAndRespond,command,features,
+export const AliciaTraining={train,progress,predict,evaluate,learn,evolve,predictAndRespond,command,features,
   data:()=>({intentCount:INTENTS.length,baseSamples:Object.values(CORPUS).reduce((x,y)=>x+y.length,0),examples:state.corrections.length}),
   exportCorrections:()=>JSON.stringify({schema:1,corrections:state.corrections},null,2)};
+// Au démarrage, réentraîne et contrôle ce petit modèle à partir des seules données locales.
+if(!state.enabled)train();else evolve();
 if(typeof window!=="undefined")window.AliciaTraining=AliciaTraining;
