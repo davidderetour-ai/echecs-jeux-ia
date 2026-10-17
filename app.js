@@ -230,54 +230,66 @@ function renderAliciaLauncher(){
  ${[['opponent','♟ Adversaire'],['partner','🤝 Partenaire'],['training','🎓 Entraînement']].map(([r,label])=>`<button type="button" class="btn sm ${aliciaRole===r?'teal':'outline'}" data-alicia-role="${r}" aria-pressed="${aliciaRole===r}">${label}</button>`).join('')}</div>
  <div class="grid-cards">${ALICIA_GAMES.map(g=>`<button type="button" class="gamecard" data-alicia-game="${g.id}" aria-label="Jouer avec Alicia à ${g.label}"><span class="emoji">${g.type==='opponent'?'♟️':'🎓'}</span><strong>${g.label}</strong><small>${g.type==='coach'?'Conseils et exercices':aliciaRole==='training'?'Exercices guidés':aliciaRole==='partner'?'Conseils pendant la partie':'Contre Alicia · IA locale'}</small></button>`).join('')}</div></section>`;
 }
+
 function renderHome(){
  const mainGames=[
-  ["chess2","♟️","Échecs à 2","Classiques · contre Alicia"],
-  ["chess4","♟️","Échecs à 4","Quatre couleurs · seul ou en équipes"],
-  ["dames10","⚪","Dames françaises","Plateau 10 × 10"],
-  ["go9","⚫","Jeu de Go","Plateaux 9, 13 et 19 lignes"],
-  ["shogi","🏯","Shogi","Échecs japonais"],
-  ["peace","🧩","100 défis","Entraînement et logique"]
+ ["chess2","♔","Échecs","2 joueurs","♔ ♚"],
+ ["chess4","♟","Échecs","4 joueurs","🔵 🟡 🟢"],
+ ["dames10","⚪","Dames","10 × 10","⚫ ⚪"],
+ ["shogi","🏯","Shogi","","将"],
+ ["go9","⚫","Go","","⚫ ⚪"]
  ];
  const mainIds=new Set(mainGames.map(g=>g[0]));
- const roleHelp=aliciaRole==='opponent'?"L’IA joue contre toi quand ce jeu le permet."
-   :aliciaRole==='partner'?"Alicia joue avec toi ou propose des conseils selon le jeu."
-   :"Tu apprends avec des exercices et des conseils.";
- const savedTitle=game?(kind()==='chess4'?'Échecs à 4':kind()==='chess2'?'Échecs à 2':M800.find(g=>g.id===kind())?.name||'partie'):'';
- return `<section class="easy-home" aria-label="Accueil simplifié des jeux">
-  <div class="easy-intro"><div class="easy-tag">🎮 Mes jeux · gratuit · hors ligne</div>
-   <h1>À quoi veux-tu jouer ?</h1>
-   <p>Choisis un jeu et commence. Les autres réglages sont facultatifs.</p>
+ const savedTitle=game?(kind()==='chess4'?'Échecs à 4 joueurs':kind()==='chess2'?'Échecs à 2 joueurs':M800.find(g=>g.id===kind())?.name||'Jeu en cours'):'';
+ const clockActive=window.GameClocks?.enabled?.()===true;
+ const roleHelp=aliciaRole==='opponent'?'Une IA locale joue contre toi selon le jeu.':aliciaRole==='partner'?'Alicia est ta partenaire ou te donne des conseils selon le jeu.':'Exercices et explications adaptés au jeu.';
+ const publicLink='https://davidderetour-ai.github.io/echecs-jeux-ia/index.html';
+ return `<section class="chosen-home" aria-label="Accueil Échecs et Jeux IA">
+  <div class="chosen-header">
+    <div class="chosen-brand"><span class="chosen-knight" aria-hidden="true">♞</span><div><h1>Échecs & Jeux IA</h1><p>Jouez · Apprenez · Progressez</p></div></div>
+    <a class="chosen-alicia-link" href="./assistant-ia/" data-external-alicia aria-label="Ouvrir Alicia dans le navigateur"><span class="chosen-alicia-avatar">✦</span><span><strong>✨ Alicia</strong><small>Votre assistante IA</small></span><b aria-hidden="true">›</b></a>
   </div>
-  ${game&&!game.over?`<button type="button" class="easy-resume" data-tab="play">↩ Reprendre ma partie <strong>${E(savedTitle)}</strong><span>Sans recommencer</span></button>`:''}
-  <section class="easy-role" aria-label="Comment jouer avec Alicia"><h2>Avec Alicia</h2>
-   <div class="easy-role-buttons" role="group" aria-label="Choisir le rôle d'Alicia">
-    ${[['opponent','♟ Adversaire'],['partner','🤝 Partenaire'],['training','🎓 Apprendre']].map(([r,label])=>`<button type="button" class="${aliciaRole===r?'is-selected':''}" data-alicia-role="${r}" aria-pressed="${aliciaRole===r}">${label}</button>`).join('')}
-   </div><p class="easy-role-help">${roleHelp}</p>
+  <div class="chosen-welcome"><span class="chosen-sun" aria-hidden="true">☀️</span><div><h2>Bonjour !</h2><p>Quel jeu veux-tu découvrir aujourd'hui ?</p></div></div>
+  <section class="chosen-panel chosen-section-games">
+    <div class="chosen-heading"><h2>🎮 Jouer</h2><button type="button" data-action="show-other-games">Tous les jeux ❯</button></div>
+    <div class="chosen-games" aria-label="Choisis un jeu">
+      ${mainGames.map(([id,icon,name,subtitle,visual])=>`<button type="button" class="chosen-game chosen-game-${id}" data-alicia-game="${id}" aria-label="Jouer à ${name} ${subtitle}"><span class="chosen-game-art" aria-hidden="true">${visual}</span><strong>${name}</strong><small>${subtitle||'Découvrir'}</small></button>`).join('')}
+    </div>
   </section>
-  <section aria-label="Accès rapide aux jeux">
-   <div class="easy-heading"><h2>Mes jeux</h2><span>Un toucher pour ouvrir</span></div>
-   <div class="easy-games">
-   ${mainGames.map(([id,emoji,name,sub])=>`<button type="button" class="easy-game" data-alicia-game="${id}" aria-label="Ouvrir ${name}"><span class="easy-emoji" aria-hidden="true">${emoji}</span><span class="easy-copy"><strong>${name}</strong><small>${sub}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
-   </div>
+  <section class="chosen-panel chosen-alicia">
+    <div class="chosen-alicia-top"><div class="chosen-alicia-portrait" aria-hidden="true">👩🏻‍💻</div><div><h2>✦ Alicia : adversaire, partenaire ou entraîneuse</h2><p>Choisis son rôle. Les moteurs locaux des jeux sont gratuits et peuvent fonctionner sans Internet. ${roleHelp}</p></div></div>
+    <div class="chosen-role" role="group" aria-label="Rôle d'Alicia">
+    ${[['opponent','♟','Adversaire'],['partner','🤝','Partenaire'],['training','🎓','Entraîneuse']].map(([role,icon,label])=>`<button type="button" data-alicia-role="${role}" aria-pressed="${aliciaRole===role}" class="${aliciaRole===role?'selected':''}">${icon} <span>${label}</span></button>`).join('')}
+    </div>
   </section>
-  <section class="easy-learning" aria-label="Apprendre et jouer avec des amis">
-   <button type="button" data-tab="train">🎓 <strong>Mes exercices</strong><span>Progresser à mon rythme →</span></button>
-   <button type="button" data-tab="friends">👥 <strong>Jouer avec un ami</strong><span>À proximité ou en ligne →</span></button>
+  <section class="chosen-panel chosen-continue">
+    <div class="chosen-heading"><h2>◷ Continuer</h2><button type="button" data-tab="settings">Mes sauvegardes ❯</button></div>
+    ${game&&!game.over?`<div class="chosen-resume"><div class="chosen-mini-board" aria-hidden="true">♜♟<span>♙♖</span></div><div class="chosen-resume-copy"><strong>${E(savedTitle)}</strong><small>Partie enregistrée sur cet appareil</small><span class="chosen-status">● En cours</span></div><button type="button" data-tab="play" class="chosen-resume-button">▶ Reprendre</button></div>`:`<div class="chosen-resume chosen-empty"><span class="chosen-mini-board" aria-hidden="true">♙</span><p>Aucune partie à reprendre pour le moment.</p><button type="button" data-alicia-game="chess2" class="chosen-resume-button">▶ Jouer</button></div>`}
   </section>
-  <details class="easy-more" id="all-games"><summary>🎲 Tous les autres jeux <span>Voir la liste ▾</span></summary>
+  <div class="chosen-bottom-panels">
+  <section class="chosen-panel chosen-quick"><h2>⚙ Réglages rapides</h2>
+    <button type="button" data-action="toggle-clock" class="chosen-clock" role="switch" aria-checked="${clockActive}"><span>◷ <strong>Minuteur</strong><small>${clockActive?'Activé · avec pendule':'Désactivé · joue à ton rythme'}</small></span><span class="chosen-switch ${clockActive?'on':''}" aria-hidden="true"><i></i></span></button>
+    <div class="chosen-difficulty"><strong>▥ Difficulté de l'IA</strong><div class="chosen-level-buttons" role="group" aria-label="Difficulté de l'IA">${[[1,'Débutant'],[2,'Facile'],[3,'Moyen'],[4,'Avancé'],[5,'Expert'],[6,'Maître']].map(([n,name])=>`<button type="button" data-ui-level="${n}" aria-pressed="${Number(level)===n}" class="${Number(level)===n?'selected':''}">${name}</button>`).join('')}</div><small>Jusqu'à 6 niveaux selon le moteur du jeu.</small></div>
+  </section>
+  <section class="chosen-panel chosen-playmodes"><h2>👥 Mode de jeu</h2>
+    <button type="button" data-action="choose-local"><span>▣</span><strong>Hors ligne</strong><small>Sur cet appareil · sans Internet</small><b>❯</b></button>
+    <button type="button" data-tab="friends"><span>◉</span><strong>En ligne</strong><small>Salon privé · serveur nécessaire</small><b>❯</b></button>
+    <button type="button" data-action="share-app"><span>♧</span><strong>Partager avec mes amis</strong><small>Envoyer le lien de l'application</small><b>❯</b></button>
+  </section>
+  </div>
+  <details class="chosen-more easy-more" id="all-games"><summary>🎲 Tous les autres jeux <span>Afficher la liste ▾</span></summary>
     <div class="easy-games easy-games-extra">
-    ${ALICIA_GAMES.filter(g=>!mainIds.has(g.id)).map(g=>`<button type="button" class="easy-game" data-alicia-game="${g.id}"><span class="easy-emoji" aria-hidden="true">${g.type==='coach'?'🧠':'🎲'}</span><span class="easy-copy"><strong>${E(g.label)}</strong><small>${g.type==='coach'?'Conseils et défis':'Jeu avec IA locale'}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
+    ${ALICIA_GAMES.filter(g=>!mainIds.has(g.id)).map(g=>`<button type="button" class="easy-game" data-alicia-game="${g.id}"><span class="easy-emoji" aria-hidden="true">${g.type==='coach'?'🧩':'🎲'}</span><span class="easy-copy"><strong>${E(g.label)}</strong><small>${g.type==='coach'?'Conseils et défis':'Jeu local'}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
     </div>
     <div class="easy-tools">
-      <button type="button" data-tab="extras">🎲 Jeux bonus</button>
+      <button type="button" data-tab="train">🎓 Entraînement</button>
       <button type="button" data-tab="junior">📗 Échecs Junior</button>
-      <button type="button" data-tab="rules">📖 Les règles</button>
-      <button type="button" data-tab="atelier">🛠️ Assistante</button>
-      <button type="button" data-tab="settings">⚙ Réglages</button>
+      <button type="button" data-tab="rules">📖 Règles</button>
+      <button type="button" data-tab="settings">⚙ Réglages et sauvegardes</button>
     </div>
   </details>
- </section>`;
+  <p class="chosen-notice">Les modes à distance demandent un serveur configuré. Pour installer l'application native sur un autre iPhone, une installation compatible iOS reste nécessaire.</p>
+  </section>`;
 }
 
 function gameRotation(g){return resolveRotation(g,rotationMode,boardRotation,controllers);}
@@ -516,6 +528,15 @@ function renderSettings(){return `<div class="section-head"><div><div class="tag
  <div class="card"><h3>📲 Installer sur ton appareil</h3><p><b>iPhone :</b> ouvre l’adresse HTTPS dans Safari → Partager → « Sur l’écran d’accueil ».</p><p><b>Android :</b> ouvre l’adresse HTTPS dans Chrome → menu ⋮ → « Installer l’application » ou « Ajouter à l’écran d’accueil ».</p><p><b>PC Windows / Mac :</b> ouvre dans Chrome ou Edge → « Installer » dans la barre d’adresse ; Safari sur Mac peut proposer « Ajouter au Dock » selon la version.</p><p class="note">Pour une véritable installation sur iPhone et Android, publie ce dossier sur un site HTTPS gratuit (par exemple GitHub Pages). L’ouverture d’un fichier HTML isolé sur téléphone ne suffit pas. La première visite nécessite internet, ensuite l’application est mise en cache.</p><button class="btn primary" data-action="install">⬇ Installer quand disponible</button><hr><h3>🧾 Mes progrès</h3><p>${stats.lessons} exercices · ${stats.quizzes} bonnes réponses</p><button data-action="reset-stats" class="btn outline sm">Remettre les progrès à zéro</button></div>
  <div class="card"><h3>🔐 Vie privée</h3><p>Les parties et la progression sont enregistrées dans le navigateur de l’appareil. Hors connexion, aucune position n’est transmise. En mode serveur, l’état du jeu est envoyé uniquement à l’adresse que tu as configurée.</p><p>Pas de compte à créer, pas de publicité ni de suivi intégré.</p></div><div class="card"><h3>📚 Documents importés</h3><p>L’application est élaborée à partir des deux PDF fournis. Tu peux les ouvrir et les imprimer.</p><div class="btn-row"><a href="docs/Regles_4_joueurs.pdf" target="_blank" class="btn outline">Échecs à 4</a><a href="docs/Guide_M800.pdf" target="_blank" class="btn outline">Millennium M800</a><a href="docs/Notice_V24_A4.pdf" target="_blank" class="btn outline">Notice V2.4</a></div></div></div>`;}
 function handleAction(action){
+  if(action==='toggle-clock'){const on=window.GameClocks?.toggle?.();render();toast(on?'Minuteur activé.':'Sans minuteur : les pendules restent arrêtées.');return;}
+  if(action==='choose-local'){aiMode='offline';save();render();toast('IA locale sélectionnée : fonctionne sans serveur.');return;}
+  if(action==='show-other-games'){const details=document.getElementById('all-games');if(details){details.open=true;details.scrollIntoView({behavior:'smooth',block:'start'});}return;}
+  if(action==='share-app'){
+    const link='https://davidderetour-ai.github.io/echecs-jeux-ia/index.html';
+    if(navigator.share){navigator.share({title:'Échecs & Jeux IA',text:'Viens jouer avec moi !',url:link}).catch(()=>{});return;}
+    if(navigator.clipboard?.writeText){navigator.clipboard.writeText(link).then(()=>toast('Lien du jeu copié.')).catch(()=>prompt('Copie ce lien :',link));return;}
+    prompt('Copie ce lien :',link);return;
+  }
  if(action==='start-four'){start('chess4');return;}
   if(action==='play-alicia'){playWithAlicia(game?.type==='chess4'?'chess4':game?.id||'chess2');return;}
  if(action==='alicia-hint'){const a=coachAdvice(game,level);miniInfo=a.text;render();return;}
@@ -904,6 +925,7 @@ document.addEventListener('click',ev=>{
   if(!pathWrong)passPathLevel();else toast('Ce n’est pas encore la bonne réponse. Réessaie.');
   render();return;
  }
+ el=ev.target.closest('[data-external-alicia]');if(el){el.href='https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/';return;}
  el=ev.target.closest('[data-tab]');if(el){goto(el.dataset.tab);return;}
  el=ev.target.closest('[data-junior-challenge]');if(el){const j=JUNIOR_CHALLENGES[Number(el.dataset.juniorChallenge)];if(!j)return;practiceIndex=j.exercise;loadPractice();trainTab='moves';goto('train');toast('Défi du Junior : '+j.title);return;}
  el=ev.target.closest('[data-open-game]');if(el){start(el.dataset.openGame);return;}
@@ -913,6 +935,7 @@ document.addEventListener('click',ev=>{
  el=ev.target.closest('[data-save-delete]');if(el){deleteSlot(el.dataset.saveDelete);return;}
  el=ev.target.closest('[data-theme-choice]');if(el){if(isTheme(el.dataset.themeChoice)){theme=el.dataset.themeChoice;save();render();toast('Design activé : '+themeLabel(theme));}return;}
  el=ev.target.closest('[data-pieces-choice]');if(el){if(['sculpted','flat','round'].includes(el.dataset.piecesChoice)){piecesLook=el.dataset.piecesChoice;save();render();toast('Style des pièces changé.');}return;}
+ el=ev.target.closest('[data-ui-level]');if(el){const chosen=Number(el.dataset.uiLevel);if(Number.isInteger(chosen)&&chosen>=1&&chosen<=6){level=chosen;save();render();toast("Niveau d'IA : "+chosen+".");}return;}
  el=ev.target.closest('[data-alicia-role]');if(el){
   aliciaRole=el.dataset.aliciaRole;store.set('alicia-game-role',aliciaRole);render();return;
  }
