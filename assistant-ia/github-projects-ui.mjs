@@ -1,7 +1,7 @@
 /* Alicia : accès GitHub public en lecture seule et propositions téléchargeables.
  * Les identifiants privés ne sont jamais demandés dans le navigateur.
  */
-import {listPublicRepositories,prepareProposal,accessStatus,OWNER} from "./github-projects-core.mjs";
+import {listPublicRepositories,prepareProposal,accessStatus,OWNER,MAIN_GAME} from "./github-projects-core.mjs";
 const $=id=>document.getElementById(id);
 const node=(tag,value)=>{const e=document.createElement(tag);if(value!=null)e.textContent=value;return e;};
 const state={loaded:false,projects:[],error:""};
@@ -16,6 +16,14 @@ function init(){
  const status=node("p","Non connecté aux dépôts privés. Clique pour consulter les projets publics GitHub.");status.setAttribute("role","status");
  const list=node("div");list.id="alicia-github-public-projects";
  toolbar.append(refresh);root.append(intro,toolbar,status,list);
+ const primary=node("div");primary.style.cssText="margin:10px 0;padding:10px;border:1px solid #596fab;border-radius:10px";
+ const primaryTitle=node("strong","Projet principal : "+MAIN_GAME.name);
+ const primaryLinks=node("p");primaryLinks.style.cssText="display:flex;flex-wrap:wrap;gap:12px";
+ const gameLink=node("a","Ouvrir le jeu Échecs & Jeux IA ↗");gameLink.href=MAIN_GAME.website;gameLink.target="_blank";gameLink.rel="noopener noreferrer";
+ const repoLink=node("a","Voir le code sur GitHub ↗");repoLink.href=MAIN_GAME.source;repoLink.target="_blank";repoLink.rel="noopener noreferrer";
+ primaryLinks.append(gameLink,repoLink);
+ primary.append(primaryTitle,primaryLinks);
+ root.append(primary);
  const proposal=node("details");proposal.style.cssText="margin-top:12px;padding:10px;border:1px solid #7890c0;border-radius:9px";
  proposal.append(node("summary","Préparer une modification pour approbation"));
  const info=node("p","Cette étape fabrique seulement un fichier de proposition. Elle ne modifie aucun projet. Sur Mac, la commande github-portfolio.mjs peut ensuite créer une pull request brouillon après ton accord dans le Terminal et une autorisation GitHub séparée.");
@@ -84,6 +92,13 @@ function init(){
   refresh:reload,projects:()=>state.projects.map(x=>({...x})),status:accessStatus,
   answer(query){
    const q=String(query||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+   if(/\b(?:echecs|jeux ia)\b/.test(q)&&/\b(?:lien|adresse|site|ouvrir|projet)\b/.test(q)){
+    root.open=true;
+    return {answer:"Le jeu Échecs & Jeux IA est accessible ici : "+MAIN_GAME.website+
+      ". Son dépôt GitHub est : "+MAIN_GAME.source+
+      ". Je peux consulter les fichiers publics, mais toute proposition de modification devra être approuvée.",
+      provider:"Catalogue GitHub public Alicia",local:true,verified:false,sources:[]};
+   }
    if(!/\b(?:github|git hub)\b/.test(q)||!/\b(?:mes|tes|nos|tous|projets|depots|repositories)\b/.test(q)||
        /\b(?:qu est ce que|comment utiliser|comment marche)\b/.test(q))return null;
    root.open=true;
