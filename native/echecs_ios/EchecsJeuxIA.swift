@@ -116,6 +116,8 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
     private var server: OfflineGameServer?
     private var web: WKWebView!
     private let message = UILabel()
+    private var startupTimeout: DispatchWorkItem?
+    private var expectedLocalPage: URL?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,6 +126,9 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         config.websiteDataStore = .default() // stockage propre a l'app iOS ; aucune purge
         web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self
+        web.isOpaque = false
+        web.backgroundColor = UIColor(red: 0.07, green: 0.12, blue: 0.20, alpha: 1)
+        web.scrollView.backgroundColor = web.backgroundColor
         web.scrollView.contentInsetAdjustmentBehavior = .never
         web.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(web)
@@ -135,6 +140,10 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         ])
         message.text = "Chargement des jeux hors ligne…"
         message.textColor = .white
+        message.backgroundColor = UIColor(red: 0.08, green: 0.16, blue: 0.28, alpha: 0.96)
+        message.layer.cornerRadius = 14
+        message.layer.masksToBounds = true
+        message.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         message.textAlignment = .center
         message.numberOfLines = 0
         message.translatesAutoresizingMaskIntoConstraints = false
@@ -155,7 +164,7 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
                 guard let self = self else { return }
                 switch result {
                 case .success(let url):
-                    self.web.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+                    self.checkLocalServerAndLoad(url)
                 case .failure:
                     self.message.text = "Le serveur de jeu local n'a pas démarré. Ferme l'application puis réessaie."
                 }
@@ -163,7 +172,60 @@ private final class GamesViewController: UIViewController, WKNavigationDelegate 
         }
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { message.isHidden = true }
+    private func showStatus(_ info: String) {
+        message.isHidden = false
+        message.text = "Échecs & Jeux IA\\n\\n" + info
+        NSLog("[Échecs iOS] %@", info)
+    }
+
+    // Ne pas masquer le diagnostic au simple succès de navigation :
+    // WKWebView peut afficher une page blanche même si l'URL est "finie".
+    private func checkLocalServerAndLoad(_ url: URL) {
+        expectedLocalPage = url
+        showStatus("Vérification des  jeux intégrés…")
+        URLSession.shared.dataTask(with: URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)) {
+            [weak self] data, response, error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                guard error == nil,
+                      let http = response as? HTTPURLResponse, http.statusCode == 200,
+                      let data = data, let html = String(data: data, encoding: .utf8),
+                      html.contains("id=\\"content\\"") else {
+                    self.showStatus("Le serveur local ne renvoie pas le menu des jeux.\\nDétail : \\(error?.localizedDescription ?? String(describing: (response as? HTTPURLResponse)?.statusCode))\\n\\nFerme puis rouvre l'application.")
+                    return
+                }
+                self.showStatus("Ouverture des plateaux…")
+                self.web.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
+                self.startupTimeout?.cancel()
+                let timeout = DispatchWorkItem { [weak self] in
+                    guard let self = self, !self.message.isHidden else { return }
+                    self.showStatus("L'écran de jeu ne répond pas après 12 secondes.\\nFerme puis rouvre l'application et envoie une capture de ce message.")
+                }
+                self.startupTimeout = timeout
+                DispatchQueue.main.asyncAfter(deadline: .now() + 12, execute: timeout)
+            }
+        }.resume()
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard let url = webView.url, url.host == "127.0.0.1" else {
+            showStatus("Une page externe ou inconnue a été chargée.")
+            return
+        }
+        webView.evaluateJavaScript("document.querySelector('.header') !== null && document.querySelector('#content') !== null") { [weak self] result, error in
+            guard let self = self else { return }
+            if error == nil, result as? Bool == true {
+                self.startupTimeout?.cancel()
+                self.message.isHidden = true
+            } else {
+                self.showStatus("La page locale a été reçue mais le menu des jeux est absent.\\nDétail : \\(error?.localizedDescription ?? "HTML incomplet")")
+            }
+        }
+    }
+
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        showStatus("Le moteur WebKit a été interrompu. Ferme puis rouvre l'application.")
+    }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         message.isHidden = false
         message.text = "Erreur de chargement local : \(error.localizedDescription)"
