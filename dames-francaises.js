@@ -4,15 +4,16 @@
 import {SIZE,newFrenchDraughts,legalFrenchMoves,applyFrenchMove,undoFrench,chooseFrenchAlicia,frenchAdvice,square} from "./dames-francaises-engine.mjs";
 import {botSettings} from "./game-bots.mjs";
 const $=id=>document.getElementById(id);
-const STORE="alicia-dames-francaises-v1",PROGRESS="alicia-dames-francaises-exercices-v1";
 const params=new URLSearchParams(location.search);
+const duelActive=params.get("mode")==="duel";
+const STORE=duelActive?"alicia-dames-francaises-duel-v1":"alicia-dames-francaises-v1",PROGRESS="alicia-dames-francaises-exercices-v1";
 const roles=["opponent","partner","training"];
 let role=roles.includes(params.get("role"))?params.get("role"):"opponent";
 const initialState=()=>({game:newFrenchDraughts(),level:3,role:"opponent",score:0,study:0});
 let loaded=initialState();
 try{const v=JSON.parse(localStorage.getItem(STORE)||"null");if(v?.game?.kind==="french-draughts"&&v.game.board?.length===10){loaded={...loaded,...v};}}catch{}
 const savedRole=roles.includes(loaded.role)?loaded.role:"opponent";
-if(!params.has("role"))role=savedRole;
+if(!params.has("role"))role=duelActive?"opponent":savedRole;
 let game=loaded.game,level=Number(loaded.level)||3,score=Number(loaded.score)||0,
  study=Number.isInteger(loaded.study)?Math.max(0,Math.min(2,loaded.study)):0,
  chosen=null,coach="",busy=false,options=[];
@@ -46,6 +47,7 @@ function lessonComplete(move){
  return target==="promotion"?!!move.promotion:move.captures.length>=target;
 }
 function setRole(newRole){
+ if(duelActive){setMessage("Mode duel : retourne aux options pour choisir une autre partie.");return;}
  if(!roles.includes(newRole))return;
  activeRole=newRole;game=newFrenchDraughts();study=0;chosen=null;options=[];busy=false;
  if(newRole==="training"){game=makeLesson(0);setMessage(lessons[0].desc);}
@@ -58,6 +60,7 @@ function setLesson(i){
  setMessage(lessons[study].desc);persist();render();
 }
 function select(r,c){
+ if(duelActive)return;
  if(busy||game.over||(activeRole!=="training"&&game.turn!=="white"))return;
  const moves=getMoves();
  if(chosen){
@@ -97,16 +100,18 @@ function play(m){
 }
 let botTicket=0;
 function scheduleBot(){
- if(game.turn!=="black"||game.over||activeRole==="training"||busy)return;
+ if((game.turn!=="black"&&!duelActive)||game.over||activeRole==="training"||busy)return;
  const ticket=++botTicket;busy=true;render();
  setTimeout(()=>{
-  if(ticket!==botTicket||game.turn!=="black"||game.over){busy=false;render();return;}
+  if(ticket!==botTicket||(game.turn!=="black"&&!duelActive)||game.over){busy=false;render();return;}
+  if(document.hidden){busy=false;return;}
   try{
-   const move=chooseFrenchAlicia(game,{level:botSettings(params.get("bot"),level,5).level});
-   if(move){const n=applyFrenchMove(game,move);if(n){game=n;setMessage("✦ Alicia joue "+line(move)+(move.captures.length?" et capture "+move.captures.length+" pièce(s)":"")+". À toi !"+(activeRole==="partner"&&!game.over?" 🤝 Conseil pour ton tour : "+frenchAdvice(game,level).text:""));persist();}}
+   const aiName=duelActive&&game.turn==="white"?"alicia":params.get("bot");
+   const move=chooseFrenchAlicia(game,{level:botSettings(aiName,level,5).level});
+   if(move){const n=applyFrenchMove(game,move);if(n){const name=duelActive?(game.turn==="white"?"Alicia":"IA choisie"):"Alicia";game=n;setMessage("✦ "+name+" joue "+line(move)+(move.captures.length?" et capture "+move.captures.length+" pièce(s)":"")+". À toi !"+(activeRole==="partner"&&!game.over?" 🤝 Conseil pour ton tour : "+frenchAdvice(game,level).text:""));persist();}}
   }catch(error){setMessage("Calcul d'Alicia interrompu : "+String(error?.message||error));}
-  busy=false;render();
- },280);
+  busy=false;render();if(duelActive&&!game.over)scheduleBot();
+ },duelActive?700:280);
 }
 function render(){
  const moves=getMoves();
