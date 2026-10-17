@@ -66,6 +66,7 @@ test("Alicia comprend « apprend python » et donne une leçon intégrée sans i
   assert.match(result.answer,/print\(\)/);
   assert.match(result.answer,/pas un entraînement/);
  }
+ assert.equal(r.classify("explique input en Python").intent,null);
  assert.equal(JSON.parse(memory.get("alicia-cours-index-v1")).enabled,true);
  assert.equal(r.respond("installe Python"),null);
 });
