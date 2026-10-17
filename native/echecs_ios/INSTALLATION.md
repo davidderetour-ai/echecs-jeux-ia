@@ -1,4 +1,4 @@
-# Échecs & Jeux IA — application iPhone native (v3.8.7)
+# Échecs & Jeux IA — application iPhone native (v3.8.8)
 
 **Produit distinct de l'application Alicia Fusion.**
 
@@ -14,7 +14,7 @@
 Depuis GitHub connecté :
 1. Ouvrir l'onglet **Actions** du dépôt, choisir le workflow **Échecs & Jeux IA — Compiler IPA iPhone native gratuite**.
 2. Ouvrir une exécution marquée d'un cercle vert.
-3. Sous **Artifacts**, télécharger `Echecs-Jeux-IA-iPhone-IPA-v3.8.7`.
+3. Sous **Artifacts**, télécharger `Echecs-Jeux-IA-iPhone-IPA-v3.8.8`.
 4. Décompresser **une seule fois** le ZIP de GitHub pour récupérer `Echecs-Jeux-IA-iPhone-unsigned.ipa`.
 5. **Ne pas double-cliquer sur ce fichier IPA depuis le Finder Mac.** Ce fichier n'est ni une application Mac ni une archive à décompresser pour l'installer.
 
@@ -44,13 +44,30 @@ Le workflow `.github/workflows/echecs-ios-ipa.yml` utilise `macos-15`, les outil
 
 La voix et les versions d'Alicia ne sont pas modifiées par ce projet.
 
-## Correctif iPhone 3.8.7 — écran blanc
+## Correctif iPhone 3.8.8 — écran blanc
 
 Une capture d'écran iPhone a révélé une page blanche après installation de l'IPA initiale.
 Le test HTTP local a reproduit une erreur de démarrage `POSIXErrorCode 22 (Invalid argument)` : le port était défini deux fois dans les paramètres de `NWListener`. Le correctif utilise une écoute TCP ordinaire sur le même port, filtrée pour n'accepter que les connexions de boucle locale, et un test d'intégration HTTP vérifie les fichiers des jeux.
 
 - **Ne supprimer ni Alicia ni la première version des jeux** avant la mise à jour.
-- Télécharger l'artefact `Echecs-Jeux-IA-iPhone-IPA-v3.8.7` depuis un run vert récent sur main.
+- Télécharger l'artefact `Echecs-Jeux-IA-iPhone-IPA-v3.8.8` depuis un run vert récent sur main.
 - Dans AltStore Classic, sélectionner le nouvel IPA pour mettre à jour la version existante portant le même identifiant `fr.echecsjeuxia.iphone.native`. Éviter toute désinstallation ou changement d'identifiant : cela pourrait perdre des données.
 - Tester le menu de jeux ; si un message d'erreur apparaît, envoyer la capture. Un diagnostic natif lisible indique désormais si le serveur local ou la page WebKit échoue.
 - La réussite du test Mac n'est pas une garantie de fonctionnement physique sur iPhone : il faut confirmer après installation.
+
+## Dépannage iPhone v3.8.8 — capture de page blanche persistante
+
+La capture réelle de l'iPhone est restée entièrement blanche après la tentative de mise à jour 3.8.7. Il n'est pas établi si le nouvel IPA a réellement remplacé le précédent ; le statut « Active » dans AltStore ne donne pas cette preuve.
+
+La version 3.8.8 ajoute un **bandeau de navigation UIKit indépendant de WebKit**, visible dès l'ouverture en haut, indiquant explicitement « Échecs & Jeux IA · v3.8.8 » et quatre commandes :
+
+- **Accueil** recharge le menu principal inclus dans l'IPA.
+- **Go** ouvre le jeu de Go local dans la même application.
+- **Dames** ouvre les dames françaises locales.
+- **Diagnostic** affiche les informations locales (page ouverte, état d'initialisation, texte présent dans le DOM), sans envoyer de données sur Internet.
+
+Si ce bandeau **n'apparaît pas** après mise à jour AltStore, la version installée n'est probablement pas le binaire 3.8.8 ou l'installation a rencontré un problème ; **ne pas désinstaller l'app** sans sauvegarde préalable.
+
+Dans le seul paquet IPA, l'installation d'un nouveau service worker est désactivée et les anciens enregistrements de service worker sont désinscrits. Aucune valeur localStorage n'est supprimée ; la PWA Safari n'est pas modifiée.
+
+Le workflow vérifie la syntaxe et les moteurs, compile un vrai exécutable iOS et teste les réponses HTTP local du serveur Swift. **Un test automatisé sur Mac n'est pas une validation visuelle sur iPhone**.
