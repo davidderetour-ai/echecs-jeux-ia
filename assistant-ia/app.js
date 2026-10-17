@@ -70,7 +70,7 @@ async function callIA(review=false){
  // Knowledge lessons and safe local tool router are optional plug-ins.
  const query=messages.filter(m=>m.role==="user").slice(-1)[0]?.content||"";
  let plugin=null;
- try{plugin=window.AliciaRequestUnderstanding?.respond?.(query)||window.AliciaCourseLearning?.answer?.(query)||window.AliciaLocalTools?.answer?.(query)||null;}
+ try{plugin=window.AliciaTraining?.command?.(query)||window.AliciaRequestUnderstanding?.respond?.(query)||window.AliciaTraining?.predictAndRespond?.(query)||window.AliciaCourseLearning?.answer?.(query)||window.AliciaLocalTools?.answer?.(query)||null;}
  catch(err){console.warn("Outil optionnel indisponible",err);}
  const response=plugin||engine.answer({messages,mode:$("mode").value,notes:getNotes()});
  if(!response||typeof response.answer!=="string"||!response.answer.trim())throw new Error("Le moteur n’a retourné aucune réponse.");
