@@ -1005,9 +1005,10 @@ document.addEventListener('click',ev=>{
 document.addEventListener('change',ev=>{
  let el=ev.target;
  if(el.id==='backup-import-file'){const f=el.files?.[0];importBackupFile(f);el.value='';return;}if(el.matches('[data-player]')){setController(el.dataset.player,el.value);return;}
- if(!el.matches('[data-select]'))return;
- const field=el.dataset.select;
  if(el.matches('[data-setup-rules]')&&pendingSetup){pendingSetup.rules=el.value;return;}
+  if(!el.matches('[data-select]'))return;
+ const field=el.dataset.select;
+ 
  if(field==='fourmode'){fourMode=el.value;start('chess4');toast('Nouvelle partie avec la règle choisie.');return;}
  if(field==='level')level=+el.value;
  if(field==='ai-style')aiStyle=el.value;
