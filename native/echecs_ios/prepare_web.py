@@ -57,7 +57,8 @@ assert "</head>" in source_html
 # Désinscription des anciens SW dans l'origine isolée de WKWebView :
 # ne supprime JAMAIS localStorage, cookies ni sauvegardes de jeu.
 cleanup = """<script>
-window.__iosNativeVersion="3.8.9";
+window.__iosNativeVersion="3.9.0";
+document.documentElement.classList.add('native-ios');
 if ('serviceWorker' in navigator) {
  navigator.serviceWorker.getRegistrations().then(function(list){
   return Promise.all(list.map(function(item){return item.unregister()}));
