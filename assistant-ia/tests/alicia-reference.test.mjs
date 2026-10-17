@@ -49,7 +49,7 @@ test("Alicia interprète la commande d'avatar au lieu de dire qu'elle ne sait pa
 });
 test("Cache hors ligne inclut la nouvelle référence et le moteur 3D",()=>{
  const sw=load("sw.js");
- assert.match(sw,/alicia-shell-v36/);
+ assert.match(sw,/alicia-shell-v37/);
  for(const path of ["alicia-reference-ui.js","alicia-reference-theme.css","alicia-avatar3d.js","vendor\/three.r147.min.js"]){
   assert.ok(sw.includes(path),path);
  }
