@@ -7,6 +7,7 @@ export const ALICIA_GAME_ORIGIN="https://davidderetour-ai.github.io/echecs-jeux-
 const GAME_MODES=Object.freeze([
  {id:"chess2",label:"Échecs classiques",type:"opponent",path:"index.html",engine:"engine.js"},
  {id:"chess4",label:"Échecs à 4 joueurs",type:"opponent",path:"index.html",engine:"engine.js"},
+ {id:"dames10",label:"Dames françaises 10 × 10",type:"opponent",path:"dames-francaises.html",engine:"dames-francaises-engine.mjs"},
  {id:"checkers",label:"Dames",type:"opponent",path:"index.html",engine:"mini.js"},
  {id:"reversi",label:"Reversi",type:"opponent",path:"index.html",engine:"mini.js"},
  {id:"connect4",label:"Puissance 4",type:"opponent",path:"index.html",engine:"mini.js"},
@@ -24,11 +25,12 @@ const GAME_MODES=Object.freeze([
 ]);
 export const ALICIA_GAMES=GAME_MODES;
 export function getAliciaGame(id){return GAME_MODES.find(g=>g.id===id)||null;}
-export function aliciaGameLink(id,{local=false}={}){
+export function aliciaGameLink(id,{local=false,role="opponent"}={}){
  const g=getAliciaGame(id);
  if(!g)return null;
  const target=new URL(g.path,local?"https://local.invalid/":ALICIA_GAME_ORIGIN);
  target.searchParams.set("alicia",g.id);
+ if(["opponent","partner","training"].includes(role))target.searchParams.set("role",role);
  return local?target.pathname+target.search:target.href;
 }
 export function aliciaGameAction(id){
