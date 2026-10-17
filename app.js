@@ -1,5 +1,7 @@
 import {mountUniversal360} from './universal-360.js';
 import {ALICIA_GAMES,getAliciaGame,aliciaGameLink} from './alicia-games.mjs';
+import {gameSetupSpec,safeSetup,standaloneGameUrl} from './game-setup.mjs';
+import {renderGamePreparation} from './game-setup-ui.mjs';
 import {NearbyPeer,parseSignal} from './nearby.js';
 import {mountShogi,unmountShogi} from './shogi-app.js';
 import {mountChess360,mountExtra360} from './chess-3d.js';
@@ -23,6 +25,9 @@ const labelTurns={white:'⚪ Au tour des Blancs',black:'⚫ Au tour des Noirs',r
 const store={get(k,def){try{return JSON.parse(localStorage.getItem(k))??def;}catch{return def;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}};
 let tab='home',game=store.get('jeu-v1',null),selected=null,trainingSelected=null,practice=null,practiceResult='',quizAnswered=null;
 let immersiveGame=false, nativeImmersive=false, gameOptionsOpen=false;
+let setupGameId=gameSetupSpec(new URLSearchParams(location.search).get('prepare'))?.id||null;
+let pendingSetup=null;
+if(setupGameId)tab='setup';
 let practiceIndex=0,quizIndex=0,ruleTab='intro',trainTab='path',pendingBot=null,botBusy=false,zoom=false,banner='';
 let fourMode=store.get('fourmode','chesscom-ffa');
 let level=store.get('level',2),aiMode=store.get('aimode','offline'),serverUrl=store.get('serverurl','');
@@ -70,7 +75,7 @@ function save(){if(game&&!roomLive&&!nearbyLive){const g=JSON.parse(JSON.stringi
 function kind(){return game?.kind==='chess'?(game.type==='chess4'?'chess4':'chess2'):game?.id;}
 function isHuman(){if(nearbyLive){if(!game||game.over||game.kind!=='chess')return false;return game.colors[game.turn]===(nearbyRole==='host'?(game.type==='chess4'?'red':'white'):(game.type==='chess4'?'blue':'black'));}if(roomLive)return !!(game&&!game.over&&roomData?.started&&game.colors[game.turn]===roomData.seat);if(!game||game.over)return false;const c=game.kind==='chess'?game.colors[game.turn]:game.turn===0?'A':'B';return controllers[c]==='human';}
 function cancelBot(){if(pendingBot){clearTimeout(pendingBot);pendingBot=null;}botBusy=false;}
-function goto(t){document.querySelector('.nav-more')?.removeAttribute('open');if(immersiveGame && !['play','extras'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
+function goto(t){document.querySelector('.nav-more')?.removeAttribute('open');if(immersiveGame && !['play','extras','shogi'].includes(t))leaveImmersive();if(!['play','extras'].includes(t))gameOptionsOpen=false;tab=t;selected=null;cancelBot();render();if(t==='play')queueBot();}
 // Nouveau jeu : copie de sécurité avant de remplacer la partie courante.
 function protectCurrentGame(){
  if(!game||game.over||roomLive||nearbyLive)return true;
@@ -126,8 +131,9 @@ function playWithAlicia(id,role=aliciaRole){
  render();
 }
 function start(id,previousProtected=false){if(!previousProtected&&!protectCurrentGame())return;gameOptionsOpen=false;if(nearbyLive){toast('Quitte d’abord la partie de proximité.');goto('friends');return;}cancelBot();if(roomLive){roomLive=false;roomData=null;}game=id==='chess4'?newChess('chess4',fourMode):id==='chess2'?newChess('chess2'):newMini(id);selected=null;miniInfo='';save();tab='play';render();queueBot();}
-function render(){document.body?.classList?.toggle('chosen-home-active',tab==='home');document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+function render(){document.body?.classList?.toggle('chosen-home-active',tab==='home');document.body?.classList?.toggle('game-immersive',immersiveGame&&['play','extras','shogi'].includes(tab));if(document.body?.dataset){document.body.dataset.gameView=tab;document.body.dataset.viewMode=viewMode;}if(threeBoard){threeBoard.dispose();threeBoard=null;}unmountShogi();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  if(tab==='home')root.innerHTML=renderHome();
+ if(tab==='setup')root.innerHTML=renderGamePreparation(setupGameId,pendingSetup,modes);
  if(tab==='play')root.innerHTML=renderPlay();
  if(tab==='train'){if(!practice)loadPractice();root.innerHTML=renderTraining();}
  if(tab==='rules')root.innerHTML=renderRules();
@@ -177,12 +183,14 @@ function render(){document.body?.classList?.toggle('chosen-home-active',tab==='h
 }
 function leaveImmersive(){
  immersiveGame=false;nativeImmersive=false;
+ try{window.webkit?.messageHandlers?.gameDisplay?.postMessage(false);}catch{}
  document.body.classList.remove('game-immersive');
  if(document.fullscreenElement&&typeof document.exitFullscreen==='function')document.exitFullscreen().catch(()=>{});
 }
 function toggleImmersive(){
  if(immersiveGame){leaveImmersive();render();return;}
  immersiveGame=true;render();
+ try{window.webkit?.messageHandlers?.gameDisplay?.postMessage(true);}catch{}
  // iPhone Safari ne prend pas en charge le plein écran d'un élément HTML : interface plein écran simulée.
  if(typeof document.documentElement.requestFullscreen==='function'){
   try{const req=document.documentElement.requestFullscreen({navigationUI:'hide'});
@@ -253,7 +261,7 @@ function renderHome(){
   <section class="chosen-panel chosen-section-games">
     <div class="chosen-heading"><h2>🎮 Jouer</h2><button type="button" data-action="show-other-games">Tous les jeux ❯</button></div>
     <div class="chosen-games" aria-label="Choisis un jeu">
-      ${mainGames.map(([id,icon,name,subtitle,visual])=>`<button type="button" class="chosen-game chosen-game-${id}" data-alicia-game="${id}" aria-label="Jouer à ${name} ${subtitle}"><span class="chosen-game-art" aria-hidden="true">${visual}</span><strong>${name}</strong><small>${subtitle||'Découvrir'}</small></button>`).join('')}
+      ${mainGames.map(([id,icon,name,subtitle,visual])=>`<button type="button" class="chosen-game chosen-game-${id}" data-prepare-game="${id}" aria-label="Préparer ${name} ${subtitle}"><span class="chosen-game-art" aria-hidden="true">${visual}</span><strong>${name}</strong><small>${subtitle||'Découvrir'}</small></button>`).join('')}
     </div>
   </section>
   <section class="chosen-panel chosen-alicia">
@@ -264,7 +272,7 @@ function renderHome(){
   </section>
   <section class="chosen-panel chosen-continue">
     <div class="chosen-heading"><h2>◷ Continuer</h2><button type="button" data-tab="settings">Mes sauvegardes ❯</button></div>
-    ${game&&!game.over?`<div class="chosen-resume"><div class="chosen-mini-board" aria-hidden="true">♜♟<span>♙♖</span></div><div class="chosen-resume-copy"><strong>${E(savedTitle)}</strong><small>Partie enregistrée sur cet appareil</small><span class="chosen-status">● En cours</span></div><button type="button" data-tab="play" class="chosen-resume-button">▶ Reprendre</button></div>`:`<div class="chosen-resume chosen-empty"><span class="chosen-mini-board" aria-hidden="true">♙</span><p>Aucune partie à reprendre pour le moment.</p><button type="button" data-alicia-game="chess2" class="chosen-resume-button">▶ Jouer</button></div>`}
+    ${game&&!game.over?`<div class="chosen-resume"><div class="chosen-mini-board" aria-hidden="true">♜♟<span>♙♖</span></div><div class="chosen-resume-copy"><strong>${E(savedTitle)}</strong><small>Partie enregistrée sur cet appareil</small><span class="chosen-status">● En cours</span></div><button type="button" data-action="resume-fullscreen" class="chosen-resume-button">▶ Reprendre</button></div>`:`<div class="chosen-resume chosen-empty"><span class="chosen-mini-board" aria-hidden="true">♙</span><p>Aucune partie à reprendre pour le moment.</p><button type="button" data-prepare-game="chess2" class="chosen-resume-button">▶ Jouer</button></div>`}
   </section>
   <div class="chosen-bottom-panels">
   <section class="chosen-panel chosen-quick"><h2>⚙ Réglages rapides</h2>
@@ -279,7 +287,7 @@ function renderHome(){
   </div>
   <details class="chosen-more easy-more" id="all-games"><summary>🎲 Tous les autres jeux <span>Afficher la liste ▾</span></summary>
     <div class="easy-games easy-games-extra">
-    ${ALICIA_GAMES.filter(g=>!mainIds.has(g.id)).map(g=>`<button type="button" class="easy-game" data-alicia-game="${g.id}"><span class="easy-emoji" aria-hidden="true">${g.type==='coach'?'🧩':'🎲'}</span><span class="easy-copy"><strong>${E(g.label)}</strong><small>${g.type==='coach'?'Conseils et défis':'Jeu local'}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
+    ${ALICIA_GAMES.filter(g=>!mainIds.has(g.id)).map(g=>`<button type="button" class="easy-game" data-prepare-game="${g.id}"><span class="easy-emoji" aria-hidden="true">${g.type==='coach'?'🧩':'🎲'}</span><span class="easy-copy"><strong>${E(g.label)}</strong><small>${g.type==='coach'?'Conseils et défis':'Jeu local'}</small></span><span class="easy-arrow" aria-hidden="true">›</span></button>`).join('')}
     </div>
     <div class="easy-tools">
       <button type="button" data-tab="train">🎓 Entraînement</button>
