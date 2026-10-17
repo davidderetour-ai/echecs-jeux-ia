@@ -23,7 +23,7 @@ for file in list(root.glob("*.js")) + list(root.glob("*.mjs")):
 assert (root / "backup.js").exists(), "Import / export des sauvegardes absent"
 assert (root / "go-persistence.mjs").exists(), "Sauvegardes des trois Go absentes"
 assert not (root / "assistant-ia").exists(), "L'interface Alicia ne doit pas être écrasée"
-assert 'window.__iosNativeVersion="3.8.9"' in (root / "index.html").read_text(encoding="utf-8"), "Marqueur native IPA absent"
+assert 'window.__iosNativeVersion="3.9.0"' in (root / "index.html").read_text(encoding="utf-8"), "Marqueur native IPA absent"
 assert "if(false&&'serviceWorker' in navigator" in (root / "app.js").read_text(encoding="utf-8"), "Service worker PWA encore actif dans l'app native"
 # Régression de l'erreur réellement photographiée sur iPhone :
 # Go n'a pas les éléments .header / #content de la page d'accueil.
@@ -33,7 +33,7 @@ assert "path.endsWith('/go.html')" in native_source
 assert "path.endsWith('/dames-francaises.html')" in native_source
 assert "document.getElementById('size') && document.getElementById('cv')" in native_source
 assert "document.getElementById('roles') && document.getElementById('board')" in native_source
-assert 'private let displayVersion = "3.8.9"' in native_source
+assert 'private let displayVersion = "3.9.0"' in native_source
 assert 'if diagnosticRequested && !message.isHidden' in native_source
 print("OK : validation spécifique Go/Dames/Accueil, diagnostic refermable et version native.")
 print("OK : ressources principales, imports JS et sauvegardes présents dans l'IPA.")
