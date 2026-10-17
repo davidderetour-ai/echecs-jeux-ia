@@ -101,9 +101,9 @@
     setStatus("Le modèle humain ne peut pas s'afficher. Portrait de secours disponible ; choisis le 3D stylisé si besoin.");
    }
   });
-  window.addEventListener("alicia:3d-failed",()=>{
+  window.addEventListener("alicia:3d-failed",e=>{
    if(!PHOTOS[selected])fallback(true,"archive-portrait");
-   const reason=String(arguments[0]?.detail?.reason||"WebGL indisponible").slice(0,180);
+   const reason=String(e?.detail?.reason||"WebGL indisponible").slice(0,180);
    setStatus("3D non affichée ("+reason+"). Ancien portrait conservé.");
   });
   select.addEventListener("change",()=>apply(select.value));
