@@ -43,3 +43,21 @@ test("App iPhone : identité préservée et lancement pleine taille",()=>{
  assert.match(ipa,/3\.9\.1/);
  assert.match(swift,/private let displayVersion = "3\.9\.1"/);
 });
+
+test("Changement de jeu : confirmation et copie sûre sans remplacer les anciennes sauvegardes",()=>{
+ assert.match(js,/function protectCurrentGame\(\)/);
+ assert.match(js,/if\(!confirm\(/);
+ assert.match(js,/localStorage\.setItem\("v2-saves",JSON\.stringify\(slots\)\)/);
+ assert.match(js,/function start\(id,previousProtected=false\)/);
+ assert.match(js,/if\(game&&!game\.over&&!roomLive&&!nearbyLive&&kind\(\)===chosen\)/);
+ assert.match(js,/Partie reprise, sans recommencer/);
+});
+test("iPhone : barre compacte et navigation native de secours",()=>{
+ assert.match(swift,/nativeBar\.heightAnchor\.constraint\(equalToConstant: 54\)/);
+ assert.match(swift,/#selector\(nativeGamesMenu\)/);
+ assert.match(swift,/#selector\(nativeDiagnostic\)/);
+ assert.match(swift,/UIAlertController\(title: "Choisis ton jeu"/);
+ assert.match(swift,/nativeHome\(\)/);
+ assert.match(swift,/nativeGo\(\)/);
+ assert.match(swift,/nativeDames\(\)/);
+});
