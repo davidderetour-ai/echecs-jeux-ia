@@ -19,8 +19,8 @@ cat > "$APP/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>Échecs &amp; Jeux IA</string>
   <key>CFBundleDisplayName</key><string>Échecs &amp; Jeux IA</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>3.8.7</string>
-  <key>CFBundleVersion</key><string>3862</string>
+  <key>CFBundleShortVersionString</key><string>3.8.8</string>
+  <key>CFBundleVersion</key><string>3863</string>
   <key>LSRequiresIPhoneOS</key><true/>
   <key>MinimumOSVersion</key><string>15.0</string>
   <key>UIDeviceFamily</key><array><integer>1</integer><integer>2</integer></array>
