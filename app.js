@@ -982,7 +982,7 @@ document.addEventListener('click',ev=>{
  }
  el=ev.target.closest('[data-tab]');if(el){goto(el.dataset.tab);return;}
  el=ev.target.closest('[data-junior-challenge]');if(el){const j=JUNIOR_CHALLENGES[Number(el.dataset.juniorChallenge)];if(!j)return;practiceIndex=j.exercise;loadPractice();trainTab='moves';goto('train');toast('Défi du Junior : '+j.title);return;}
- el=ev.target.closest('[data-open-game]');if(el){start(el.dataset.openGame);return;}
+ el=ev.target.closest('[data-open-game]');if(el){openGameSetup(el.dataset.openGame);return;}
  el=ev.target.closest('[data-extra-start]');if(el){extraGame=newExtra(el.dataset.extraStart);bonusAdvice='';save();goto('extras');return;}
  el=ev.target.closest('[data-extra-cell]');if(el){extraClick(Number(el.dataset.extraCell));return;}
  el=ev.target.closest('[data-save-load]');if(el){loadSlot(el.dataset.saveLoad);return;}
@@ -993,7 +993,7 @@ document.addEventListener('click',ev=>{
  el=ev.target.closest('[data-alicia-role]');if(el){
   aliciaRole=el.dataset.aliciaRole;store.set('alicia-game-role',aliciaRole);render();return;
  }
- el=ev.target.closest('[data-alicia-game]');if(el){const chosen=el.dataset.aliciaGame;if(game&&!game.over&&!roomLive&&!nearbyLive&&kind()===chosen){goto('play');toast('Partie reprise, sans recommencer.');return;}playWithAlicia(chosen,aliciaRole);return;}
+ el=ev.target.closest('[data-alicia-game]');if(el){openGameSetup(el.dataset.aliciaGame);return;}
  el=ev.target.closest('[data-action]');if(el){handleAction(el.dataset.action);return;}
  el=ev.target.closest('[data-train]');if(el){trainTab=el.dataset.train;if(trainTab==='path'&&pathActive){const step=pathModule(pathActive)?.steps[pathLevel];if(step?.type==='board'){practiceIndex=step.index;loadPractice();}}else if(trainTab==='moves'){loadPractice();}render();return;}
  el=ev.target.closest('[data-rule]');if(el){ruleTab=el.dataset.rule;render();return;}
