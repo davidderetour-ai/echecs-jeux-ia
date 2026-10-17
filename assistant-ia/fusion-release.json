@@ -1,6 +1,6 @@
 {
   "name": "Alicia Fusion",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "channel": "stable",
   "updated": "2026-10-17",
   "webUrl": "https://davidderetour-ai.github.io/echecs-jeux-ia/assistant-ia/",
@@ -29,8 +29,12 @@
     "coursIndexables",
     "entrainementStatistiqueSupervise",
     "reevaluationApresCorrection",
-    "evolutionLocaleSansCodeAutonome"
+    "evolutionLocaleSansCodeAutonome",
+    "projetsGitHubPublics",
+    "lienJeuEchecsIA",
+    "propositionsValidationManuelle",
+    "evolutionModulesCoordonnee"
   ],
   "nativeInstallation": "manual",
-  "note": "Apprentissage supervisé local de demandes avec corpus vérifié et corrections explicites. Aucune copie de GPT-6, aucune API GPT-6 payante activée. Mise à jour native manuelle ; synchronisation des données uniquement via export/import volontaire."
+  "note": "Le jeu Échecs & Jeux IA est référencé dans Alicia. GitHub public en lecture, propositions de modification après accord manuel. Entraînement et contrôles locaux, sans réplication de GPT-6 ni changement de code autonome."
 }
