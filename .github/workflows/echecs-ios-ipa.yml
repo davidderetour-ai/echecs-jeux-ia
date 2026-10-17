@@ -1,0 +1,40 @@
+name: Échecs & Jeux IA — Compiler IPA iPhone native gratuite
+on:
+  push:
+    branches:
+      - main
+      - echecs-jeux-ios-natif-iphone-20261017
+    paths:
+      - "native/echecs_ios/**"
+      - ".github/workflows/echecs-ios-ipa.yml"
+  pull_request:
+    paths:
+      - "native/echecs_ios/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Compiler Échecs & Jeux IA pour iPhone (arm64)
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - name: Récupérer les jeux et moteurs locaux
+        uses: actions/checkout@v4
+      - name: Vérifier les moteurs existants sans modifier les versions
+        run: |
+          set -euo pipefail
+          node --test tests/*.test.mjs
+          node --check app.js
+          node --check go.js
+          node --check dames-francaises.js
+          node --check shogi-app.js
+      - name: Compiler l'IPA iOS native avec moteur hors ligne
+        run: bash native/echecs_ios/build_ipa.sh
+      - name: Publier le fichier pour AltStore Classic
+        uses: actions/upload-artifact@v4
+        with:
+          name: Echecs-Jeux-IA-iPhone-IPA-v3.8.6
+          path: dist/Echecs-Jeux-IA-iPhone/Echecs-Jeux-IA-iPhone-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
